@@ -4,6 +4,7 @@ import plotly.express as px
 import pandas as pd
 import plotly.graph_objects as go
 from dash import dash_table
+import dash_bootstrap_components as dbc
 
 dash.register_page(__name__, path='/movilidad-docente')
 
@@ -18,33 +19,39 @@ layout = html.Div([
     html.Br(),  
     html.H3('Movilidad académica'),
     html.Br(), 
-    html.H4('Movilidad docente'),
+    dbc.Nav(
+    [
+        dbc.NavItem(dbc.NavLink("Movilidad estudiantil", href="/movilidad-estudiantil")),
+        dbc.NavItem(dbc.NavLink('Movilidad docente', active=True, href="/movilidad-docente")),
+    ],
+    pills=True,),
     html.Br(), 
-    
+    html.H5('Docentes beneficiados'),
+    html.Br(),
     dcc.Dropdown(
-        id="nivel_md",
+        id="nivel_movilidad_docente",
         options= data_md['Nivel'].unique(),
         clearable=True,
         placeholder="Seleccione el nivel",
     ),
     dcc.Dropdown(
-        id="tipo_md",
+        id="tipo_movilidad_docente",
         options= data_md['Tipo'].unique(),
         clearable=True,
         placeholder="Seleccione el tipo",
     ),
-    dcc.Graph(id="graph_md"),
+    dcc.Graph(id="graph_movilidad_docente"),
     html.Br(), 
-    html.H4('Logros Alcanzados'),
+    html.H5('Logros Alcanzados'),
     html.Br(), 
     dcc.Dropdown(
-        id="facultad_md",
+        id="facultad_movilidad_docente",
         options= data_md_2['facultad'].unique(),
         clearable=True,
         placeholder="Seleccione la facultad",
     ),
     dcc.Dropdown(
-        id="anio_md",
+        id="anio_movilidad_docente",
         options= data_md_2['anio'].unique(),
         clearable=True,
         placeholder="Seleccione el año",
@@ -55,13 +62,13 @@ layout = html.Div([
         'whiteSpace': 'normal',
         'height': 'auto',
         },
-        id = 'logros_md_table'
+        id = 'logros_table_movilidad_docente'
     ),
  ])
 
 @callback(
-    Output("graph_md", "figure"), 
-    [Input("nivel_md", "value"), Input("tipo_md", "value")])
+    Output("graph_movilidad_docente", "figure"), 
+    [Input("nivel_movilidad_docente", "value"), Input("tipo_movilidad_docente", "value")])
 def update_bar_chart_md(nivel, tipo):
 
     if nivel or tipo:
@@ -125,8 +132,8 @@ def update_bar_chart_md(nivel, tipo):
     return fig
 
 @callback(
-    Output("logros_md_table", "data"), 
-    [Input("facultad_md", "value"), Input("anio_md", "value")])
+    Output("logros_table_movilidad_docente", "data"), 
+    [Input("facultad_movilidad_docente", "value"), Input("anio_movilidad_docente", "value")])
 def logros_alcanzados_md(facultad, anio):
     if facultad or anio:
         if not anio:
