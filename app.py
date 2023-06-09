@@ -3,7 +3,9 @@ from dash import Dash, html, dcc, callback, Input, Output
 import dash_bootstrap_components as dbc
 import requests, json, time
 from flask import session
+
 app = Dash(__name__, use_pages=True)
+server = app.server
 
 '''
     dcc.Interval(
