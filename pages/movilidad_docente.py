@@ -8,150 +8,249 @@ import dash_bootstrap_components as dbc
 
 dash.register_page(__name__, path='/movilidad-docente')
 
-data_md = pd.read_excel('pages/movilidad_docente_2.xlsx')
-data_md_2 = pd.read_excel('pages/logros_md.xlsx')
+data = pd.read_excel('pages/movilidad_docente_2.xlsx')
+data_2 = pd.read_excel('pages/logros_md.xlsx')
 
-data_md["anio"] = data_md["anio"].astype('str')
+data["anio"] = data["anio"].astype('str')
 
-layout = html.Div([
-    html.Br(), 
-    html.H2('Relaciones Interinstitucionales'), 
-    html.Br(),  
-    html.H3('Movilidad académica'),
-    html.Br(), 
+# movilidad docente nacional
+movilidad_docente_nacional = data[data['Nivel'] == 'Nacional']
+
+# movilidad docente nacional entrante
+movilidad_docente_nacional_entrante = movilidad_docente_nacional[movilidad_docente_nacional['Tipo'] == 'Movilidad entrante']
+movilidad_docente_nacional_entrante = movilidad_docente_nacional_entrante.sort_values('facultad', ascending=False)
+total_movilidad_docente_nacional_entrante = movilidad_docente_nacional_entrante['Docentes beneficiados'].sum()
+
+
+# movilidad docente nacional saliente
+movilidad_docente_nacional_saliente = movilidad_docente_nacional[movilidad_docente_nacional['Tipo']
+                                                 == 'Movilidad saliente']
+movilidad_docente_nacional_saliente = movilidad_docente_nacional_saliente.sort_values('facultad', ascending=False)
+total_movilidad_docente_nacional_saliente = movilidad_docente_nacional_saliente['Docentes beneficiados'].sum()
+
+# movilidad docente internacional
+movilidad_docente_internacional = data[data['Nivel'] == 'Internacional']
+# movilidad internacional entrante
+movilidad_docente_internacional_entrante = movilidad_docente_internacional[movilidad_docente_internacional['Tipo'] == 'Movilidad entrante']
+movilidad_docente_internacional_entrante = movilidad_docente_internacional_entrante.sort_values('facultad', ascending=False)
+total_movilidad_docente_internacional_entrante = movilidad_docente_internacional_entrante['Docentes beneficiados'].sum()
+
+# movilidad docente internacional saliente
+movilidad_docente_internacional_saliente = movilidad_docente_internacional[
+    movilidad_docente_internacional['Tipo'] == 'Movilidad saliente']
+movilidad_docente_internacional_saliente = movilidad_docente_internacional_saliente.sort_values('facultad', ascending=False)
+total_movilidad_docente_internacional_saliente = movilidad_docente_internacional_saliente['Docentes beneficiados'].sum()
+
+
+
+layout = html.Div([ 
+    html.H2('Relaciones Interinstitucionales'),   
+    html.H3('Movilidad académica'), 
     dbc.Nav(
     [
         dbc.NavItem(dbc.NavLink("Movilidad estudiantil", href="/movilidad-estudiantil")),
         dbc.NavItem(dbc.NavLink('Movilidad docente', active=True, href="/movilidad-docente")),
     ],
-    pills=True,),
-    html.Br(), 
+    pills=True,), 
     html.H5('Docentes beneficiados'),
-    html.Br(),
-    dcc.Dropdown(
-        id="nivel_movilidad_docente",
-        options= data_md['Nivel'].unique(),
-        clearable=True,
-        placeholder="Seleccione el nivel",
-    ),
-    dcc.Dropdown(
-        id="tipo_movilidad_docente",
-        options= data_md['Tipo'].unique(),
-        clearable=True,
-        placeholder="Seleccione el tipo",
-    ),
-    dcc.Graph(id="graph_movilidad_docente"),
-    html.Br(), 
-    html.H5('Logros Alcanzados'),
-    html.Br(), 
-    dcc.Dropdown(
-        id="facultad_movilidad_docente",
-        options= data_md_2['facultad'].unique(),
-        clearable=True,
-        placeholder="Seleccione la facultad",
-    ),
-    dcc.Dropdown(
-        id="anio_movilidad_docente",
-        options= data_md_2['anio'].unique(),
-        clearable=True,
-        placeholder="Seleccione el año",
-    ),
-    html.Br(), 
-    dash_table.DataTable(
-        style_data={
-        'whiteSpace': 'normal',
-        'height': 'auto',
-        },
-        id = 'logros_table_movilidad_docente'
-    ),
- ])
+    html.Div(
+        [
+            dbc.Row(
+                [
+                    dbc.Col(html.Div([
+                        dbc.Card(
+                            dbc.CardBody(
+                                [
+                                    html.H6("Movilidad nacional entrante",
+                                            className="card-subtitle"),
+                            
+                                    html.P(
+                                        total_movilidad_docente_nacional_entrante,
+                                        className="card-text",
+                                        style={'textAlign': 'center'}
+                                    ),
+                                ]
+                            ),
+                        )
+                    ], className='card_container'), lg=3),
+                    dbc.Col(html.Div([
+                        dbc.Card(
+                            dbc.CardBody(
+                                [
+                                    html.H6("Movilidad nacional saliente",
+                                            className="card-subtitle"),
+                            
+                                    html.P(
+                                        total_movilidad_docente_nacional_saliente,
+                                        className="card-text",
+                                        style={'textAlign': 'center'}
+                                    ),
+                                ]
+                            ),
+                        )
+                    ], className='card_container'), lg=3),
+                    dbc.Col(html.Div([
+                        dbc.Card(
+                            dbc.CardBody(
+                                [
+                                    html.H6("Movilidad internacional entrante",
+                                            className="card-subtitle"),
+                            
+                                    html.P(
+                                        total_movilidad_docente_internacional_entrante,
+                                        className="card-text",
+                                        style={'textAlign': 'center'}
+                                    ),
+                                ]
+                            ),
+                        )
+                    ], className='card_container'), lg=3),
+                    dbc.Col(html.Div([
+                        dbc.Card(
+                            dbc.CardBody(
+                                [
+                                    html.H6("Movilidad internacional saliente",
+                                            className="card-subtitle"),
+                            
+                                    html.P(
+                                        total_movilidad_docente_internacional_saliente,
+                                        className="card-text",
+                                        style={'textAlign': 'center'}
+                                    ),
+                                ]
+                            ),
+                        )
+                    ], className='card_container'), lg=3),
+                ]
+            ),
+        ]),
+    html.H5('Movilidad nacional saliente'),
+    dcc.Graph(id="graph_movilidad_docente_nacional_saliente",
+              figure=px.bar(movilidad_docente_nacional_saliente,
+                            x="Docentes beneficiados",
+                            y="facultad",
+                            color="anio",
+                            labels={
+                                'facultad': 'Dependencia',
+                                'anio': 'año',
+                            },
+                            color_discrete_sequence=px.colors.qualitative.Prism,
+                            hover_data={
+                                "Docentes beneficiados": True,
+                                "anio": True},
+                            barmode="group"
+                            )),
+    html.H5('Movilidad internacional entrante'),
+    dcc.Graph(id="graph_movilidad_docente_internacional_entrante",
+              figure=px.bar(movilidad_docente_internacional_entrante,
+                            x="Docentes beneficiados",
+                            y="facultad",
+                            color="anio",
+                            labels={
+                                'facultad': 'Dependencia',
+                                'anio': 'año',
+                            },
+                            color_discrete_sequence=px.colors.qualitative.G10,
+                            hover_data={
+                                "Docentes beneficiados": True,
+                                "anio": True},
+                            barmode="group"
+                            )),
+    html.H5('Movilidad internacional saliente'),
+    dcc.Graph(id="graph_movilidad_docente_internacional_saliente",
+              figure=px.bar(movilidad_docente_internacional_saliente,
+                            x="Docentes beneficiados",
+                            y="facultad",
+                            color="anio",
+                            labels={
+                                'facultad': 'Dependencia',
+                                'anio': 'año', },
+                            color_discrete_sequence=px.colors.qualitative.G10,
+                            hover_data={
+                                "Docentes beneficiados": True,
+                                "anio": True},
+                            barmode="group"
+                            )),  
+    html.H5('Logros Alcanzados'), 
+     html.Div(
+        [
+            dbc.Row(
+                [
+                    dbc.Col(html.Div([
+                        dcc.Dropdown(
+                            id="facultad_movilidad_docente",
+                            options=data_2['facultad'].unique(),
+                            clearable=True,
+                            placeholder="Seleccione la facultad",
+                        ),
+                    ]), lg=6),
+                    dbc.Col(html.Div([
+                        dcc.Dropdown(
+                            id="anio_movilidad_docente",
+                            options=data_2['anio'].unique(),
+                            clearable=True,
+                            placeholder="Seleccione el año",
+                        ),
+                    ]), lg=6),
+                ],
+            ),
+            dbc.Row(
+                [
+                    dbc.Col(
+                        html.Div([
+                            dash_table.DataTable(
+                                style_data={
+                                    'whiteSpace': 'normal',
+                                    'height': 'auto',
+                                    'fontFamily': 'Mulish',
+                                    'fontSize': '18pts',
+                                    'fontWeight': 400
+                                },
+                                style_header={
+                                    'backgroundColor': 'white',
+                                    'fontWeight': 'bold',
+                                    'textAlign': 'center',
+                                    'fontFamily': 'Mulish',
+                                    'fontSize': '22pts',
+                                    'fontWeight': 500
+                                },
+                                style_data_conditional=[
+                                    {
+                                        'if': {'row_index': 'odd'},
+                                        'backgroundColor':'rgb(29, 105, 150, 0.1)',
+                                    }
+                                ],
+                                id='logros_table_movilidad_docente',
+                            ),
+                        ], style={'paddingTop': '2%'})
+                    )
+                ]
+            )
+        ]),
+ ], className='layout')
 
-@callback(
-    Output("graph_movilidad_docente", "figure"), 
-    [Input("nivel_movilidad_docente", "value"), Input("tipo_movilidad_docente", "value")])
-def update_bar_chart_md(nivel, tipo):
-
-    if nivel or tipo:
-        if not tipo:
-            df = data_md
-            df = df[df['Nivel'] == nivel]
-            fig = px.bar(df, 
-              x="Docentes beneficiados", 
-                     y="facultad", 
-                    color="anio",
-                    color_discrete_sequence=px.colors.qualitative.Dark2, 
-                    hover_data={"Docentes beneficiados":True,
-                        "total":True,        
-                         "Nivel":True,
-                         "Tipo":True,
-                         "anio":True},  
-                    barmode="group")
-            return fig
-        if not nivel:
-            df = data_md
-            df = df[df['Tipo'] == tipo]
-            fig = px.bar(df, 
-                    x="Docentes beneficiados", 
-                    y="facultad", 
-                    color="anio",
-                    color_discrete_sequence=px.colors.qualitative.Dark2, 
-                    hover_data={"Docentes beneficiados":True,
-                        "total":True,                   
-                         "Nivel":True,
-                         "Tipo":True,
-                         "anio":True},  
-                    barmode="group")
-            return fig
-        if nivel and tipo:
-            df = data_md
-            df = df[df['Nivel'] == nivel]
-            df = df[df['Tipo'] == tipo]
-            fig = px.bar(df, 
-                     x="Docentes beneficiados", 
-                     y="facultad", 
-                    color="anio",
-                    color_discrete_sequence=px.colors.qualitative.Dark2, 
-                    hover_data={"Docentes beneficiados":True,
-                         "total": True,
-                         "Nivel":True,
-                         "Tipo":True,
-                         "anio":True},  
-                    barmode="group")
-            return fig
-
-    df = data_md
-    fig = px.bar(df, x="Docentes beneficiados", y="facultad", 
-                    color="anio",
-                    color_discrete_sequence=px.colors.qualitative.Dark2, 
-                     hover_data={"Docentes beneficiados":True,
-                         "total":True,                   
-                         "Nivel":True,
-                         "Tipo":True,
-                         "anio":True},  
-                     barmode="group")
-    return fig
 
 @callback(
     Output("logros_table_movilidad_docente", "data"), 
     [Input("facultad_movilidad_docente", "value"), Input("anio_movilidad_docente", "value")])
-def logros_alcanzados_md(facultad, anio):
+def logros_alcanzados_movilidad_docente(facultad, anio):
     if facultad or anio:
         if not anio:
-            df = data_md_2
+            df = data_2
             df = df[df['facultad'] == facultad]
             data = df.to_dict('records')
             return data
         if not facultad:
-            df = data_md_2
+            df = data_2
             df = df[df['anio'] == anio]
             data = df.to_dict('records')
             return data
         if facultad and anio:
-            df = data_md_2
+            df = data_2
             df = df[df['facultad'] == facultad]
             df = df[df['anio'] == anio]
             data = df.to_dict('records')
             return data
-    df = data_md_2
+    df = data_2
     data = df.to_dict('records')
     return data

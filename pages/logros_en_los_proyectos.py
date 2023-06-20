@@ -6,23 +6,28 @@ import plotly.graph_objects as go
 from dash import dash_table
 import dash_bootstrap_components as dbc
 
-dash.register_page(
-    __name__, path='/presentacion-propuestas-y-cotizaciones-de-estudios')
+dash.register_page(__name__, path='/logros-en-los-proyectos')
 
 data = pd.read_excel(open(
-    'pages/presentacion_de_propuestas_y_cotizaciones_de_estudios.xlsx', 'rb'), sheet_name='1')
+    'pages/logros_en_los_proyectos.xlsx', 'rb'), sheet_name='1')
 
 data_2 = pd.read_excel(open(
-    'pages/presentacion_de_propuestas_y_cotizaciones_de_estudios.xlsx', 'rb'), sheet_name='2')
+    'pages/logros_en_los_proyectos.xlsx', 'rb'), sheet_name='2')
 
 data_3 = pd.read_excel(open(
-    'pages/presentacion_de_propuestas_y_cotizaciones_de_estudios.xlsx', 'rb'), sheet_name='3')
+    'pages/logros_en_los_proyectos.xlsx', 'rb'), sheet_name='3')
 
 data_4 = pd.read_excel(open(
-    'pages/presentacion_de_propuestas_y_cotizaciones_de_estudios.xlsx', 'rb'), sheet_name='4')
+    'pages/logros_en_los_proyectos.xlsx', 'rb'), sheet_name='4')
 
 data_5 = pd.read_excel(open(
-    'pages/presentacion_de_propuestas_y_cotizaciones_de_estudios.xlsx', 'rb'), sheet_name='5')
+    'pages/logros_en_los_proyectos.xlsx', 'rb'), sheet_name='5')
+
+data_6 = pd.read_excel(open(
+    'pages/logros_en_los_proyectos.xlsx', 'rb'), sheet_name='6')
+
+data_7 = pd.read_excel(open(
+    'pages/logros_en_los_proyectos.xlsx', 'rb'), sheet_name='7')
 
 # logros alcanzados
 data = data.drop(columns=['area', 'programa', 'actividad', 'actividadDetalle'])
@@ -30,7 +35,7 @@ data = data.drop(columns=['area', 'programa', 'actividad', 'actividadDetalle'])
 new_cols = ['facultad', 'anio', 'Logro']
 data = data[new_cols]
 
-# Propuestas realizadas en la modalidad de servicios académicos
+# Inscritos en actividades de educación continua pertenecientes a la UNAL
 data_2 = data_2.drop(
     columns=['area', 'programa', 'actividad', 'actividadDetalle'])
 
@@ -51,7 +56,7 @@ def total_function(facultad, anio):
 data_2.apply(lambda x: total_function(x['facultad'], x['anio']), axis=1)
 total_data_2 = data_2['cifra'].sum()
 
-# Propuestas en la modalidad de servicios académicos aprobadas por el Consejo de facultad
+# Inscritos en actividades de educación continua externos a la UNAL
 data_3 = data_3.drop(
     columns=['area', 'programa', 'actividad', 'actividadDetalle'])
 
@@ -72,7 +77,7 @@ def total_function_3(facultad, anio):
 data_3.apply(lambda x: total_function_3(x['facultad'], x['anio']), axis=1)
 total_data_3 = data_3['cifra'].sum()
 
-# Propuestas realizadas en la modalidad de educación continua
+# Inscritos a nivel internacional en actividades de educación continua
 data_4 = data_4.drop(
     columns=['area', 'programa', 'actividad', 'actividadDetalle'])
 
@@ -93,7 +98,7 @@ def total_function_4(facultad, anio):
 data_4.apply(lambda x: total_function_4(x['facultad'], x['anio']), axis=1)
 total_data_4 = data_4['cifra'].sum()
 
-# Propuestas en la modalidad de educación continua aprobadas por el Consejo de facultad
+# Docentes participantes en actividades de educación continua externos a la UNAL*
 data_5 = data_5.drop(
     columns=['area', 'programa', 'actividad', 'actividadDetalle'])
 
@@ -114,20 +119,65 @@ def total_function_5(facultad, anio):
 data_5.apply(lambda x: total_function_5(x['facultad'], x['anio']), axis=1)
 total_data_5 = data_5['cifra'].sum()
 
+# Docentes participantes en actividades de educación continua pertenecientes a la UNAL
+
+data_6 = data_6.drop(
+    columns=['area', 'programa', 'actividad', 'actividadDetalle'])
+
+new_cols_5 = ['facultad', 'anio', 'cifra']
+data_6 = data_6[new_cols_5]
+data_6["anio"] = data_6["anio"].astype('str')
+data_6.fillna(0, inplace=True)
+data_6['cifra'] = data_6['cifra'].astype('int')
+
+
+def total_function_5(facultad, anio):
+    df_facultad = data_6[data_6['facultad'] == facultad]
+    df_total = df_facultad['cifra'].sum()
+    data_6.loc[(data_6['facultad'] == facultad) & (
+        data_6['anio'] == anio), 'total'] = df_total
+
+
+data_6.apply(lambda x: total_function_5(x['facultad'], x['anio']), axis=1)
+total_data_6 = data_6['cifra'].sum()
+
+# Número de diplomados que se dictan en temas ambientales
+
+data_7 = data_7.drop(
+    columns=['area', 'programa', 'actividad', 'actividadDetalle'])
+
+new_cols_5 = ['facultad', 'anio', 'cifra']
+data_7 = data_7[new_cols_5]
+data_7["anio"] = data_7["anio"].astype('str')
+data_7.fillna(0, inplace=True)
+data_7['cifra'] = data_7['cifra'].astype('int')
+
+
+def total_function_5(facultad, anio):
+    df_facultad = data_7[data_7['facultad'] == facultad]
+    df_total = df_facultad['cifra'].sum()
+    data_7.loc[(data_7['facultad'] == facultad) & (
+        data_7['anio'] == anio), 'total'] = df_total
+
+
+data_7.apply(lambda x: total_function_5(x['facultad'], x['anio']), axis=1)
+total_data_7 = data_7['cifra'].sum()
+
+
 layout = html.Div([
     html.H2('Extensión, Innovación y Propiedad Intelectual'),
     html.H3('Proyectos de extensión'),
     dbc.Nav(
         [
             dbc.NavItem(dbc.NavLink("Presentación de propuestas y cotizaciones de estudios",
-                                    active=True, href="/presentacion-propuestas-y-cotizaciones-de-estudios")),
+                                    href="/presentacion-propuestas-y-cotizaciones-de-estudios")),
             dbc.NavItem(dbc.NavLink('Participación en procesos de contratación y convocatorias',
                                     href="/participacion-en-procesos-de-contratacion-y-convocatorias")),
             dbc.NavItem(dbc.NavLink('Participación en procesos de invitación directa',
                                     href="/participacion-en-procesos-de-invitacion-directa")),
             dbc.NavItem(dbc.NavLink('Proyectos iniciados en el año',
                                     href="/proyectos-iniciados-en-el-anio")),
-            dbc.NavItem(dbc.NavLink('Logros en los proyectos',
+            dbc.NavItem(dbc.NavLink('Logros en los proyectos',  active=True,
                                     href="/logros-en-los-proyectos")),
             dbc.NavItem(dbc.NavLink('Liquidación de proyectos',
                                     href="/liquidacion-de-proyectos")),
@@ -141,7 +191,7 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Propuestas realizadas en la modalidad de servicios académicos",
+                                    html.H6("Inscritos en actividades de educación continua pertenecientes a la UNAL",
                                             className="card-subtitle"),
 
                                     html.P(
@@ -152,12 +202,12 @@ layout = html.Div([
                                 ]
                             ),
                         )
-                    ], className='card_container'), md=3),
+                    ], className='card_container'), lg=3),
                     dbc.Col(html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Propuestas en la modalidad de servicios académicos aprobadas por el Consejo de facultad",
+                                    html.H6("Inscritos en actividades de educación continua externos a la UNAL",
                                             className="card-subtitle"),
 
                                     html.P(
@@ -168,12 +218,12 @@ layout = html.Div([
                                 ]
                             ),
                         )
-                    ], className='card_container'), md=3),
+                    ], className='card_container'), lg=3),
                     dbc.Col(html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Propuestas realizadas en la modalidad de educación continua",
+                                    html.H6("Inscritos a nivel internacional en actividades de educación continua",
                                             className="card-subtitle"),
 
                                     html.P(
@@ -184,12 +234,12 @@ layout = html.Div([
                                 ]
                             ),
                         )
-                    ], className='card_container'), md=3),
+                    ], className='card_container'), lg=3),
                     dbc.Col(html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Propuestas en la modalidad de educación continua aprobadas por el Consejo de facultad",
+                                    html.H6("Docentes participantes en actividades de educación continua externos a la UNAL",
                                             className="card-subtitle"),
 
                                     html.P(
@@ -200,12 +250,48 @@ layout = html.Div([
                                 ]
                             ),
                         )
-                    ], className='card_container'), md=3),
+                    ], className='card_container'), lg=3),
                 ]
             ),
+            dbc.Row(
+                [
+                    dbc.Col(html.Div([
+                        dbc.Card(
+                            dbc.CardBody(
+                                [
+                                    html.H6("Docentes participantes en actividades de educación continua pertenecientes a la UNAL",
+                                            className="card-subtitle"),
+
+                                    html.P(
+                                        total_data_6,
+                                        className="card-text",
+                                        style={'textAlign': 'center'}
+                                    ),
+                                ]
+                            ),
+                        ),
+                    ], className='card_container'), lg=3),
+                    dbc.Col(html.Div([
+                        dbc.Card(
+                            dbc.CardBody(
+                                [
+                                    html.H6("Número de diplomados que se dictan en temas ambientales",
+                                            className="card-subtitle"),
+
+                                    html.P(
+                                        total_data_7,
+                                        className="card-text",
+                                        style={'textAlign': 'center'}
+                                    ),
+                                ]
+                            ),
+                        )
+                    ], className='card_container'), lg=3),
+                ]
+            )
         ]),
-    html.H5('Propuestas realizadas en la modalidad de servicios académicos'),
-    dcc.Graph(id="graph_propuestas_servicios_academicos",
+    html.H5('Inscritos en actividades de educación continua pertenecientes a la UNAL'),
+    dcc.Graph(id="graph_inscritos_educacion_continua_UNAL",
               figure=px.bar(data_2,
                             x="cifra",
                             y="facultad",
@@ -213,7 +299,7 @@ layout = html.Div([
                             labels={
                                 'anio': 'año',
                                 'facultad': 'Dependencia',
-                                'cifra': 'propuetas de servicios académicos'
+                                'cifra': 'Inscritos en educación contínua de la UNAL'
                             },
                             color_discrete_sequence=px.colors.qualitative.Prism,
                             hover_data={
@@ -222,8 +308,8 @@ layout = html.Div([
                                 "anio": True},
                             barmode="group"
                             )),
-    html.H5('Propuestas en la modalidad de servicios académicos aprobadas por el Consejo de facultad'),
-    dcc.Graph(id="graph_propuestas_consejo_facultad",
+    html.H5('Inscritos en actividades de educación continua externos a la UNAL'),
+    dcc.Graph(id="graph_inscritos_educacion_continua_externos_UNAL",
               figure=px.bar(data_3,
                             x="cifra",
                             y="facultad",
@@ -231,7 +317,7 @@ layout = html.Div([
                             labels={
                                 'anio': 'año',
                                 'facultad': 'Dependencia',
-                                'cifra': 'propuestas de servicios académicos aprobadas'
+                                'cifra': 'Inscritos en educación contínua externos a la UNAL'
                             },
                             color_discrete_sequence=px.colors.qualitative.Prism,
                             barmode="group",
@@ -240,8 +326,8 @@ layout = html.Div([
                                 "total": True,
                                 "anio": True},
                             )),
-    html.H5('Propuestas realizadas en la modalidad de educación continua'),
-    dcc.Graph(id="graph_propuestas_educacion_continua",
+    html.H5('Inscritos a nivel internacional en actividades de educación contínua'),
+    dcc.Graph(id="graph_inscritos_nivel_internacional_educacion_continua",
               figure=px.bar(data_4,
                             x="cifra",
                             y="facultad",
@@ -249,7 +335,26 @@ layout = html.Div([
                             labels={
                                 'anio': 'año',
                                 'facultad': 'Dependencia',
-                                'cifra': 'propuestas de educación contínua'
+                                'cifra': 'Inscritos internacionales en actividades de educación contínua'
+                            },
+                            color_discrete_sequence=px.colors.qualitative.Prism,
+                            barmode="group",
+                            hover_data={
+                                "cifra": True,
+                                "total": True,
+                                "anio": True},
+                            )),
+    html.H5(
+        'Docentes participantes en actividades de educación continua externos a la UNAL'),
+    dcc.Graph(id="graph_docentes_educacion_continua_externos_unal",
+              figure=px.bar(data_5,
+                            x="cifra",
+                            y="facultad",
+                            color="anio",
+                            labels={
+                                'anio': 'año',
+                                'facultad': 'Dependencia',
+                                'cifra': 'Docentes externos a la UNAL'
                             },
                             color_discrete_sequence=px.colors.qualitative.G10,
                             barmode="group",
@@ -258,18 +363,36 @@ layout = html.Div([
                                 "total": True,
                                 "anio": True},
                             )),
-    html.H5('Propuestas en la modalidad de educación continua aprobadas por el Consejo de facultad'),
-    dcc.Graph(id="graph_propuestas_educacion_continua_consejo_facultad",
-              figure=px.bar(data_5,
+    html.H5('Docentes participantes en actividades de educación continua pertenecientes a la UNAL'),
+    dcc.Graph(id="graph_docentes_educacion_continua_unal",
+              figure=px.bar(data_6,
                             x="cifra",
                             y="facultad",
                             color="anio",
                             labels={
                                 'anio': 'año',
                                 'facultad': 'Dependencia',
-                                'cifra': 'propuestas de educación contínua aprobadas'
+                                'cifra': 'Docentes pertenicientes a la UNAL'
                             },
                             color_discrete_sequence=px.colors.qualitative.G10,
+                            barmode="group",
+                            hover_data={
+                                "cifra": True,
+                                "total": True,
+                                "anio": True},
+                            )),
+    html.H5('Número de diplomados que se dictan en temas ambientales'),
+    dcc.Graph(id="graph_diplomados_temas_ambientales",
+              figure=px.bar(data_7,
+                            x="cifra",
+                            y="facultad",
+                            color="anio",
+                            labels={
+                                'anio': 'año',
+                                'facultad': 'Dependencia',
+                                'cifra': 'Diplomados de temas ambientales'
+                            },
+                            color_discrete_sequence=px.colors.qualitative.Plotly,
                             barmode="group",
                             hover_data={
                                 "cifra": True,
@@ -283,7 +406,7 @@ layout = html.Div([
                 [
                     dbc.Col(html.Div([
                         dcc.Dropdown(
-                            id="facultad_propuestas_y_cotizacion_de_estudios",
+                            id="facultad_logros_proyectos",
                             options=data['facultad'].unique(),
                             clearable=True,
                             placeholder="Seleccione la facultad",
@@ -291,7 +414,7 @@ layout = html.Div([
                     ]), lg=6),
                     dbc.Col(html.Div([
                         dcc.Dropdown(
-                            id="anio_propuestas_y_cotizacion_de_estudios",
+                            id="anio_logros_proyectos",
                             options=data['anio'].unique(),
                             clearable=True,
                             placeholder="Seleccione el año",
@@ -325,7 +448,7 @@ layout = html.Div([
                                         'backgroundColor': 'rgb(29, 105, 150, 0.1)',
                                     }
                                 ],
-                                id='logros_table_propuestas_y_cotizacion_de_estudios',
+                                id='logros_table_logros_proyectos',
                             ),
                         ], style={'paddingTop': '2%'})
                     )
@@ -337,9 +460,9 @@ layout = html.Div([
 
 
 @callback(
-    Output("logros_table_propuestas_y_cotizacion_de_estudios", "data"),
-    [Input("facultad_propuestas_y_cotizacion_de_estudios", "value"), Input("anio_propuestas_y_cotizacion_de_estudios", "value")])
-def logros_alcanzados_propuestas_y_cotizacion_de_estudios(facultad, anio):
+    Output("logros_table_logros_proyectos", "data"),
+    [Input("facultad_logros_proyectos", "value"), Input("anio_logros_proyectos", "value")])
+def logros_alcanzados_logros_proyectos(facultad, anio):
     if facultad or anio:
         if not anio:
             df = data

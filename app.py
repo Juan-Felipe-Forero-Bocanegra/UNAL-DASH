@@ -1,7 +1,9 @@
 import dash
 from dash import Dash, html, dcc, callback, Input, Output
 import dash_bootstrap_components as dbc
-import requests, json, time
+import requests
+import json
+import time
 from flask import session
 
 app = Dash(__name__, use_pages=True)
@@ -15,35 +17,39 @@ server = app.server
     '''
 
 app.layout = html.Div([
-	dcc.Store(id='store'),
+    dcc.Store(id='store'),
     dbc.NavbarSimple(
-    children=[
-        dbc.DropdownMenu(
-            children=[
-                dbc.DropdownMenuItem("Convenios", href='/convenios'),
-                dbc.DropdownMenuItem('Movilidad académica', href="/movilidad-estudiantil"),
-            ],
-            nav=True,
-            in_navbar=True,
-            label="Relaciones interinstitucionales",
-        ),
-        dbc.DropdownMenu(
+        children=[
+            dbc.DropdownMenu(
                 children=[
-                    dbc.DropdownMenuItem("Proyectos de extensión", href='/presentacion-propuestas-y-cotizaciones-de-estudios'),                    
+                    dbc.DropdownMenuItem("Convenios", href='/convenios'),
+                    dbc.DropdownMenuItem('Movilidad académica',
+                                         href="/movilidad-estudiantil"),
+                ],
+                nav=True,
+                in_navbar=True,
+                label="Relaciones interinstitucionales",
+            ),
+            dbc.DropdownMenu(
+                children=[
+                    dbc.DropdownMenuItem(
+                        "Proyectos de extensión", href='/presentacion-propuestas-y-cotizaciones-de-estudios'),
+                    dbc.DropdownMenuItem(
+                        "Alianzas, redes, convenios y movilidades de investigación", href='/alianzas-redes-convenios-y-movilidad-de-investigacion'),
                 ],
                 nav=True,
                 in_navbar=True,
                 label="Extensión, Innovación y Propiedad Intelectual",
             ),
-	
-    ],
-    brand="Prig Data App",
-    brand_href="/convenios",
-    color="light",
-    dark=False,
+
+        ],
+        brand="Prig Data App",
+        brand_href="/convenios",
+        color="light",
+        dark=False,
     ),
-      
-	dash.page_container
+
+    dash.page_container
 ])
 
 '''
@@ -60,9 +66,8 @@ def login(interval):
     token = 'Bearer ' + jsonResponse['token']
     
     return {'token': token}
-'''   
-
+'''
 
 
 if __name__ == '__main__':
-	app.run_server(debug=True)
+    app.run_server(debug=True)
