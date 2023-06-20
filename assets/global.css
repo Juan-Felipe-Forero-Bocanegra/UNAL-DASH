@@ -86,3 +86,7 @@ td {
     padding: 15px !important;
     text-align: left !important;
 }
+
+.dropdown-item {
+    word-wrap: break-word !important;
+}

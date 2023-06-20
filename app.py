@@ -35,7 +35,7 @@ app.layout = html.Div([
                     dbc.DropdownMenuItem(
                         "Proyectos de extensión", href='/presentacion-propuestas-y-cotizaciones-de-estudios'),
                     dbc.DropdownMenuItem(
-                        "Alianzas, redes, convenios y movilidades de investigación", href='/alianzas-redes-convenios-y-movilidad-de-investigacion'),
+                        "Alianzas, redes, convenios", href='/alianzas-redes-convenios-y-movilidad-de-investigacion'),
                 ],
                 nav=True,
                 in_navbar=True,
