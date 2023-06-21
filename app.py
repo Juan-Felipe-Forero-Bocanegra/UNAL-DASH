@@ -36,6 +36,14 @@ app.layout = html.Div([
                         "Proyectos de extensión", href='/presentacion-propuestas-y-cotizaciones-de-estudios'),
                     dbc.DropdownMenuItem(
                         "Alianzas, redes, convenios", href='/alianzas-redes-convenios-y-movilidad-de-investigacion'),
+                    dbc.DropdownMenuItem(
+                        "Estrategia de comunicación de la Extensión", href='/estrategia-comunicacion-extension'),
+                    dbc.DropdownMenuItem(
+                        "Innovaciones", href='/innovaciones'),
+                    dbc.DropdownMenuItem(
+                        "Reconocimiento y visibilidad de la UNAL", href='/reconocimiento-visibilidad-universidad'),
+                     dbc.DropdownMenuItem(
+                        "Prácticas y pasantías", href='/practicas-y-pasantias'),
                 ],
                 nav=True,
                 in_navbar=True,
