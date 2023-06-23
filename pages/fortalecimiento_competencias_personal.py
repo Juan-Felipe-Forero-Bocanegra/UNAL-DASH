@@ -6,17 +6,16 @@ import plotly.graph_objects as go
 from dash import dash_table
 import dash_bootstrap_components as dbc
 
-dash.register_page(
-    __name__, path='/participacion-en-procesos-de-contratacion-y-convocatorias')
+dash.register_page(__name__, path='/fortalecimiento-competencias-personal')
 
 data = pd.read_excel(open(
-    'pages/participacion_en_procesos_de_contratacion_y_convocatorias.xlsx', 'rb'), sheet_name='1')
+    'pages/fortalecimiento_competencias_personal.xlsx', 'rb'), sheet_name='1')
 
 data_2 = pd.read_excel(open(
-    'pages/participacion_en_procesos_de_contratacion_y_convocatorias.xlsx', 'rb'), sheet_name='2')
+    'pages/fortalecimiento_competencias_personal.xlsx', 'rb'), sheet_name='2')
 
 data_3 = pd.read_excel(open(
-    'pages/participacion_en_procesos_de_contratacion_y_convocatorias.xlsx', 'rb'), sheet_name='3')
+    'pages/fortalecimiento_competencias_personal.xlsx', 'rb'), sheet_name='3')
 
 # logros alcanzados
 data = data.drop(columns=['area', 'programa', 'actividad', 'actividadDetalle'])
@@ -24,7 +23,7 @@ data = data.drop(columns=['area', 'programa', 'actividad', 'actividadDetalle'])
 new_cols = ['facultad', 'anio', 'Logro']
 data = data[new_cols]
 
-# Propuestas presentadas
+# Número de capacitaciones realizadas para el personal docente realizadas en la facultad
 data_2 = data_2.drop(
     columns=['area', 'programa', 'actividad', 'actividadDetalle'])
 
@@ -44,7 +43,9 @@ def total_function(facultad, anio):
 
 data_2.apply(lambda x: total_function(x['facultad'], x['anio']), axis=1)
 total_data_2 = data_2['cifra'].sum()
-# propuetas ganadoras
+
+# Número de docentes participantes en capacitaciones realizadas en la facultad
+
 data_3 = data_3.drop(
     columns=['area', 'programa', 'actividad', 'actividadDetalle'])
 
@@ -65,26 +66,17 @@ def total_function(facultad, anio):
 data_3.apply(lambda x: total_function(x['facultad'], x['anio']), axis=1)
 total_data_3 = data_3['cifra'].sum()
 
-
 layout = html.Div([
-    html.H2('Extensión, Innovación y Propiedad Intelectual'),
-    html.H3('Proyectos de extensión'),
-    dbc.Nav(
+    html.H2('Formación del personal docente y administrativo'),
+    html.H3('Fortalecimiento de competencias del personal'),
+     dbc.Nav(
         [
-            dbc.NavItem(dbc.NavLink("Presentación de propuestas y cotizaciones de estudios",
-                                    href="/presentacion-propuestas-y-cotizaciones-de-estudios")),
-            dbc.NavItem(dbc.NavLink('Participación en procesos de contratación y convocatorias',
-                                    active=True, href="/participacion-en-procesos-de-contratacion-y-convocatorias")),
-            dbc.NavItem(dbc.NavLink('Participación en procesos de invitación directa',
-                                    href="/participacion-en-procesos-de-invitacion-directa")),
-            dbc.NavItem(dbc.NavLink('Proyectos iniciados en el año',
-                                    href="/proyectos-iniciados-en-el-anio")),
-            dbc.NavItem(dbc.NavLink('Logros en los proyectos',
-                                    href="/logros-en-los-proyectos")),
-            dbc.NavItem(dbc.NavLink('Liquidación de proyectos',
-                                    href="/liquidacion-de-proyectos")),
+            dbc.NavItem(dbc.NavLink("Fortalecimiento de competencias del personal", active=True,
+                                    href="/fortalecimiento-competencias-personal")),
+            dbc.NavItem(dbc.NavLink("Descuentos otorgados a los servidores públicos administrativos en capacitaciones del área de extensión", 
+                                    href="/descuentos-otorgados-servidores-publicos-administrativos")),
         ],
-        pills=True,),
+        pills=True,),   
     html.Div(
         [
             dbc.Row(
@@ -93,7 +85,7 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Propuestas presentadas",
+                                    html.H6("Número de capacitaciones realizadas para el personal docente realizadas en la facultad",
                                             className="card-subtitle"),
 
                                     html.P(
@@ -104,12 +96,12 @@ layout = html.Div([
                                 ]
                             ),
                         )
-                    ], className='card_container'), lg=4),
+                    ], className='card_container'), lg=3),
                     dbc.Col(html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Propuestas ganadoras",
+                                    html.H6("Número de docentes participantes en capacitaciones realizadas en la facultad",
                                             className="card-subtitle"),
 
                                     html.P(
@@ -120,12 +112,12 @@ layout = html.Div([
                                 ]
                             ),
                         )
-                    ], className='card_container'), lg=4),
+                    ], className='card_container'), lg=3),
                 ]
             ),
         ]),
-    html.H5('Propuestas presentadas'),
-    dcc.Graph(id="graph_propuestas_presentadas_contratacion_y_convocatorias",
+    html.H5('Número de capacitaciones realizadas para el personal docente realizadas en la facultad'),
+    dcc.Graph(id="graph_capacitaciones_personal_docente_facultad",
               figure=px.bar(data_2,
                             x="cifra",
                             y="facultad",
@@ -133,7 +125,7 @@ layout = html.Div([
                             labels={
                                 'anio': 'año',
                                 'facultad': 'Dependencia',
-                                'cifra': 'Propuestas presentadas'
+                                'cifra': 'Capacitaciones para el personal docente'
                             },
                             color_discrete_sequence=px.colors.qualitative.Prism,
                             hover_data={
@@ -142,8 +134,8 @@ layout = html.Div([
                                 "anio": True},
                             barmode="group"
                             )),
-    html.H5('Propuestas ganadoras'),
-    dcc.Graph(id="graph_propuestas_ganadoras_contratacion_y_convocatorias",
+    html.H5('Número de docentes participantes en capacitaciones realizadas en la facultad'),
+    dcc.Graph(id="graph_numero_docentes_capacitaciones_facultad",
               figure=px.bar(data_3,
                             x="cifra",
                             y="facultad",
@@ -151,7 +143,7 @@ layout = html.Div([
                             labels={
                                 'anio': 'año',
                                 'facultad': 'Dependencia',
-                                'cifra': 'Propuestas ganadoras'
+                                'cifra': 'Número de docentes'
                             },
                             color_discrete_sequence=px.colors.qualitative.Prism,
                             hover_data={
@@ -167,7 +159,7 @@ layout = html.Div([
                 [
                     dbc.Col(html.Div([
                         dcc.Dropdown(
-                            id="facultad_procesos_contratacion_y_convocatorias",
+                            id="facultad_fortalecimiento_competencias_personal",
                             options=data['facultad'].unique(),
                             clearable=True,
                             placeholder="Seleccione la facultad",
@@ -175,7 +167,7 @@ layout = html.Div([
                     ]), lg=6),
                     dbc.Col(html.Div([
                         dcc.Dropdown(
-                            id="anio_procesos_contratacion_y_convocatorias",
+                            id="anio_fortalecimiento_competencias_personal",
                             options=data['anio'].unique(),
                             clearable=True,
                             placeholder="Seleccione el año",
@@ -209,7 +201,7 @@ layout = html.Div([
                                         'backgroundColor': 'rgb(29, 105, 150, 0.1)',
                                     }
                                 ],
-                                id='logros_tabla_procesos_contratacion_y_convocatorias',
+                                id='logros_tabla_fortalecimiento_competencias_personal',
                             ),
                         ], style={'paddingTop': '2%'})
                     )
@@ -222,9 +214,9 @@ layout = html.Div([
 
 
 @callback(
-    Output("logros_tabla_procesos_contratacion_y_convocatorias", "data"),
-    [Input("facultad_procesos_contratacion_y_convocatorias", "value"), Input("anio_procesos_contratacion_y_convocatorias", "value")])
-def logros_alcanzados_procesos_contratacion_y_convocatorias(facultad, anio):
+    Output("logros_tabla_fortalecimiento_competencias_personal", "data"),
+    [Input("facultad_fortalecimiento_competencias_personal", "value"), Input("anio_fortalecimiento_competencias_personal", "value")])
+def logros_alcanzados_fortalecimiento_competencias_personal(facultad, anio):
     if facultad or anio:
         if not anio:
             df = data

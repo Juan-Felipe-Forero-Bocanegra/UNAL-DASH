@@ -78,7 +78,7 @@ layout = html.Div([
                             ),
                             style={"width": "18rem"},
                         )
-                    ]), lg=3),
+                    ]), lg=4),
                     dbc.Col(html.Div([
                         dbc.Card(
                             dbc.CardBody(
@@ -95,7 +95,7 @@ layout = html.Div([
                             ),
                             style={"width": "18rem"},
                         )
-                    ]), lg=3),
+                    ]), lg=4),
                     dbc.Col(html.Div([
                         dbc.Card(
                             dbc.CardBody(
@@ -112,7 +112,11 @@ layout = html.Div([
                             ),
                             style={"width": "18rem"},
                         )
-                    ]), lg=3),
+                    ]), lg=4),
+                ]
+            ),
+            dbc.Row(
+                [                 
                     dbc.Col(html.Div([
                         dbc.Card(
                             dbc.CardBody(
@@ -129,7 +133,7 @@ layout = html.Div([
                             ),
                             style={"width": "18rem"},
                         )
-                    ]), lg=3),
+                    ]), lg=4),
                 ]
             ),
         ]),

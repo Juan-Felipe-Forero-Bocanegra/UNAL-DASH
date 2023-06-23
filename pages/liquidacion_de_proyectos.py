@@ -177,7 +177,7 @@ layout = html.Div([
                                 ]
                             ),
                         )
-                    ], className='card_container'), lg=3),
+                    ], className='card_container'), lg=4),
                     dbc.Col(html.Div([
                         dbc.Card(
                             dbc.CardBody(
@@ -193,7 +193,7 @@ layout = html.Div([
                                 ]
                             ),
                         )
-                    ], className='card_container'), lg=3),
+                    ], className='card_container'), lg=4),
                     dbc.Col(html.Div([
                         dbc.Card(
                             dbc.CardBody(
@@ -209,7 +209,11 @@ layout = html.Div([
                                 ]
                             ),
                         )
-                    ], className='card_container' ), lg=3),
+                    ], className='card_container' ), lg=4),
+                ]
+            ),
+             dbc.Row(
+                [
                     dbc.Col(html.Div([
                         dbc.Card(
                             dbc.CardBody(
@@ -225,11 +229,7 @@ layout = html.Div([
                                 ]
                             ),
                         )
-                    ], className='card_container' ), lg=3),
-                ]
-            ),
-             dbc.Row(
-                [
+                    ], className='card_container' ), lg=4),
                     dbc.Col(html.Div([
                         dbc.Card(
                             dbc.CardBody(
@@ -245,7 +245,7 @@ layout = html.Div([
                                 ]
                             ),
                         ),
-                    ], className='card_container' ), lg=3),
+                    ], className='card_container' ), lg=4),
                 ]
             )
         ]),

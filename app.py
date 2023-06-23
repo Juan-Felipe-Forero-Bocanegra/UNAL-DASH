@@ -42,12 +42,30 @@ app.layout = html.Div([
                         "Innovaciones", href='/innovaciones'),
                     dbc.DropdownMenuItem(
                         "Reconocimiento y visibilidad de la UNAL", href='/reconocimiento-visibilidad-universidad'),
-                     dbc.DropdownMenuItem(
+                    dbc.DropdownMenuItem(
                         "Prácticas y pasantías", href='/practicas-y-pasantias'),
+                    dbc.DropdownMenuItem(
+                        "Formación del personal", href='/fortalecimiento-competencias-personal'),
                 ],
                 nav=True,
                 in_navbar=True,
                 label="Extensión, Innovación y Propiedad Intelectual",
+            ),
+            dbc.DropdownMenu(
+                children=[
+                    dbc.DropdownMenuItem("Fortalecer la paz", href='/formacion-paz'),                    
+                ],
+                nav=True,
+                in_navbar=True,
+                label="Paz y ética",
+            ),
+            dbc.DropdownMenu(
+                children=[
+                    dbc.DropdownMenuItem("Agua", href='/agua'),                    
+                ],
+                nav=True,
+                in_navbar=True,
+                label="Gestión ambiental",
             ),
 
         ],
@@ -55,6 +73,7 @@ app.layout = html.Div([
         brand_href="/convenios",
         color="light",
         dark=False,
+        expand="xxl"
     ),
 
     dash.page_container

@@ -145,7 +145,9 @@ layout = html.Div([
     dbc.Nav(
         [
             dbc.NavItem(dbc.NavLink("Prácticas y pasantías",
-                                    active=True, href="/practicas_y_pasantias")),
+                                    active=True, href="/practicas-y-pasantias")),
+            dbc.NavItem(dbc.NavLink("Convenios para prácticas y pasantías",
+                                     href="/convenios-practicas-pasantias-anio")),
         ],
         pills=True,),
     html.Div(
