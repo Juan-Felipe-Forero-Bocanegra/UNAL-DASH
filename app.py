@@ -61,7 +61,8 @@ app.layout = html.Div([
             ),
             dbc.DropdownMenu(
                 children=[
-                    dbc.DropdownMenuItem("Agua", href='/agua'),                    
+                    dbc.DropdownMenuItem("Línea base", href='/agua'),
+                    dbc.DropdownMenuItem("Programas", href='/alertas-tempranas'),                    
                 ],
                 nav=True,
                 in_navbar=True,
