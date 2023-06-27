@@ -68,13 +68,23 @@ app.layout = html.Div([
                 in_navbar=True,
                 label="Gestión ambiental",
             ),
-
+            dbc.DropdownMenu(
+                children=[
+                    dbc.DropdownMenuItem("Producción editorial", href='/'),
+                    dbc.DropdownMenuItem("Difusión y comercialización", href='/difusion-comercializacion-publicaciones'),                    
+                ],
+                nav=True,
+                in_navbar=True,
+                label="Divulgación de la producción académica",
+            ),
+            dbc.NavItem(dbc.NavLink("Gobierno de TI", href='/repositorios-informacion')),         
+             
         ],
         brand="Prig Data App",
         brand_href="/convenios",
         color="light",
         dark=False,
-        expand="xxl"
+        expand="xs"
     ),
 
     dash.page_container

@@ -67,8 +67,12 @@ layout = html.Div([
         [
             dbc.NavItem(dbc.NavLink("Alertas tempranas", active=True,
                                     href="/alertas-tempranas")),
-            dbc.NavItem(dbc.NavLink("Riesgos ambientales", 
+            dbc.NavItem(dbc.NavLink("Riesgos ambientales",
                                     href="/riesgos-ambientales")),
+            dbc.NavItem(dbc.NavLink("Cultura ambiental",
+                                    href="/cultura-ambiental")),
+            dbc.NavItem(dbc.NavLink("Huella de carbono", 
+                                    href="/huella-carbono")),
 
         ],
         pills=True,),
