@@ -50,6 +50,8 @@ def total_function(facultad, anio):
 
 data_2.apply(lambda x: total_function(x['facultad'], x['anio']), axis=1)
 total_data_2 = data_2['cifra'].sum()
+total_data_2 = f'{total_data_2:,}'.replace(',', ' ')
+total_data_2 = total_data_2 + ' kg'
 
 # Cantidad de residuos reciclables
 
@@ -72,6 +74,9 @@ def total_function(facultad, anio):
 
 data_3.apply(lambda x: total_function(x['facultad'], x['anio']), axis=1)
 total_data_3 = data_3['cifra'].sum()
+total_data_3 = f'{total_data_3:,}'.replace(',', ' ')
+total_data_3 = total_data_3 + ' kg'
+
 
 # Cantidad de residuos ordinarios
 
@@ -94,6 +99,8 @@ def total_function_4(facultad, anio):
 
 data_4.apply(lambda x: total_function_4(x['facultad'], x['anio']), axis=1)
 total_data_4 = data_4['cifra'].sum()
+total_data_4 = f'{total_data_4:,}'.replace(',', ' ')
+total_data_4 = total_data_4 + ' kg'
 
 # Cantidad de RCD
 
@@ -116,6 +123,8 @@ def total_function_5(facultad, anio):
 
 data_5.apply(lambda x: total_function_5(x['facultad'], x['anio']), axis=1)
 total_data_5 = data_5['cifra'].sum()
+total_data_5 = f'{total_data_5:,}'.replace(',', ' ')
+total_data_5 = total_data_5 + ' kg'
 
 # Cantidad de residuos químicos
 
@@ -138,6 +147,8 @@ def total_function_6(facultad, anio):
 
 data_6.apply(lambda x: total_function_6(x['facultad'], x['anio']), axis=1)
 total_data_6 = data_6['cifra'].sum()
+total_data_6 = f'{total_data_6:,}'.replace(',', ' ')
+total_data_6 = total_data_6 + ' kg'
 
 # Cantidad de residuos infecciosos
 
@@ -160,6 +171,8 @@ def total_function_7(facultad, anio):
 
 data_7.apply(lambda x: total_function_7(x['facultad'], x['anio']), axis=1)
 total_data_7 = data_7['cifra'].sum()
+total_data_7 = f'{total_data_7:,}'.replace(',', ' ')
+total_data_7 = total_data_7 + ' kg'
 
 # Cantidad de residuos posconsumo
 
@@ -172,7 +185,6 @@ data_8["anio"] = data_8["anio"].astype('str')
 data_8.fillna(0, inplace=True)
 data_8['cifra'] = data_8['cifra'].astype('int')
 
-
 def total_function_8(facultad, anio):
     df_facultad = data_8[data_8['facultad'] == facultad]
     df_total = df_facultad['cifra'].sum()
@@ -182,6 +194,8 @@ def total_function_8(facultad, anio):
 
 data_8.apply(lambda x: total_function_8(x['facultad'], x['anio']), axis=1)
 total_data_8 = data_8['cifra'].sum()
+total_data_8 = f'{total_data_8:,}'.replace(',', ' ')
+total_data_8 = total_data_8 + ' kg'
 
 layout = html.Div([
     html.H2('Gestión ambiental'),
@@ -190,12 +204,10 @@ layout = html.Div([
         [
             dbc.NavItem(dbc.NavLink("Agua",
                                     href="/agua")),
-            dbc.NavItem(dbc.NavLink("Energia",
+            dbc.NavItem(dbc.NavLink("Energía",
                                     href="/energia")),
-            dbc.NavItem(dbc.NavLink("Residuos", active=True,
-                                    href="/residuos")),
-            dbc.NavItem(dbc.NavLink("Plagas y vectores", 
-                                    href="/plagas-y-vectores")),
+            dbc.NavItem(dbc.NavLink("Resíduos", active=True,
+                                    href="/resíduos")),
         ],
         pills=True,),
     html.Div(
@@ -206,14 +218,11 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Residuos biodegradables",
-                                            className="card-subtitle"),
-
-                                    html.P(
+                                    html.H5(
                                         total_data_2,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.P("biodegradables"),
                                 ]
                             ),
                         )
@@ -222,14 +231,11 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Residuos reciclables",
-                                            className="card-subtitle"),
-
-                                    html.P(
+                                    html.H5(
                                         total_data_3,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.P("reciclables"),
                                 ]
                             ),
                         )
@@ -238,14 +244,11 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Residuos ordinarios",
-                                            className="card-subtitle"),
-
-                                    html.P(
+                                    html.H5(
                                         total_data_4,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.P("ordinarios"),
                                 ]
                             ),
                         )
@@ -258,14 +261,11 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("RCD generados",
-                                            className="card-subtitle"),
-
-                                    html.P(
+                                    html.H5(
                                         total_data_5,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.P("RCD generados"),
                                 ]
                             ),
                         )
@@ -274,14 +274,11 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Residuos químicos",
-                                            className="card-subtitle"),
-
-                                    html.P(
+                                    html.H5(
                                         total_data_6,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.P("químicos"),
                                 ]
                             ),
                         )
@@ -290,14 +287,11 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Residuos infecciosos",
-                                            className="card-subtitle"),
-
-                                    html.P(
+                                    html.H5(
                                         total_data_7,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.P("infecciosos"),
                                 ]
                             ),
                         )
@@ -310,14 +304,11 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Residuos posconsumo",
-                                            className="card-subtitle"),
-
-                                    html.P(
+                                    html.H5(
                                         total_data_8,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.P("posconsumo"),
                                 ]
                             ),
                         )

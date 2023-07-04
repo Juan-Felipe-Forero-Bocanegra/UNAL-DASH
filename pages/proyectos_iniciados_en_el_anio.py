@@ -92,14 +92,11 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Propuestas formalizadas en la modalidad de servicios académicos",
-                                            className="card-subtitle"),
-
-                                    html.P(
+                                    html.H5(
                                         total_data_2,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.P("propuestas en la modalidad de servicios académicos"),
                                 ]
                             ),
                         )
@@ -108,14 +105,11 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Propuestas formalizadas en la modalidad de educación continua",
-                                            className="card-subtitle"),
-
-                                    html.P(
+                                    html.H5(
                                         total_data_3,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.P("propuestas en la modalidad de educación continua"),
                                 ]
                             ),
                         )
@@ -123,7 +117,7 @@ layout = html.Div([
                 ]
             ),
         ]),
-    html.H5('Propuestas formalizadas en la modalidad de servicios académicos'),
+    html.H5('Propuestas en la modalidad de servicios académicos'),
     dcc.Graph(id="graph_propuestas_modalidad_servicios_academicos",
               figure=px.bar(data_2,
                             x="cifra",
@@ -132,7 +126,7 @@ layout = html.Div([
                             labels={
                                 'anio': 'año',
                                 'facultad': 'Dependencia',
-                                'cifra': 'Propuestas en la modalidad de servicios académicos'
+                                'cifra': 'Propuestas de servicios académicos'
                             },
                             color_discrete_sequence=px.colors.qualitative.Prism,
                             hover_data={
@@ -141,7 +135,7 @@ layout = html.Div([
                                 "anio": True},
                             barmode="group"
                             )),
-    html.H5('Propuestas formalizadas en la modalidad de educación continua'),
+    html.H5('Propuestas en la modalidad de educación continua'),
     dcc.Graph(id="graph_propuestas_modalidad_educacion_continua",
               figure=px.bar(data_3,
                             x="cifra",
@@ -150,7 +144,7 @@ layout = html.Div([
                             labels={
                                 'anio': 'año',
                                 'facultad': 'Dependencia',
-                                'cifra': 'Propuestas en la modalidad de educación continua'
+                                'cifra': 'Propuestas de educación continua'
                             },
                             color_discrete_sequence=px.colors.qualitative.Prism,
                             hover_data={
@@ -223,7 +217,7 @@ layout = html.Div([
 @callback(
     Output("logros_tabla_proyectos_iniciados_en_el_anio", "data"),
     [Input("facultad_proyectos_iniciados_en_el_anio", "value"), Input("anio_proyectos_iniciados_en_el_anio", "value")])
-def logros_alcanzados_procesos_contratacion_y_convocatorias(facultad, anio):
+def logros_alcanzados_proyectos_iniciados_en_el_anio(facultad, anio):
     if facultad or anio:
         if not anio:
             df = data

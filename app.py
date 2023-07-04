@@ -53,7 +53,7 @@ app.layout = html.Div([
             ),
             dbc.DropdownMenu(
                 children=[
-                    dbc.DropdownMenuItem("Fortalecer la paz", href='/formacion-paz'),                    
+                    dbc.DropdownMenuItem("Consolidación de la paz", href='/formacion-paz'),                    
                 ],
                 nav=True,
                 in_navbar=True,
@@ -61,8 +61,8 @@ app.layout = html.Div([
             ),
             dbc.DropdownMenu(
                 children=[
-                    dbc.DropdownMenuItem("Línea base", href='/agua'),
-                    dbc.DropdownMenuItem("Programas", href='/alertas-tempranas'),                    
+                    dbc.DropdownMenuItem("Línea base antrópica", href='/agua'),
+                    dbc.DropdownMenuItem("Programas transversales", href='/alertas-tempranas'),                    
                 ],
                 nav=True,
                 in_navbar=True,

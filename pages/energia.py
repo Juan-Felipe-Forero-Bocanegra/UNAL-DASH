@@ -36,6 +36,7 @@ def total_function(facultad, anio):
 
 data_2.apply(lambda x: total_function(x['facultad'], x['anio']), axis=1)
 total_data_2 = data_2['cifra'].sum()
+total_data_2 = f'{total_data_2:,}'.replace(',', ' ')
 
 # Costo de energía en el último año
 
@@ -58,7 +59,8 @@ def total_function(facultad, anio):
 
 data_3.apply(lambda x: total_function(x['facultad'], x['anio']), axis=1)
 total_data_3 = data_3['cifra'].sum()
-
+total_data_3 = f'{total_data_3:,}'.replace(',', ' ')
+total_data_3 = '$ ' + total_data_3
 
 layout = html.Div([
     html.H2('Gestión ambiental'),
@@ -69,10 +71,8 @@ layout = html.Div([
                                     href="/agua")),
             dbc.NavItem(dbc.NavLink("Energía", active=True,
                                     href="/energia")),
-            dbc.NavItem(dbc.NavLink("Residuos",
+            dbc.NavItem(dbc.NavLink("Resíduos",
                                     href="/residuos")),
-            dbc.NavItem(dbc.NavLink("Plagas y vectores",
-                                    href="/plagas-y-vectores")),
         ],
         pills=True,),
     html.Div(
@@ -83,14 +83,11 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Consumo de energía",
-                                            className="card-subtitle"),
-
-                                    html.P(
+                                    html.H5(
                                         total_data_2,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.P("consumo de energía en (?)"),
                                 ]
                             ),
                         )
@@ -99,14 +96,11 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Costo de energía",
-                                            className="card-subtitle"),
-
-                                    html.P(
+                                    html.H5(
                                         total_data_3,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.P("costo de la energía"),
                                 ]
                             ),
                         )
@@ -123,7 +117,7 @@ layout = html.Div([
                             labels={
                                 'anio': 'año',
                                 'facultad': 'Dependencia',
-                                'cifra': 'Consumo de energia'
+                                'cifra': 'Consumo de energía'
                             },
                             color_discrete_sequence=px.colors.qualitative.Prism,
                             hover_data={
@@ -132,7 +126,7 @@ layout = html.Div([
                                 "anio": True},
                             barmode="group"
                             )),
-    html.H5('Costo de energía'),
+    html.H5('Costo de la energía'),
     dcc.Graph(id="graph_costo_energia",
               figure=px.bar(data_3,
                             x="cifra",
@@ -141,7 +135,7 @@ layout = html.Div([
                             labels={
                                 'anio': 'año',
                                 'facultad': 'Dependencia',
-                                'cifra': 'Costo de la energia'
+                                'cifra': 'Costo de la energía'
                             },
                             color_discrete_sequence=px.colors.qualitative.Prism,
                             hover_data={

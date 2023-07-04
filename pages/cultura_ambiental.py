@@ -111,8 +111,6 @@ layout = html.Div([
                                     href="/riesgos-ambientales")),
             dbc.NavItem(dbc.NavLink("Cultura ambiental", active=True,
                                     href="/cultura-ambiental")),
-            dbc.NavItem(dbc.NavLink("Huella de carbono", 
-                                    href="/huella-carbono")),
         ],
         pills=True,),
     html.Div(
@@ -123,14 +121,11 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Asistentes a eventos ambientales",
-                                            className="card-subtitle"),
-
-                                    html.P(
+                                    html.H5(
                                         total_data_3,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.P("asistentes a eventos ambientales"),
                                 ]
                             ),
                         )
@@ -139,14 +134,11 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Eventos ambientales realizados",
-                                            className="card-subtitle"),
-
-                                    html.P(
+                                    html.H5(
                                         total_data_4,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.P("eventos realizados"),
                                 ]
                             ),
                         )
@@ -166,7 +158,7 @@ layout = html.Div([
                             labels={
                                 'anio': 'año',
                                 'facultad': 'Dependencia',
-                                'cifra': 'Asistentes a eventos ambientales'
+                                'cifra': 'Asistentes'
                             },
                             color_discrete_sequence=px.colors.qualitative.Prism,
                             hover_data={
@@ -184,7 +176,7 @@ layout = html.Div([
                             labels={
                                 'anio': 'año',
                                 'facultad': 'Dependencia',
-                                'cifra': 'Eventos ambientales'
+                                'cifra': 'Eventos'
                             },
                             color_discrete_sequence=px.colors.qualitative.Prism,
                             hover_data={

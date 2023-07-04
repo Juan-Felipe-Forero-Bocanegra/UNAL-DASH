@@ -53,8 +53,6 @@ layout = html.Div([
                                     href="/riesgos-ambientales")),
             dbc.NavItem(dbc.NavLink("Cultura ambiental",
                                     href="/cultura-ambiental")),
-            dbc.NavItem(dbc.NavLink("Huella de carbono",
-                                    href="/huella-carbono")),
 
         ],
         pills=True,),
@@ -66,14 +64,11 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Número de emergencias ambientales",
-                                            className="card-subtitle"),
-
-                                    html.P(
+                                    html.H5(
                                         total_data_2,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.P("emergencias ambientales"),
                                 ]
                             ),
                         )
@@ -81,7 +76,7 @@ layout = html.Div([
                 ]
             ),
         ]),
-    html.H5('Número de emergencias ambientales'),
+    html.H5('Emergencias ambientales'),
     dcc.Graph(id="graph_numero_emergencias_ambientales",
               figure=px.bar(data_2,
                             x="cifra",

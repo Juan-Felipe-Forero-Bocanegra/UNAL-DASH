@@ -54,6 +54,7 @@ def total_function(facultad, anio):
 data_2.apply(lambda x: total_function(x['facultad'], x['anio']), axis=1)
 total_data_2 = data_2['cifra'].sum()
 
+
 # Estudiantes de posgrado vínculados con entidades externas
 data_3 = data_3.drop(
     columns=['area', 'programa', 'actividad', 'actividadDetalle'])
@@ -138,6 +139,8 @@ def total_function_5(facultad, anio):
 
 data_6.apply(lambda x: total_function_5(x['facultad'], x['anio']), axis=1)
 total_data_6 = data_6['cifra'].sum()
+total_data_6 = f'{total_data_6:,}'.replace(',', ' ')
+total_data_6 = '$ ' + total_data_6
 
 layout = html.Div([
     html.H2('Extensión, Innovación y Propiedad Intelectual'),
@@ -147,7 +150,7 @@ layout = html.Div([
             dbc.NavItem(dbc.NavLink("Prácticas y pasantías",
                                     active=True, href="/practicas-y-pasantias")),
             dbc.NavItem(dbc.NavLink("Convenios para prácticas y pasantías",
-                                     href="/convenios-practicas-pasantias-anio")),
+                                    href="/convenios-practicas-pasantias-anio")),
         ],
         pills=True,),
     html.Div(
@@ -158,66 +161,44 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Estudiantes de pregrado vínculados con entidades externas",
-                                            className="card-subtitle"),
-
-                                    html.P(
+                                    html.H5(
                                         total_data_2,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.P(
+                                        "estudiantes de pregrado vínculados con entidades externas"),
                                 ]
                             ),
                         )
-                    ], className='card_container'), lg=3),
+                    ], className='card_container'), lg=4),
                     dbc.Col(html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Estudiantes de posgrado vínculados con entidades externas",
-                                            className="card-subtitle"),
-
-                                    html.P(
+                                    html.H5(
                                         total_data_3,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.P(
+                                        "estudiantes de posgrado vínculados con entidades externas"),
                                 ]
                             ),
                         )
-                    ], className='card_container'), lg=3),
+                    ], className='card_container'), lg=4),
                     dbc.Col(html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Estudiantes de pregrado vinculados con la Universidad",
-                                            className="card-subtitle"),
-
-                                    html.P(
+                                    html.H5(
                                         total_data_4,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
-                                ]
-                            ),
-                        )
-                    ], className='card_container'), lg=3),
-                    dbc.Col(html.Div([
-                        dbc.Card(
-                            dbc.CardBody(
-                                [
-                                    html.H6("Estudiantes de posgrado vinculados con la Universidad",
-                                            className="card-subtitle"),
-
                                     html.P(
-                                        total_data_5,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
-                                    ),
+                                        "estudiantes de pregrado vinculados con la universidad"),
                                 ]
                             ),
                         )
-                    ], className='card_container'), lg=3),
+                    ], className='card_container'), lg=4),
                 ]
             ),
             dbc.Row(
@@ -226,18 +207,30 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Suma de los reconocmientos económicos",
-                                            className="card-subtitle"),
-
-                                    html.P(
-                                        total_data_6,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                    html.H5(
+                                        total_data_5,
+                                        className="card-number",
                                     ),
+                                    html.P(
+                                        "estudiantes de posgrado vinculados con la universidad"),
                                 ]
                             ),
                         )
-                    ], className='card_container'), lg=3),
+                    ], className='card_container'), lg=4),
+                    dbc.Col(html.Div([
+                        dbc.Card(
+                            dbc.CardBody(
+                                [
+                                    html.H5(
+                                        total_data_6,
+                                        className="card-number",
+                                    ),
+                                    html.P(
+                                        "suma de los reconocmientos económicos"),
+                                ]
+                            ),
+                        )
+                    ], className='card_container'), lg=4),
                 ]
             ),
         ]),

@@ -141,14 +141,12 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Propuestas realizadas en la modalidad de servicios académicos",
-                                            className="card-subtitle"),
-
-                                    html.P(
+                                    html.H5(
                                         total_data_2,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.H6(
+                                        "propuestas realizadas en la modalidad de servicios académicos"),
                                 ]
                             ),
                         )
@@ -157,14 +155,12 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Propuestas en la modalidad de servicios académicos aprobadas por el Consejo de facultad",
-                                            className="card-subtitle"),
-
-                                    html.P(
+                                    html.H5(
                                         total_data_3,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.H6(
+                                        "propuestas en la modalidad de servicios académicos aprobadas por el Consejo de Facultad"),
                                 ]
                             ),
                         )
@@ -173,14 +169,12 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Propuestas realizadas en la modalidad de educación continua",
-                                            className="card-subtitle"),
-
-                                    html.P(
+                                    html.H5(
                                         total_data_4,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.H6(
+                                        "propuestas realizadas en la modalidad de educación continua"),
                                 ]
                             ),
                         )
@@ -193,14 +187,11 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Propuestas en la modalidad de educación continua aprobadas por el Consejo de facultad",
-                                            className="card-subtitle"),
-
-                                    html.P(
+                                    html.H5(
                                         total_data_5,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.H6("propuestas en la modalidad de educación continua aprobadas por el Consejo de Facultad"),
                                 ]
                             ),
                         )
@@ -217,7 +208,7 @@ layout = html.Div([
                             labels={
                                 'anio': 'año',
                                 'facultad': 'Dependencia',
-                                'cifra': 'propuetas de servicios académicos'
+                                'cifra': 'Propuetas de servicios académicos'
                             },
                             color_discrete_sequence=px.colors.qualitative.Prism,
                             hover_data={
@@ -235,7 +226,7 @@ layout = html.Div([
                             labels={
                                 'anio': 'año',
                                 'facultad': 'Dependencia',
-                                'cifra': 'propuestas de servicios académicos aprobadas'
+                                'cifra': 'Propuestas de servicios académicos aprobadas'
                             },
                             color_discrete_sequence=px.colors.qualitative.Prism,
                             barmode="group",
@@ -253,7 +244,7 @@ layout = html.Div([
                             labels={
                                 'anio': 'año',
                                 'facultad': 'Dependencia',
-                                'cifra': 'propuestas de educación contínua'
+                                'cifra': 'Propuestas de educación contínua'
                             },
                             color_discrete_sequence=px.colors.qualitative.G10,
                             barmode="group",
@@ -271,7 +262,7 @@ layout = html.Div([
                             labels={
                                 'anio': 'año',
                                 'facultad': 'Dependencia',
-                                'cifra': 'propuestas de educación contínua aprobadas'
+                                'cifra': 'Propuestas de educación contínua aprobadas'
                             },
                             color_discrete_sequence=px.colors.qualitative.G10,
                             barmode="group",

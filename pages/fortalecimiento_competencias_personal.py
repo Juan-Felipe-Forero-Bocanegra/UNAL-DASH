@@ -73,7 +73,7 @@ layout = html.Div([
         [
             dbc.NavItem(dbc.NavLink("Fortalecimiento de competencias del personal", active=True,
                                     href="/fortalecimiento-competencias-personal")),
-            dbc.NavItem(dbc.NavLink("Descuentos otorgados a los servidores públicos administrativos en capacitaciones del área de extensión", 
+            dbc.NavItem(dbc.NavLink("Descuentos a los servidores públicos administrativos en capacitaciones del área de extensión", 
                                     href="/descuentos-otorgados-servidores-publicos-administrativos")),
         ],
         pills=True,),   
@@ -85,14 +85,11 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Número de capacitaciones realizadas para el personal docente realizadas en la facultad",
-                                            className="card-subtitle"),
-
-                                    html.P(
+                                    html.H5(
                                         total_data_2,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.P("capacitaciones para el personal docente"),
                                 ]
                             ),
                         )
@@ -101,14 +98,11 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Número de docentes participantes en capacitaciones realizadas en la facultad",
-                                            className="card-subtitle"),
-
-                                    html.P(
+                                    html.H5(
                                         total_data_3,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.P("docentes participantes"),
                                 ]
                             ),
                         )
@@ -116,7 +110,7 @@ layout = html.Div([
                 ]
             ),
         ]),
-    html.H5('Número de capacitaciones realizadas para el personal docente realizadas en la facultad'),
+    html.H5('Capacitaciones para el personal docente'),
     dcc.Graph(id="graph_capacitaciones_personal_docente_facultad",
               figure=px.bar(data_2,
                             x="cifra",
@@ -125,7 +119,7 @@ layout = html.Div([
                             labels={
                                 'anio': 'año',
                                 'facultad': 'Dependencia',
-                                'cifra': 'Capacitaciones para el personal docente'
+                                'cifra': 'Capacitaciones'
                             },
                             color_discrete_sequence=px.colors.qualitative.Prism,
                             hover_data={
@@ -134,7 +128,7 @@ layout = html.Div([
                                 "anio": True},
                             barmode="group"
                             )),
-    html.H5('Número de docentes participantes en capacitaciones realizadas en la facultad'),
+    html.H5('Docentes participantes en capacitaciones'),
     dcc.Graph(id="graph_numero_docentes_capacitaciones_facultad",
               figure=px.bar(data_3,
                             x="cifra",
@@ -143,7 +137,7 @@ layout = html.Div([
                             labels={
                                 'anio': 'año',
                                 'facultad': 'Dependencia',
-                                'cifra': 'Número de docentes'
+                                'cifra': 'Docentes'
                             },
                             color_discrete_sequence=px.colors.qualitative.Prism,
                             hover_data={

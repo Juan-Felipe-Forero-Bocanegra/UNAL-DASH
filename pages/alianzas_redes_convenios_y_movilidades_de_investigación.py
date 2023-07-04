@@ -52,14 +52,11 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Convenios suscritos",
-                                            className="card-subtitle"),
-
-                                    html.P(
+                                    html.H5(
                                         total_data_2,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.P("convenios suscritos"),
                                 ]
                             ),
                         )
@@ -92,7 +89,7 @@ layout = html.Div([
                 [
                     dbc.Col(html.Div([
                         dcc.Dropdown(
-                            id="facultad_convenios_suscritos",
+                            id="facultad_alianzas_redes_convenios",
                             options=data['facultad'].unique(),
                             clearable=True,
                             placeholder="Seleccione la facultad",
@@ -100,7 +97,7 @@ layout = html.Div([
                     ]), lg=6),
                     dbc.Col(html.Div([
                         dcc.Dropdown(
-                            id="anio_convenios_suscritos",
+                            id="anio_alianzas_redes_convenios",
                             options=data['anio'].unique(),
                             clearable=True,
                             placeholder="Seleccione el año",
@@ -134,7 +131,7 @@ layout = html.Div([
                                         'backgroundColor': 'rgb(29, 105, 150, 0.1)',
                                     }
                                 ],
-                                id='logros_tabla_convenios_suscritos',
+                                id='logros_tabla_alianzas_redes_convenios',
                             ),
                         ], style={'paddingTop': '2%'})
                     )
@@ -147,9 +144,9 @@ layout = html.Div([
 
 
 @callback(
-    Output("logros_tabla_convenios_suscritos", "data"),
-    [Input("facultad_convenios_suscritos", "value"), Input("anio_convenios_suscritos", "value")])
-def logros_alcanzados_procesos_contratacion_y_convocatorias(facultad, anio):
+    Output("logros_tabla_alianzas_redes_convenios", "data"),
+    [Input("facultad_alianzas_redes_convenios", "value"), Input("anio_alianzas_redes_convenios", "value")])
+def logros_alcanzados_alianzas_redes_convenios(facultad, anio):
     if facultad or anio:
         if not anio:
             df = data

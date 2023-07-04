@@ -57,6 +57,9 @@ def total_function(facultad, anio):
 
 data_3.apply(lambda x: total_function(x['facultad'], x['anio']), axis=1)
 total_data_3 = data_3['cifra'].sum()
+total_data_3 = f'{total_data_3:,}'.replace(',', ' ')
+total_data_3 = '$ ' + total_data_3
+
 
 layout = html.Div([
     html.H2('Formación del personal docente y administrativo'),
@@ -65,7 +68,7 @@ layout = html.Div([
         [
             dbc.NavItem(dbc.NavLink("Fortalecimiento de competencias del personal", 
                                     href="/fortalecimiento-competencias-personal")),
-            dbc.NavItem(dbc.NavLink("Descuentos otorgados a los servidores públicos administrativos en capacitaciones del área de extensión", active=True,
+            dbc.NavItem(dbc.NavLink("Descuentos a los servidores públicos administrativos en capacitaciones del área de extensión", active=True,
                                     href="/descuentos-otorgados-servidores-publicos-administrativos")),
         ],
         pills=True,),   
@@ -77,14 +80,11 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Número de beneficiarios",
-                                            className="card-subtitle"),
-
-                                    html.P(
+                                    html.H5(
                                         total_data_2,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.P("beneficiarios"),
                                 ]
                             ),
                         )
@@ -93,14 +93,11 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Valor total de los descuentos otorgados",
-                                            className="card-subtitle"),
-
-                                    html.P(
+                                    html.H5(
                                         total_data_3,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.P("total de los descuentos"),
                                 ]
                             ),
                         )

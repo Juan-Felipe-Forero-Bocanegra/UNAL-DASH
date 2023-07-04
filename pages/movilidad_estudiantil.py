@@ -20,28 +20,36 @@ movilidad_estudiantil_nacional = data[data['Nivel'] == 'Nacional']
 
 # movilidad estudiantil nacional entrante
 movilidad_estudiantil_nacional_entrante = movilidad_estudiantil_nacional[movilidad_estudiantil_nacional['Tipo']
-                                                 == 'Movilidad entrante']
+                                                                         == 'Movilidad entrante']
 movilidad_estudiantil_nacional_entrante = movilidad_estudiantil_nacional_entrante.sort_values(
     'facultad', ascending=False)
-total_movilidad_estudiantil_nacional_entrante = movilidad_estudiantil_nacional_entrante['Estudiantes beneficiados'].sum()
+total_movilidad_estudiantil_nacional_entrante = movilidad_estudiantil_nacional_entrante['Estudiantes beneficiados'].sum(
+)
 
 
 # movilidad estudiantil nacional saliente
 movilidad_estudiantil_nacional_saliente = movilidad_estudiantil_nacional[movilidad_estudiantil_nacional['Tipo']
-                                                 == 'Movilidad saliente']
-movilidad_estudiantil_nacional_saliente = movilidad_estudiantil_nacional_saliente.sort_values('facultad', ascending=False)
-total_movilidad_estudiantil_nacional_saliente = movilidad_estudiantil_nacional_saliente['Estudiantes beneficiados'].sum()
+                                                                         == 'Movilidad saliente']
+movilidad_estudiantil_nacional_saliente = movilidad_estudiantil_nacional_saliente.sort_values(
+    'facultad', ascending=False)
+total_movilidad_estudiantil_nacional_saliente = movilidad_estudiantil_nacional_saliente['Estudiantes beneficiados'].sum(
+)
 
 # movilidad estudiantil internacional
 movilidad_estudiantil_internacional = data[data['Nivel'] == 'Internacional']
 # movilidad estudiantil internacional entrante
-movilidad_estudiantil_internacional_entrante = movilidad_estudiantil_internacional[movilidad_estudiantil_internacional['Tipo'] == 'Movilidad entrante']
-movilidad_estudiantil_internacional_entrante = movilidad_estudiantil_internacional_entrante.sort_values('facultad', ascending=False)
-total_movilidad_estudiantil_internacional_entrante = movilidad_estudiantil_internacional_entrante['Estudiantes beneficiados'].sum()
+movilidad_estudiantil_internacional_entrante = movilidad_estudiantil_internacional[
+    movilidad_estudiantil_internacional['Tipo'] == 'Movilidad entrante']
+movilidad_estudiantil_internacional_entrante = movilidad_estudiantil_internacional_entrante.sort_values(
+    'facultad', ascending=False)
+total_movilidad_estudiantil_internacional_entrante = movilidad_estudiantil_internacional_entrante['Estudiantes beneficiados'].sum(
+)
 
 # movilidad estudiantil internacional saliente
-movilidad_estudiantil_internacional_saliente = movilidad_estudiantil_internacional[movilidad_estudiantil_internacional['Tipo'] == 'Movilidad saliente']
-movilidad_estudiantil_internacional_saliente = movilidad_estudiantil_internacional_saliente.sort_values('facultad', ascending=False)
+movilidad_estudiantil_internacional_saliente = movilidad_estudiantil_internacional[
+    movilidad_estudiantil_internacional['Tipo'] == 'Movilidad saliente']
+movilidad_estudiantil_internacional_saliente = movilidad_estudiantil_internacional_saliente.sort_values(
+    'facultad', ascending=False)
 total_movilidad_estudiantil_internacional_saliente = movilidad_estudiantil_internacional_saliente['Estudiantes beneficiados'].sum(
 )
 
@@ -66,74 +74,59 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Movilidad nacional entrante",
-                                            className="card-subtitle"),
-                            
-                                    html.P(
+                                    html.H5(
                                         total_movilidad_estudiantil_nacional_entrante,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.P("movilidad nacional entrante"),
                                 ]
                             ),
-                            style={"width": "18rem"},
                         )
-                    ]), lg=4),
+                    ], className='card_container'), lg=4),
                     dbc.Col(html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Movilidad nacional saliente",
-                                            className="card-subtitle"),
-                            
-                                    html.P(
+                                    html.H5(
                                         total_movilidad_estudiantil_nacional_saliente,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.P("movilidad nacional saliente"),
                                 ]
                             ),
                             style={"width": "18rem"},
                         )
-                    ]), lg=4),
+                    ], className='card_container'), lg=4),
                     dbc.Col(html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Movilidad internacional entrante",
-                                            className="card-subtitle"),
-                            
-                                    html.P(
+                                    html.H5(
                                         total_movilidad_estudiantil_internacional_entrante,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.P("movilidad internacional entrante"),
                                 ]
                             ),
-                            style={"width": "18rem"},
                         )
-                    ]), lg=4),
+                    ], className='card_container'), lg=4),
                 ]
             ),
             dbc.Row(
-                [                 
+                [
                     dbc.Col(html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Movilidad internacional saliente",
-                                            className="card-subtitle"),
-                            
-                                    html.P(
+                                    html.H5(
                                         total_movilidad_estudiantil_internacional_saliente,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.P("movilidad internacional saliente"),
                                 ]
                             ),
-                            style={"width": "18rem"},
                         )
-                    ]), lg=4),
+                    ], className='card_container'), lg=4),
                 ]
             ),
         ]),
@@ -246,7 +239,7 @@ layout = html.Div([
                                 style_data_conditional=[
                                     {
                                         'if': {'row_index': 'odd'},
-                                        'backgroundColor':'rgb(29, 105, 150, 0.1)',
+                                        'backgroundColor': 'rgb(29, 105, 150, 0.1)',
                                     }
                                 ],
                                 id='logros_table_movilidad_estudiantil',

@@ -70,9 +70,7 @@ layout = html.Div([
             dbc.NavItem(dbc.NavLink("Riesgos ambientales",
                                     href="/riesgos-ambientales")),
             dbc.NavItem(dbc.NavLink("Cultura ambiental",
-                                    href="/cultura-ambiental")),
-            dbc.NavItem(dbc.NavLink("Huella de carbono", 
-                                    href="/huella-carbono")),
+                                    href="/cultura-ambiental")),           
 
         ],
         pills=True,),
@@ -84,14 +82,11 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Hallazgos identificados",
-                                            className="card-subtitle"),
-
-                                    html.P(
+                                    html.H5(
                                         total_data_2,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.P("hallazgos identificados"),
                                 ]
                             ),
                         )
@@ -100,14 +95,11 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Hallazgos subsanados",
-                                            className="card-subtitle"),
-
-                                    html.P(
+                                    html.H5(
                                         total_data_3,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.P("hallazgos subsanados"),
                                 ]
                             ),
                         )

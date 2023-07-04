@@ -17,41 +17,52 @@ data["anio"] = data["anio"].astype('str')
 movilidad_docente_nacional = data[data['Nivel'] == 'Nacional']
 
 # movilidad docente nacional entrante
-movilidad_docente_nacional_entrante = movilidad_docente_nacional[movilidad_docente_nacional['Tipo'] == 'Movilidad entrante']
-movilidad_docente_nacional_entrante = movilidad_docente_nacional_entrante.sort_values('facultad', ascending=False)
-total_movilidad_docente_nacional_entrante = movilidad_docente_nacional_entrante['Docentes beneficiados'].sum()
+movilidad_docente_nacional_entrante = movilidad_docente_nacional[
+    movilidad_docente_nacional['Tipo'] == 'Movilidad entrante']
+movilidad_docente_nacional_entrante = movilidad_docente_nacional_entrante.sort_values(
+    'facultad', ascending=False)
+total_movilidad_docente_nacional_entrante = movilidad_docente_nacional_entrante['Docentes beneficiados'].sum(
+)
 
 
 # movilidad docente nacional saliente
 movilidad_docente_nacional_saliente = movilidad_docente_nacional[movilidad_docente_nacional['Tipo']
-                                                 == 'Movilidad saliente']
-movilidad_docente_nacional_saliente = movilidad_docente_nacional_saliente.sort_values('facultad', ascending=False)
-total_movilidad_docente_nacional_saliente = movilidad_docente_nacional_saliente['Docentes beneficiados'].sum()
+                                                                 == 'Movilidad saliente']
+movilidad_docente_nacional_saliente = movilidad_docente_nacional_saliente.sort_values(
+    'facultad', ascending=False)
+total_movilidad_docente_nacional_saliente = movilidad_docente_nacional_saliente['Docentes beneficiados'].sum(
+)
 
 # movilidad docente internacional
 movilidad_docente_internacional = data[data['Nivel'] == 'Internacional']
 # movilidad internacional entrante
-movilidad_docente_internacional_entrante = movilidad_docente_internacional[movilidad_docente_internacional['Tipo'] == 'Movilidad entrante']
-movilidad_docente_internacional_entrante = movilidad_docente_internacional_entrante.sort_values('facultad', ascending=False)
-total_movilidad_docente_internacional_entrante = movilidad_docente_internacional_entrante['Docentes beneficiados'].sum()
+movilidad_docente_internacional_entrante = movilidad_docente_internacional[
+    movilidad_docente_internacional['Tipo'] == 'Movilidad entrante']
+movilidad_docente_internacional_entrante = movilidad_docente_internacional_entrante.sort_values(
+    'facultad', ascending=False)
+total_movilidad_docente_internacional_entrante = movilidad_docente_internacional_entrante['Docentes beneficiados'].sum(
+)
 
 # movilidad docente internacional saliente
 movilidad_docente_internacional_saliente = movilidad_docente_internacional[
     movilidad_docente_internacional['Tipo'] == 'Movilidad saliente']
-movilidad_docente_internacional_saliente = movilidad_docente_internacional_saliente.sort_values('facultad', ascending=False)
-total_movilidad_docente_internacional_saliente = movilidad_docente_internacional_saliente['Docentes beneficiados'].sum()
+movilidad_docente_internacional_saliente = movilidad_docente_internacional_saliente.sort_values(
+    'facultad', ascending=False)
+total_movilidad_docente_internacional_saliente = movilidad_docente_internacional_saliente['Docentes beneficiados'].sum(
+)
 
 
-
-layout = html.Div([ 
-    html.H2('Relaciones Interinstitucionales'),   
-    html.H3('Movilidad académica'), 
+layout = html.Div([
+    html.H2('Relaciones Interinstitucionales'),
+    html.H3('Movilidad académica'),
     dbc.Nav(
-    [
-        dbc.NavItem(dbc.NavLink("Movilidad estudiantil", href="/movilidad-estudiantil")),
-        dbc.NavItem(dbc.NavLink('Movilidad docente', active=True, href="/movilidad-docente")),
-    ],
-    pills=True,), 
+        [
+            dbc.NavItem(dbc.NavLink("Movilidad estudiantil",
+                                    href="/movilidad-estudiantil")),
+            dbc.NavItem(dbc.NavLink('Movilidad docente',
+                                    active=True, href="/movilidad-docente")),
+        ],
+        pills=True,),
     html.H5('Docentes beneficiados'),
     html.Div(
         [
@@ -61,14 +72,11 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Movilidad nacional entrante",
-                                            className="card-subtitle"),
-                            
-                                    html.P(
+                                    html.H5(
                                         total_movilidad_docente_nacional_entrante,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.P("movilidad nacional entrante"),
                                 ]
                             ),
                         )
@@ -77,14 +85,11 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Movilidad nacional saliente",
-                                            className="card-subtitle"),
-                            
-                                    html.P(
+                                    html.H5(
                                         total_movilidad_docente_nacional_saliente,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.P("movilidad nacional saliente"),
                                 ]
                             ),
                         )
@@ -93,19 +98,16 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Movilidad internacional entrante",
-                                            className="card-subtitle"),
-                            
-                                    html.P(
+                                    html.H5(
                                         total_movilidad_docente_internacional_entrante,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.P("movilidad internacional entrante"),
                                 ]
                             ),
                         )
                     ], className='card_container'), lg=4),
-                ]
+                ], 
             ),
             dbc.Row(
                 [
@@ -113,14 +115,11 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Movilidad internacional saliente",
-                                            className="card-subtitle"),
-                            
-                                    html.P(
+                                    html.H5(
                                         total_movilidad_docente_internacional_saliente,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.H6("movilidad internacional saliente"),
                                 ]
                             ),
                         )
@@ -174,9 +173,9 @@ layout = html.Div([
                                 "Docentes beneficiados": True,
                                 "anio": True},
                             barmode="group"
-                            )),  
-    html.H5('Logros Alcanzados'), 
-     html.Div(
+                            )),
+    html.H5('Logros Alcanzados'),
+    html.Div(
         [
             dbc.Row(
                 [
@@ -221,7 +220,7 @@ layout = html.Div([
                                 style_data_conditional=[
                                     {
                                         'if': {'row_index': 'odd'},
-                                        'backgroundColor':'rgb(29, 105, 150, 0.1)',
+                                        'backgroundColor': 'rgb(29, 105, 150, 0.1)',
                                     }
                                 ],
                                 id='logros_table_movilidad_docente',
@@ -231,11 +230,11 @@ layout = html.Div([
                 ]
             )
         ]),
- ], className='layout')
+], className='layout')
 
 
 @callback(
-    Output("logros_table_movilidad_docente", "data"), 
+    Output("logros_table_movilidad_docente", "data"),
     [Input("facultad_movilidad_docente", "value"), Input("anio_movilidad_docente", "value")])
 def logros_alcanzados_movilidad_docente(facultad, anio):
     if facultad or anio:

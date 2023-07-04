@@ -76,6 +76,8 @@ def total_function_3(facultad, anio):
 
 data_3.apply(lambda x: total_function_3(x['facultad'], x['anio']), axis=1)
 total_data_3 = data_3['cifra'].sum()
+total_data_3 = f'{total_data_3:,}'.replace(',', ' ')
+
 
 # Inscritos a nivel internacional en actividades de educación continua
 data_4 = data_4.drop(
@@ -191,14 +193,11 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Inscritos en actividades de educación continua pertenecientes a la UNAL",
-                                            className="card-subtitle"),
-
-                                    html.P(
+                                    html.H5(
                                         total_data_2,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.P("inscritos en actividades de educación continua - UNAL"),
                                 ]
                             ),
                         )
@@ -207,14 +206,11 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Inscritos en actividades de educación continua externos a la UNAL",
-                                            className="card-subtitle"),
-
-                                    html.P(
+                                    html.H5(
                                         total_data_3,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.P("inscritos en actividades de educación continua externos"),
                                 ]
                             ),
                         )
@@ -223,14 +219,11 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Inscritos a nivel internacional en actividades de educación continua",
-                                            className="card-subtitle"),
-
-                                    html.P(
+                                    html.H5(
                                         total_data_4,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.P("inscritos a nivel internacional en actividades de educación continua"),
                                 ]
                             ),
                         )
@@ -243,30 +236,11 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Docentes participantes en actividades de educación continua externos a la UNAL",
-                                            className="card-subtitle"),
-
-                                    html.P(
-                                        total_data_5,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
-                                    ),
-                                ]
-                            ),
-                        )
-                    ], className='card_container'), lg=4),
-                    dbc.Col(html.Div([
-                        dbc.Card(
-                            dbc.CardBody(
-                                [
-                                    html.H6("Docentes participantes en actividades de educación continua pertenecientes a la UNAL",
-                                            className="card-subtitle"),
-
-                                    html.P(
+                                    html.H5(
                                         total_data_6,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.P("docentes en actividades de educación continua - UNAL"),
                                 ]
                             ),
                         ),
@@ -275,14 +249,24 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Número de diplomados que se dictan en temas ambientales",
-                                            className="card-subtitle"),
-
-                                    html.P(
-                                        total_data_7,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                    html.H5(
+                                        total_data_5,
+                                        className="card-number",
                                     ),
+                                    html.P("docentes en actividades de educación continua externos"),
+                                ]
+                            ),
+                        )
+                    ], className='card_container'), lg=4),
+                    dbc.Col(html.Div([
+                        dbc.Card(
+                            dbc.CardBody(
+                                [
+                                    html.H5(
+                                        total_data_7,
+                                        className="card-number",
+                                    ),
+                                    html.P("diplomados en temas ambientales"),
                                 ]
                             ),
                         )
@@ -317,7 +301,7 @@ layout = html.Div([
                             labels={
                                 'anio': 'año',
                                 'facultad': 'Dependencia',
-                                'cifra': 'Inscritos en educación contínua externos a la UNAL'
+                                'cifra': 'Inscritos en educación contínua externos'
                             },
                             color_discrete_sequence=px.colors.qualitative.Prism,
                             barmode="group",
@@ -335,28 +319,9 @@ layout = html.Div([
                             labels={
                                 'anio': 'año',
                                 'facultad': 'Dependencia',
-                                'cifra': 'Inscritos internacionales en actividades de educación contínua'
+                                'cifra': 'Inscritos a nivel internacional'
                             },
                             color_discrete_sequence=px.colors.qualitative.Prism,
-                            barmode="group",
-                            hover_data={
-                                "cifra": True,
-                                "total": True,
-                                "anio": True},
-                            )),
-    html.H5(
-        'Docentes participantes en actividades de educación continua externos a la UNAL'),
-    dcc.Graph(id="graph_docentes_educacion_continua_externos_unal",
-              figure=px.bar(data_5,
-                            x="cifra",
-                            y="facultad",
-                            color="anio",
-                            labels={
-                                'anio': 'año',
-                                'facultad': 'Dependencia',
-                                'cifra': 'Docentes externos a la UNAL'
-                            },
-                            color_discrete_sequence=px.colors.qualitative.G10,
                             barmode="group",
                             hover_data={
                                 "cifra": True,
@@ -373,6 +338,25 @@ layout = html.Div([
                                 'anio': 'año',
                                 'facultad': 'Dependencia',
                                 'cifra': 'Docentes pertenicientes a la UNAL'
+                            },
+                            color_discrete_sequence=px.colors.qualitative.G10,
+                            barmode="group",
+                            hover_data={
+                                "cifra": True,
+                                "total": True,
+                                "anio": True},
+                            )),
+    html.H5(
+        'Docentes participantes en actividades de educación continua externos a la UNAL'),
+    dcc.Graph(id="graph_docentes_educacion_continua_externos_unal",
+              figure=px.bar(data_5,
+                            x="cifra",
+                            y="facultad",
+                            color="anio",
+                            labels={
+                                'anio': 'año',
+                                'facultad': 'Dependencia',
+                                'cifra': 'Docentes externos'
                             },
                             color_discrete_sequence=px.colors.qualitative.G10,
                             barmode="group",

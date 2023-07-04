@@ -38,6 +38,8 @@ def total_function(facultad, anio):
 
 data_2.apply(lambda x: total_function(x['facultad'], x['anio']), axis=1)
 total_data_2 = data_2['cifra'].sum()
+total_data_2 = f'{total_data_2:,}'.replace(',', ' ')
+
 
 # Costo de agua en el último año
 
@@ -60,6 +62,8 @@ def total_function(facultad, anio):
 
 data_3.apply(lambda x: total_function(x['facultad'], x['anio']), axis=1)
 total_data_3 = data_3['cifra'].sum()
+total_data_3 = f'{total_data_3:,}'.replace(',', ' ')
+total_data_3 = '$ ' + total_data_3
 
 # Número de bebederos instalados
 
@@ -91,12 +95,10 @@ layout = html.Div([
         [
             dbc.NavItem(dbc.NavLink("Agua", active=True,
                                     href="/agua")),
-            dbc.NavItem(dbc.NavLink("Energia",
+            dbc.NavItem(dbc.NavLink("Energía",
                                     href="/energia")),
-            dbc.NavItem(dbc.NavLink("Residuos",
+            dbc.NavItem(dbc.NavLink("Resíduos",
                                     href="/residuos")),
-            dbc.NavItem(dbc.NavLink("Plagas y vectores",
-                                    href="/plagas-y-vectores")),
         ],
         pills=True,),
     html.Div(
@@ -107,14 +109,11 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Consumo de agua",
-                                            className="card-subtitle"),
-
-                                    html.P(
+                                    html.H5(
                                         total_data_2,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.P("consumo de agua en litros (?)"),
                                 ]
                             ),
                         )
@@ -123,14 +122,11 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Costo de agua",
-                                            className="card-subtitle"),
-
-                                    html.P(
+                                    html.H5(
                                         total_data_3,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.P("costo del agua"),
                                 ]
                             ),
                         )
@@ -139,14 +135,11 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Bebederos instalados",
-                                            className="card-subtitle"),
-
-                                    html.P(
+                                    html.H5(
                                         total_data_4,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.P("bebederos instalados"),
                                 ]
                             ),
                         )
@@ -154,7 +147,7 @@ layout = html.Div([
                 ]
             ),
         ]),
-    html.H5('Consumo de agua'),
+    html.H5('Consumo del agua'),
     dcc.Graph(id="graph_consumo_agua",
               figure=px.bar(data_2,
                             x="cifra",

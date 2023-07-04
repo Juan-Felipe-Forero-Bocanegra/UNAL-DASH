@@ -166,14 +166,11 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Proyectos en ejecución",
-                                            className="card-subtitle"),
-                            
-                                    html.P(
+                                    html.H5(
                                         total_data_2,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.P("proyectos en ejecución"),
                                 ]
                             ),
                         )
@@ -182,14 +179,11 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Proyectos suspendidos",
-                                            className="card-subtitle"),
-                            
-                                    html.P(
+                                    html.H5(
                                         total_data_3,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.P("proyectos suspendidos"),
                                 ]
                             ),
                         )
@@ -198,14 +192,11 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Proyectos en liquidación externa",
-                                            className="card-subtitle"),
-                            
-                                    html.P(
+                                    html.H5(
                                         total_data_4,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.P("proyectos en liquidación externa"),
                                 ]
                             ),
                         )
@@ -218,14 +209,11 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Proyectos en liquidación interna",
-                                            className="card-subtitle"),
-                            
-                                    html.P(
+                                    html.H5(
                                         total_data_5,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.P("proyectos en liquidación interna"),
                                 ]
                             ),
                         )
@@ -234,14 +222,11 @@ layout = html.Div([
                         dbc.Card(
                             dbc.CardBody(
                                 [
-                                    html.H6("Proyectos cerrados en el año",
-                                            className="card-subtitle"),
-                            
-                                    html.P(
+                                    html.H5(
                                         total_data_6,
-                                        className="card-text",
-                                        style={'textAlign': 'center'}
+                                        className="card-number",
                                     ),
+                                    html.P("proyectos cerrados"),
                                 ]
                             ),
                         ),
