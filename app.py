@@ -9,14 +9,13 @@ from flask import session
 app = Dash(__name__, use_pages=True)
 server = app.server
 
-'''
+
+
+app.layout = html.Div([
     dcc.Interval(
          id='interval',
          interval=1 * 36000000,
          n_intervals=0),
-    '''
-
-app.layout = html.Div([
     dcc.Store(id='store'),
     dbc.NavbarSimple(
         children=[
@@ -90,7 +89,7 @@ app.layout = html.Div([
     dash.page_container
 ])
 
-'''
+
 @callback(
     Output("store", "data"),
     Input('interval', 'n_intervals')
@@ -102,9 +101,11 @@ def login(interval):
     r = requests.post(url, json=data)
     jsonResponse = r.json()
     token = 'Bearer ' + jsonResponse['token']
-    
+    text_file = open("file.txt", "w")
+    n = text_file.write(token)
+    text_file.close()
     return {'token': token}
-'''
+
 
 
 if __name__ == '__main__':

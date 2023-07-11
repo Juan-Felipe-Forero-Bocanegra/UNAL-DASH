@@ -17,10 +17,15 @@ data = data.iloc[1:]
 new_cols = ["facultad", "anio", "Área", "Tipo", 'Entidades', 'Logro']
 data = data[new_cols]
 
+'''
+Visualize bearer from login
+html.P(id='p-output'),
+'''
 
 layout = html.Div([
     html.H2('Relaciones Interinstitucionales'),
     html.H3('Convenios'),
+    html.P(id='p-output'),
     dbc.Nav(
         [
             dbc.NavItem(dbc.NavLink(
@@ -146,11 +151,12 @@ def convenios(facultad, anio, area):
     return table
 
 
-'''
+
+
 @callback(
     Output("p-output", "children"),
     Input("store", "data"),
 )
 def update(store):
     return 'Got token ' + store.get('token')
-'''
+
