@@ -11,20 +11,23 @@ import dash_bootstrap_components as dbc
 dash.register_page(__name__, path='/movilidad-estudiantil')
 # server = app.server
 
-# data = pd.read_excel('pages/movilidad_estudiantil_2.xlsx')
-# data_2 = pd.read_excel('pages/logros.xlsx')
+#data = pd.read_excel('pages/movilidad_estudiantil_2.xlsx')
+#data_2 = pd.read_excel('pages/logros.xlsx')
 
 f = open("file.txt", "r")
 token = f.readline()
-url = "http://localhost:8070/reporte_cifras/buscarCifras?area_param=Relaciones Interinstitucionales&programa_param=Movilidad académica&actividad_param=Movilidad estudiantil"
+e = open("environment.txt", "r")
+environment = e.readline()
+url = environment + "/reporte_cifras/buscarCifras?area_param=Relaciones Interinstitucionales&programa_param=Movilidad académica&actividad_param=Movilidad estudiantil"
 headers = {'Content-type': 'application/json', 'Authorization': token}
 r = requests.get(url, headers=headers)
 dataJson = r.json()
 
+
 # ESTUDIANTES BENEFICIADOS
 
 list = []
-
+list_2 = []
 for c in dataJson:
     if c['informeActividadDetalle']['nombre'] == 'Estudiantes beneficiados':
         i = 0
@@ -54,6 +57,21 @@ for c in dataJson:
                 list.append(o)
                 i = 0
                 j += 1
+    if c['informeActividadDetalle']['nombre'] == 'Logros alcanzados':
+        i = 0
+        for a in c['informeActividadDetalle']['listaDatoListaValor']:
+            if i == 0:
+                o = {
+                    'Facultad': c['facultad'],
+                    'Año': c['anio'],
+                    'Logro': ''
+                }
+            if a['actividadDatoLista']['nombre'] == 'Logro' and a['actividadDatoLista']['orden'] == '1':
+                o['Logro'] = a['cifra']
+                i += 1
+            if i == 1:
+                list_2.append(o)
+                i = 0
 
 df = pd.DataFrame(list)
 df['Nivel'] = df['Nivel'].replace(['556'], 'Nacional')
@@ -65,6 +83,7 @@ data = df
 data["Año"] = data["Año"].astype('str')
 data['Estudiantes beneficiados'] = data['Estudiantes beneficiados'].astype(int)
 
+
 # movilidad estudiantil nacional
 movilidad_estudiantil_nacional = data[data['Nivel'] == 'Nacional']
 
@@ -72,8 +91,7 @@ movilidad_estudiantil_nacional = data[data['Nivel'] == 'Nacional']
 movilidad_estudiantil_nacional_entrante = movilidad_estudiantil_nacional[movilidad_estudiantil_nacional['Tipo']  == 'Movilidad entrante']
 movilidad_estudiantil_nacional_entrante = movilidad_estudiantil_nacional_entrante.sort_values('Facultad', ascending=False)
 total_movilidad_estudiantil_nacional_entrante = movilidad_estudiantil_nacional_entrante['Estudiantes beneficiados'].sum()
-print('movilidad_estudiantil_nacional_entrante_sort')
-print(total_movilidad_estudiantil_nacional_entrante)
+
 
 # movilidad estudiantil nacional saliente
 movilidad_estudiantil_nacional_saliente = movilidad_estudiantil_nacional[movilidad_estudiantil_nacional['Tipo']
@@ -101,28 +119,12 @@ movilidad_estudiantil_internacional_saliente = movilidad_estudiantil_internacion
 total_movilidad_estudiantil_internacional_saliente = movilidad_estudiantil_internacional_saliente['Estudiantes beneficiados'].sum(
 )
 
+
 # LOGROS ALCANZADOS
-list_2 = []
-for c in dataJson:
-    if c['informeActividadDetalle']['nombre'] == 'Logros alcanzados':
-        i = 0
-        for a in c['informeActividadDetalle']['listaDatoListaValor']:
-            if i == 0:
-                o = {
-                    'Facultad': c['facultad'],
-                    'Año': c['anio'],
-                    'Logro': ''
-                }
-            if a['actividadDatoLista']['nombre'] == 'Logro' and a['actividadDatoLista']['orden'] == '1':
-                o['Logro'] = a['cifra']
-                i += 1
-            if i == 1:
-                list_2.append(o)
-                i = 0
 
 df_logros = pd.DataFrame(list_2)
 data_2 = df_logros
-print(data_2.head())
+
 
 layout = html.Div([
     html.H2('Relaciones Interinstitucionales'),
@@ -208,7 +210,7 @@ layout = html.Div([
                             y="Facultad",
                             color="Año",
                             labels={
-                                'facultad': 'Dependencia',
+                                'Facultad': 'Dependencia',
                             },
                             color_discrete_sequence=px.colors.qualitative.Prism,
                             hover_data={

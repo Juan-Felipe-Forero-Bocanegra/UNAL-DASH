@@ -5,55 +5,71 @@ import pandas as pd
 import plotly.graph_objects as go
 from dash import dash_table
 import dash_bootstrap_components as dbc
+from flask import session
 import requests
 
 dash.register_page(
-    __name__, path='/paginas-web')
+    __name__, path='/creacion-modicacion-programas-planes-estudio')
 
 f = open("file.txt", "r")
 token = f.readline()
 e = open("environment.txt", "r")
 environment = e.readline()
-url = environment + "/reporte_cifras/buscarCifras?area_param=Gobierno y Gestión de Servicios TI&programa_param=Gobierno y Gestión de Servicios TI&actividad_param=Páginas web"
+url = environment + "/reporte_cifras/buscarCifras?area_param=Formación&programa_param=Gestión de programas curriculares&actividad_param=Creación y modificación de programas y planes de estudio"
 headers = {'Content-type': 'application/json', 'Authorization': token}
 r = requests.get(url, headers=headers)
 dataJson = r.json()
 
 list = []
-
 for c in dataJson:
     if c['informeActividadDetalle']['orden'] == 1:
         i = 0
+        j = 0
         for a in c['informeActividadDetalle']['listaDatoListaValor']:
             if i == 0:
                 o = {
                     'Facultad': c['facultad'],
                     'Año': c['anio'],
-                    'Logro': ''
+                    'Logro': '',
+                    'Programas nuevos': '',
+                    'Nivel de formación': ''
                 }
             if a['actividadDatoLista']['orden'] == '1':
-                o['Logro'] = a['cifra']
-                i += 1
-            if i == 1:
+                if a['indice'] == j:
+                    o['Logro'] = a['cifra']
+                    i += 1
+            if a['actividadDatoLista']['orden'] == '2':
+                if a['indice'] == j:
+                    o['Programas nuevos'] = a['cifra']
+                    i += 1
+            if a['actividadDatoLista']['orden'] == '3':
+                if a['indice'] == j:
+                    o['Nivel de formación'] = a['cifra']
+                    i += 1
+            if i == 3:
                 list.append(o)
                 i = 0
+                j += 1
 
 data = pd.DataFrame(list)
 
 layout = html.Div([
-    html.H2('Gobierno y Gestión de Servicios TI'),
-    html.H3(
-        'Páginas web'),
+    html.H2('Formación'),
+    html.H3('Gestión de programas curriculares'),
     dbc.Nav(
         [
-            dbc.NavItem(dbc.NavLink("Repositorios de información",
-                                    href="/repositorios-informacion")),
-            dbc.NavItem(dbc.NavLink("Mantenimiento y actualización de servicios digitales",
-                                    href="/mantenimiento-actualizacion-servicios-digitales")),
-            dbc.NavItem(dbc.NavLink("Gestión de proyectos informáticos", 
-                                    href="/gestion-proyectos-informaticos")),
-            dbc.NavItem(dbc.NavLink("Páginas web", active=True,
-                                    href="/paginas-web")),
+            dbc.NavItem(dbc.NavLink(
+                "Creación y modificación de programas y planes de estudio", active=True, href="/creacion-modicacion-programas-planes-estudio")),
+            dbc.NavItem(dbc.NavLink(
+                "Autoevaluación de los programas académicos", href="/autoevaluacion-programas-academicos")),
+            dbc.NavItem(dbc.NavLink(
+                "Planes de mejoramiento de los programas académicos", href="/planes-mejoramiento-programas-academicos")),
+            dbc.NavItem(dbc.NavLink(
+                "Acreditación de programas académicos", href="/acreditacion-programas-academicos")),
+            dbc.NavItem(dbc.NavLink(
+                "Proyectos Educativos de los Programas (PEP)", href="/proyectos-educativos-programas")),
+             dbc.NavItem(dbc.NavLink(
+                "Recursos en Autoevaluación, Planes de Mejoramiento y Acreditación", href="/recursos-autoevaluacion-planes-mejoramiento-acreditacion")),
         ],
         pills=True,),
     html.H5('Logros Alcanzados'),
@@ -63,7 +79,7 @@ layout = html.Div([
                 [
                     dbc.Col(html.Div([
                         dcc.Dropdown(
-                            id="facultad_paginas_web",
+                            id="facultad_creacion_modificacion_programas_planes_estudio",
                             options=data['Facultad'].unique(),
                             clearable=True,
                             placeholder="Seleccione la facultad",
@@ -71,7 +87,7 @@ layout = html.Div([
                     ]), lg=6),
                     dbc.Col(html.Div([
                         dcc.Dropdown(
-                            id="anio_paginas_web",
+                            id="anio_creacion_modificacion_programas_planes_estudio",
                             options=data['Año'].unique(),
                             clearable=True,
                             placeholder="Seleccione el año",
@@ -105,7 +121,7 @@ layout = html.Div([
                                         'backgroundColor': 'rgb(29, 105, 150, 0.1)',
                                     }
                                 ],
-                                id='logros_tabla_paginas_web',
+                                id='logros_tabla_creacion_modificacion_programas_planes_estudio',
                             ),
                         ], style={'paddingTop': '2%'})
                     )
@@ -118,9 +134,9 @@ layout = html.Div([
 
 
 @callback(
-    Output("logros_tabla_paginas_web", "data"),
-    [Input("facultad_paginas_web", "value"), Input("anio_paginas_web", "value")])
-def logros_alcanzados_paginas_web(facultad, anio):
+    Output("logros_tabla_creacion_modificacion_programas_planes_estudio", "data"),
+    [Input("facultad_creacion_modificacion_programas_planes_estudio", "value"), Input("anio_creacion_modificacion_programas_planes_estudio", "value")])
+def logros_alcanzados_creacion_modificacion_programas_planes_estudio(facultad, anio):
     if facultad or anio:
         if not anio:
             df = data

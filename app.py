@@ -6,15 +6,25 @@ import json
 import time
 from flask import session
 
+url = "http://localhost:8070/authenticate"
+data = {'username': 'jforerobo', 'password': 'T$Cc#s7%hPqk'}
+headers = {'Content-type': 'application/json'}
+r = requests.post(url, json=data)
+jsonResponse = r.json()
+token = 'Bearer ' + jsonResponse['token']
+text_file = open("file.txt", "w")
+n = text_file.write(token)
+text_file.close()
+
+
 app = Dash(__name__, use_pages=True)
 server = app.server
-
 
 
 app.layout = html.Div([
     dcc.Interval(
          id='interval',
-         interval=1 * 36000000,
+         interval=1 * 3600000,
          n_intervals=0),
     dcc.Store(id='store'),
     dbc.NavbarSimple(
@@ -76,11 +86,23 @@ app.layout = html.Div([
                 in_navbar=True,
                 label="Divulgación de la producción académica",
             ),
-            dbc.NavItem(dbc.NavLink("Gobierno de TI", href='/repositorios-informacion')),         
+            dbc.NavItem(dbc.NavLink("Gobierno de TI", href='/repositorios-informacion')),
+             dbc.DropdownMenu(
+                children=[
+                    dbc.DropdownMenuItem("Gestión de programas curriculares", href='/creacion-modicacion-programas-planes-estudio'),
+                    dbc.DropdownMenuItem("Cupos", href='/oferta-cupos'),  
+                    dbc.DropdownMenuItem("Cursos y asignaturas", href='/cursos'), 
+                    dbc.DropdownMenuItem("Gestión de la actividad académica", href='/catedras-sede'),
+                    dbc.DropdownMenuItem("Tutores docentes", href='/designacion-tutores-docentes'),                     
+                ],
+                nav=True,
+                in_navbar=True,
+                label="Formación",
+            ),
+                     
              
         ],
         brand="Prig Data App",
-        brand_href="/convenios",
         color="light",
         dark=False,
         expand="xs"

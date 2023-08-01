@@ -5,68 +5,86 @@ import pandas as pd
 import plotly.graph_objects as go
 from dash import dash_table
 import dash_bootstrap_components as dbc
-
+import requests
 
 dash.register_page(
     __name__, path='/participacion-en-procesos-de-invitacion-directa')
 
-data = pd.read_excel(open(
-    'pages/participacion_en_procesos_de_invitacion_directa.xlsx', 'rb'), sheet_name='1')
 
-data_2 = pd.read_excel(open(
-    'pages/participacion_en_procesos_de_invitacion_directa.xlsx', 'rb'), sheet_name='2')
+f = open("file.txt", "r")
+token = f.readline()
+e = open("environment.txt", "r")
+environment = e.readline()
+url = environment + "/reporte_cifras/buscarCifras?area_param=Extensión, Innovación y Propiedad Intelectual&programa_param=Proyectos de extensión&actividad_param=Participación en procesos de invitación directa"
+headers = {'Content-type': 'application/json', 'Authorization': token}
+r = requests.get(url, headers=headers)
+dataJson = r.json()
 
-data_3 = pd.read_excel(open(
-    'pages/participacion_en_procesos_de_invitacion_directa.xlsx', 'rb'), sheet_name='3')
+list = []
+list2 = []
+list3 = []
 
-# logros alcanzados
-data = data.drop(columns=['area', 'programa', 'actividad', 'actividadDetalle'])
+for c in dataJson:
+    if c['informeActividadDetalle']['nombre'] == 'Logros alcanzados':
+        i = 0
+        for a in c['informeActividadDetalle']['listaDatoListaValor']:
+            if i == 0:
+                o = {
+                    'Facultad': c['facultad'],
+                    'Año': c['anio'],
+                    'Logro': ''
+                }
+            if a['actividadDatoLista']['nombre'] == 'Logro' and a['actividadDatoLista']['orden'] == '1':
+                o['Logro'] = a['cifra']
+                i += 1
+            if i == 1:
+                list.append(o)
+                i = 0
+    if c['informeActividadDetalle']['nombre'] == 'Propuestas presentadas' and c['informeActividadDetalle']['orden'] == 2:
+        o = {
+                'Facultad':c['facultad'],
+                'Año':c['anio'],
+                'cifra': c['informeActividadDetalle']['cifra']
+                }
+        list2.append(o)
+    if c['informeActividadDetalle']['nombre'] == 'Propuestas ganadoras' and c['informeActividadDetalle']['orden'] == 3:
+        o = {
+                'Facultad':c['facultad'],
+                'Año':c['anio'],
+                'cifra': c['informeActividadDetalle']['cifra']
+                }
+        list3.append(o)
 
-new_cols = ['facultad', 'anio', 'Logro']
-data = data[new_cols]
+data = pd.DataFrame(list)
+data_2 = pd.DataFrame(list2)
+data_3 = pd.DataFrame(list3)
+
+
+def total_function(facultad, anio, dataframe):
+    df_facultad = dataframe[dataframe['Facultad'] == facultad]
+    df_total = df_facultad['cifra'].sum()
+    dataframe.loc[(dataframe['Facultad'] == facultad) & (
+        dataframe['Año'] == anio), 'total'] = df_total
 
 # Propuestas presentadas
-data_2 = data_2.drop(
-    columns=['area', 'programa', 'actividad', 'actividadDetalle'])
 
-new_cols_2 = ['facultad', 'anio', 'cifra']
-data_2 = data_2[new_cols_2]
-data_2["anio"] = data_2["anio"].astype('str')
+
+data_2['Año'] = data_2['Año'].astype('str')
 data_2.fillna(0, inplace=True)
 data_2['cifra'] = data_2['cifra'].astype('int')
 
-
-def total_function(facultad, anio):
-    df_facultad = data_2[data_2['facultad'] == facultad]
-    df_total = df_facultad['cifra'].sum()
-    data_2.loc[(data_2['facultad'] == facultad) & (
-        data_2['anio'] == anio), 'total'] = df_total
-
-
-data_2.apply(lambda x: total_function(x['facultad'], x['anio']), axis=1)
+data_2.apply(lambda x: total_function(x['Facultad'], x['Año'], data_2), axis=1)
 total_data_2 = data_2['cifra'].sum()
 
-# propuetas ganadoras
-data_3 = data_3.drop(
-    columns=['area', 'programa', 'actividad', 'actividadDetalle'])
 
-new_cols_3 = ['facultad', 'anio', 'cifra']
-data_3 = data_3[new_cols_3]
-data_3["anio"] = data_3["anio"].astype('str')
+# propuetas ganadoras
+
+data_3['Año'] = data_3['Año'].astype('str')
 data_3.fillna(0, inplace=True)
 data_3['cifra'] = data_3['cifra'].astype('int')
 
-
-def total_function(facultad, anio):
-    df_facultad = data_3[data_3['facultad'] == facultad]
-    df_total = df_facultad['cifra'].sum()
-    data_3.loc[(data_3['facultad'] == facultad) & (
-        data_3['anio'] == anio), 'total'] = df_total
-
-
-data_3.apply(lambda x: total_function(x['facultad'], x['anio']), axis=1)
+data_3.apply(lambda x: total_function(x['Facultad'], x['Año'], data_3), axis=1)
 total_data_3 = data_3['cifra'].sum()
-
 
 layout = html.Div([
     html.H2('Extensión, Innovación y Propiedad Intelectual'),
@@ -124,36 +142,34 @@ layout = html.Div([
     dcc.Graph(id="graph_propuestas_presentadas_invitacion_directa",
               figure=px.bar(data_2,
                             x="cifra",
-                            y="facultad",
-                            color="anio",
+                            y="Facultad",
+                            color="Año",
                             labels={
-                                'anio': 'año',
-                                'facultad': 'Dependencia',
+                                'Facultad': 'Dependencia',
                                 'cifra': 'Propuestas presentadas'
                             },
                             color_discrete_sequence=px.colors.qualitative.Prism,
                             hover_data={
                                 "cifra": True,
                                 "total": True,
-                                "anio": True},
+                                "Año": True},
                             barmode="group"
                             )),
     html.H5('Propuestas ganadoras'),
     dcc.Graph(id="graph_propuestas_ganadoras_invitacion_directa",
               figure=px.bar(data_3,
                             x="cifra",
-                            y="facultad",
-                            color="anio",
+                            y="Facultad",
+                            color="Año",
                             labels={
-                                'anio': 'año',
-                                'facultad': 'Dependencia',
+                                'Facultad': 'Dependencia',
                                 'cifra': 'Propuestas ganadoras'
                             },
                             color_discrete_sequence=px.colors.qualitative.Prism,
                             hover_data={
                                 "cifra": True,
                                 "total": True,
-                                "anio": True},
+                                "Año": True},
                             barmode="group"
                             )),
     html.H5('Logros Alcanzados'),
@@ -164,7 +180,7 @@ layout = html.Div([
                     dbc.Col(html.Div([
                         dcc.Dropdown(
                             id="facultad_procesos_invitacion_directa",
-                            options=data['facultad'].unique(),
+                            options=data['Facultad'].unique(),
                             clearable=True,
                             placeholder="Seleccione la facultad",
                         ),
@@ -172,7 +188,7 @@ layout = html.Div([
                     dbc.Col(html.Div([
                         dcc.Dropdown(
                             id="anio_procesos_invitacion_directa",
-                            options=data['anio'].unique(),
+                            options=data['Año'].unique(),
                             clearable=True,
                             placeholder="Seleccione el año",
                         ),
@@ -212,8 +228,6 @@ layout = html.Div([
                 ]
             )
         ]),
-
-
 ], className='layout')
 
 
@@ -224,18 +238,18 @@ def logros_alcanzados_procesos_invitacion_directa(facultad, anio):
     if facultad or anio:
         if not anio:
             df = data
-            df = df[df['facultad'] == facultad]
+            df = df[df['Facultad'] == facultad]
             table = df.to_dict('records')
             return table
         if not facultad:
             df = data
-            df = df[df['anio'] == anio]
+            df = df[df['Año'] == anio]
             table = df.to_dict('records')
             return table
         if facultad and anio:
             df = data
-            df = df[df['facultad'] == facultad]
-            df = df[df['anio'] == anio]
+            df = df[df['Facultad'] == facultad]
+            df = df[df['Año'] == anio]
             table = df.to_dict('records')
             return table
     df = data

@@ -2,60 +2,67 @@ import dash
 from dash import Dash, dcc, html, Input, Output, callback
 import plotly.express as px
 import pandas as pd
+import numpy as np
 import plotly.graph_objects as go
 from dash import dash_table
 import dash_bootstrap_components as dbc
 import requests
 
-dash.register_page(__name__, path='/proyectos-iniciados-en-el-anio')
+dash.register_page(__name__, path='/catedras-sede')
+
 
 f = open("file.txt", "r")
 token = f.readline()
 e = open("environment.txt", "r")
 environment = e.readline()
-url = environment + "/reporte_cifras/buscarCifras?area_param=Extensión, Innovación y Propiedad Intelectual&programa_param=Proyectos de extensión&actividad_param=Proyectos iniciados en el año"
+url = environment + "/reporte_cifras/buscarCifras?area_param=Formación&programa_param=Gestión de la actividad académica&actividad_param=Cátedras de sede"
 headers = {'Content-type': 'application/json', 'Authorization': token}
 r = requests.get(url, headers=headers)
 dataJson = r.json()
 
 list = []
-list2 = []
-list3 = []
 
 for c in dataJson:
-    if c['informeActividadDetalle']['nombre'] == 'Logros alcanzados':
+    if c['informeActividadDetalle']['orden'] == 1:
         i = 0
+        j = 0
         for a in c['informeActividadDetalle']['listaDatoListaValor']:
             if i == 0:
                 o = {
                     'Facultad': c['facultad'],
                     'Año': c['anio'],
-                    'Logro': ''
+                    'Logros': '',
+                    'Docentes': '',
+                    'Estudiantes': ''
                 }
-            if a['actividadDatoLista']['nombre'] == 'Logro' and a['actividadDatoLista']['orden'] == '1':
-                o['Logro'] = a['cifra']
-                i += 1
-            if i == 1:
+            if a['actividadDatoLista']['orden'] == '1':
+                if a['indice'] == j:
+                    o['Logros'] = a['cifra']
+                    i += 1
+            if a['actividadDatoLista']['orden'] == '2':
+                if a['indice'] == j:
+                    o['Docentes'] = a['cifra']
+                    i += 1
+            if a['actividadDatoLista']['orden'] == '3':
+                if a['indice'] == j:
+                    o['Estudiantes'] = a['cifra']
+                    i += 1
+            if i == 3:
                 list.append(o)
                 i = 0
-    if c['informeActividadDetalle']['nombre'] == 'Propuestas formalizadas en la modalidad de servicios académicos' and c['informeActividadDetalle']['orden'] == 2:
-        o = {
-                'Facultad':c['facultad'],
-                'Año':c['anio'],
-                'cifra': c['informeActividadDetalle']['cifra']
-                }
-        list2.append(o)
-    if c['informeActividadDetalle']['nombre'] == 'Propuestas formalizadas en la modalidad de educación continua' and c['informeActividadDetalle']['orden'] == 3:
-        o = {
-                'Facultad':c['facultad'],
-                'Año':c['anio'],
-                'cifra': c['informeActividadDetalle']['cifra']
-                }
-        list3.append(o)
+                j += 1
+
 
 data = pd.DataFrame(list)
-data_2 = pd.DataFrame(list2)
-data_3 = pd.DataFrame(list3)
+
+data.fillna(0, inplace=True)
+data['Logros'] = data['Logros'].replace(0, 'N/A')
+data = data[data['Logros'] != 'N/A']
+
+docentes_tmp = data[['Facultad', 'Año', 'Docentes']]
+docentes = docentes_tmp.rename(columns={'Docentes': 'cifra'})
+estudiantes_tmp = data[['Facultad', 'Año', 'Estudiantes']]
+estudiantes = estudiantes_tmp.rename(columns={'Estudiantes': 'cifra'})
 
 
 def total_function(facultad, anio, dataframe):
@@ -64,43 +71,48 @@ def total_function(facultad, anio, dataframe):
     dataframe.loc[(dataframe['Facultad'] == facultad) & (
         dataframe['Año'] == anio), 'total'] = df_total
 
+# Docentes
 
-# Propuestas formalizadas en la modalidad de servicios académicos
 
-data_2['Año'] = data_2['Año'].astype('str')
-data_2.fillna(0, inplace=True)
-data_2['cifra'] = data_2['cifra'].astype('int')
+docentes['Año'] = docentes['Año'].astype('str')
+docentes.fillna(0, inplace=True)
+docentes['cifra'] = docentes['cifra'].astype('int')
 
-data_2.apply(lambda x: total_function(x['Facultad'], x['Año'], data_2), axis=1)
-total_data_2 = data_2['cifra'].sum()
+docentes = docentes.groupby(['Facultad', 'Año'])['cifra'].sum().reset_index()
 
-# Propuestas formalizadas en la modalidad de educación continua
+docentes.apply(lambda x: total_function(
+    x['Facultad'], x['Año'], docentes), axis=1)
 
-data_3['Año'] = data_3['Año'].astype('str')
-data_3.fillna(0, inplace=True)
-data_3['cifra'] = data_3['cifra'].astype('int')
+total_docentes = docentes['cifra'].sum()
 
-data_3.apply(lambda x: total_function(x['Facultad'], x['Año'], data_3), axis=1)
-total_data_3 = data_3['cifra'].sum()
 
+# Estudiantes
+
+estudiantes['Año'] = estudiantes['Año'].astype('str')
+estudiantes.fillna(0, inplace=True)
+estudiantes['cifra'] = estudiantes['cifra'].astype('int')
+
+estudiantes = estudiantes.groupby(['Facultad', 'Año'])[
+    'cifra'].sum().reset_index()
+
+estudiantes.apply(lambda x: total_function(
+    x['Facultad'], x['Año'], estudiantes), axis=1)
+
+total_estudiantes = estudiantes['cifra'].sum()
 
 layout = html.Div([
-    html.H2('Extensión, Innovación y Propiedad Intelectual'),
-    html.H3('Proyectos de extensión'),
+    html.H2('Formación'),
+    html.H3('Gestión de la actividad académica'),
     dbc.Nav(
         [
-            dbc.NavItem(dbc.NavLink("Presentación de propuestas y cotizaciones de estudios",
-                                    href="/presentacion-propuestas-y-cotizaciones-de-estudios")),
-            dbc.NavItem(dbc.NavLink('Participación en procesos de contratación y convocatorias',
-                                    href="/participacion-en-procesos-de-contratacion-y-convocatorias")),
-            dbc.NavItem(dbc.NavLink('Participación en procesos de invitación directa',
-                                    href="/participacion-en-procesos-de-invitacion-directa")),
-            dbc.NavItem(dbc.NavLink('Proyectos iniciados en el año', active=True,
-                                    href="/proyectos-iniciados-en-el-anio")),
-            dbc.NavItem(dbc.NavLink('Logros en los proyectos',
-                                    href="/logros-en-los-proyectos")),
-            dbc.NavItem(dbc.NavLink('Liquidación de proyectos',
-                                    href="/liquidacion-de-proyectos")),
+            dbc.NavItem(dbc.NavLink("Cátedras de sede",
+                        active=True, href="/catedras-sede")),
+            dbc.NavItem(dbc.NavLink("Buenas prácticas de gestión académica",
+                        href="/buenas-practicas-gestion-academica")),
+            dbc.NavItem(dbc.NavLink("Evaluación estudiantil y examen Saber Pro",
+                        href="/evaluacion-estudiantil-examen-saber-pro")),
+            dbc.NavItem(dbc.NavLink("Actividades  para el aprendizaje de lenguas extranjeras",
+                                    href="/actividades_aprendizaje_lenguas_extranjeras")),
         ],
         pills=True,),
     html.Div(
@@ -112,10 +124,10 @@ layout = html.Div([
                             dbc.CardBody(
                                 [
                                     html.H5(
-                                        total_data_2,
+                                        total_docentes,
                                         className="card-number",
                                     ),
-                                    html.P("propuestas en la modalidad de servicios académicos"),
+                                    html.P("docentes participantes"),
                                 ]
                             ),
                         )
@@ -125,49 +137,49 @@ layout = html.Div([
                             dbc.CardBody(
                                 [
                                     html.H5(
-                                        total_data_3,
+                                        total_estudiantes,
                                         className="card-number",
                                     ),
-                                    html.P("propuestas en la modalidad de educación continua"),
+                                    html.P("estudiantes beneficiados"),
                                 ]
                             ),
                         )
                     ], className='card_container'), lg=4),
-                ]
+                ],
             ),
         ]),
-    html.H5('Propuestas en la modalidad de servicios académicos'),
-    dcc.Graph(id="graph_propuestas_modalidad_servicios_academicos",
-              figure=px.bar(data_2,
+    html.H5('Docentes participantes en cátedras de sede'),
+    dcc.Graph(id="graph_catedras_sede_docentes",
+              figure=px.bar(docentes,
                             x="cifra",
                             y="Facultad",
-                            color="Año",
+                            color='Año',
                             labels={
                                 'Facultad': 'Dependencia',
-                                'cifra': 'Propuestas de servicios académicos'
+                                'cifra': 'Docentes participantes'
                             },
-                            color_discrete_sequence=px.colors.qualitative.Prism,
+                            color_discrete_sequence=px.colors.qualitative.G10,
                             hover_data={
                                 "cifra": True,
-                                "total": True,
-                                "Año": True},
+                                'total': True,
+                                'Año': True},
                             barmode="group"
                             )),
-    html.H5('Propuestas en la modalidad de educación continua'),
-    dcc.Graph(id="graph_propuestas_modalidad_educacion_continua",
-              figure=px.bar(data_3,
+    html.H5('Estudiantes beneficiados en cátedras de sede'),
+    dcc.Graph(id="graph_catedras_sede_estudiantes",
+              figure=px.bar(estudiantes,
                             x="cifra",
                             y="Facultad",
-                            color="Año",
+                            color='Año',
                             labels={
                                 'Facultad': 'Dependencia',
-                                'cifra': 'Propuestas de educación continua'
+                                'cifra': 'Estudiantes beneficiados'
                             },
                             color_discrete_sequence=px.colors.qualitative.Prism,
                             hover_data={
                                 "cifra": True,
-                                "total": True,
-                                "Año": True},
+                                'total': True,
+                                'Año': True},
                             barmode="group"
                             )),
     html.H5('Logros Alcanzados'),
@@ -177,7 +189,7 @@ layout = html.Div([
                 [
                     dbc.Col(html.Div([
                         dcc.Dropdown(
-                            id="facultad_proyectos_iniciados_en_el_anio",
+                            id="facultad_catedras_sede",
                             options=data['Facultad'].unique(),
                             clearable=True,
                             placeholder="Seleccione la facultad",
@@ -185,7 +197,7 @@ layout = html.Div([
                     ]), lg=6),
                     dbc.Col(html.Div([
                         dcc.Dropdown(
-                            id="anio_proyectos_iniciados_en_el_anio",
+                            id="anio_catedras_sede",
                             options=data['Año'].unique(),
                             clearable=True,
                             placeholder="Seleccione el año",
@@ -219,22 +231,20 @@ layout = html.Div([
                                         'backgroundColor': 'rgb(29, 105, 150, 0.1)',
                                     }
                                 ],
-                                id='logros_tabla_proyectos_iniciados_en_el_anio',
+                                id='logros_table_catedras_sede',
                             ),
                         ], style={'paddingTop': '2%'})
                     )
                 ]
             )
         ]),
-
-
 ], className='layout')
 
 
 @callback(
-    Output("logros_tabla_proyectos_iniciados_en_el_anio", "data"),
-    [Input("facultad_proyectos_iniciados_en_el_anio", "value"), Input("anio_proyectos_iniciados_en_el_anio", "value")])
-def logros_alcanzados_proyectos_iniciados_en_el_anio(facultad, anio):
+    Output("logros_table_catedras_sede", "data"),
+    [Input("facultad_catedras_sede", "value"), Input("anio_catedras_sede", "value")])
+def logros_alcanzados_catedras_sede(facultad, anio):
     if facultad or anio:
         if not anio:
             df = data

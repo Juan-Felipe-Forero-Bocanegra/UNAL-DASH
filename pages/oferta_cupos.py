@@ -7,14 +7,13 @@ from dash import dash_table
 import dash_bootstrap_components as dbc
 import requests
 
-dash.register_page(
-    __name__, path='/paginas-web')
+dash.register_page(__name__, path='/oferta-cupos')
 
 f = open("file.txt", "r")
 token = f.readline()
 e = open("environment.txt", "r")
 environment = e.readline()
-url = environment + "/reporte_cifras/buscarCifras?area_param=Gobierno y Gestión de Servicios TI&programa_param=Gobierno y Gestión de Servicios TI&actividad_param=Páginas web"
+url = environment + "/reporte_cifras/buscarCifras?area_param=Formación&programa_param=Cupos&actividad_param=Oferta de cupos"
 headers = {'Content-type': 'application/json', 'Authorization': token}
 r = requests.get(url, headers=headers)
 dataJson = r.json()
@@ -40,22 +39,11 @@ for c in dataJson:
 
 data = pd.DataFrame(list)
 
+# logros alcanzados
+
 layout = html.Div([
-    html.H2('Gobierno y Gestión de Servicios TI'),
-    html.H3(
-        'Páginas web'),
-    dbc.Nav(
-        [
-            dbc.NavItem(dbc.NavLink("Repositorios de información",
-                                    href="/repositorios-informacion")),
-            dbc.NavItem(dbc.NavLink("Mantenimiento y actualización de servicios digitales",
-                                    href="/mantenimiento-actualizacion-servicios-digitales")),
-            dbc.NavItem(dbc.NavLink("Gestión de proyectos informáticos", 
-                                    href="/gestion-proyectos-informaticos")),
-            dbc.NavItem(dbc.NavLink("Páginas web", active=True,
-                                    href="/paginas-web")),
-        ],
-        pills=True,),
+    html.H2('Formación'),
+    html.H3('Oferta cupos'),
     html.H5('Logros Alcanzados'),
     html.Div(
         [
@@ -63,7 +51,7 @@ layout = html.Div([
                 [
                     dbc.Col(html.Div([
                         dcc.Dropdown(
-                            id="facultad_paginas_web",
+                            id="facultad_oferta_cupos",
                             options=data['Facultad'].unique(),
                             clearable=True,
                             placeholder="Seleccione la facultad",
@@ -71,7 +59,7 @@ layout = html.Div([
                     ]), lg=6),
                     dbc.Col(html.Div([
                         dcc.Dropdown(
-                            id="anio_paginas_web",
+                            id="anio_oferta_cupos",
                             options=data['Año'].unique(),
                             clearable=True,
                             placeholder="Seleccione el año",
@@ -105,7 +93,7 @@ layout = html.Div([
                                         'backgroundColor': 'rgb(29, 105, 150, 0.1)',
                                     }
                                 ],
-                                id='logros_tabla_paginas_web',
+                                id='logros_tabla_oferta_cupos',
                             ),
                         ], style={'paddingTop': '2%'})
                     )
@@ -118,9 +106,9 @@ layout = html.Div([
 
 
 @callback(
-    Output("logros_tabla_paginas_web", "data"),
-    [Input("facultad_paginas_web", "value"), Input("anio_paginas_web", "value")])
-def logros_alcanzados_paginas_web(facultad, anio):
+    Output("logros_tabla_oferta_cupos", "data"),
+    [Input("facultad_oferta_cupos", "value"), Input("anio_oferta_cupos", "value")])
+def logros_alcanzados_oferta_cupos(facultad, anio):
     if facultad or anio:
         if not anio:
             df = data

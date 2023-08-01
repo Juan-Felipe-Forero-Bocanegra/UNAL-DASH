@@ -5,18 +5,41 @@ import pandas as pd
 import plotly.graph_objects as go
 from dash import dash_table
 import dash_bootstrap_components as dbc
-
+import requests
 
 dash.register_page(__name__, path='/construccion-opinion-publica-informada')
 
-data = pd.read_excel(open(
-    'pages/construccion_opinion_publica_informada.xlsx', 'rb'), sheet_name='1')
 
-# logros alcanzados
-data = data.drop(columns=['area', 'programa', 'actividad', 'actividadDetalle'])
+f = open("file.txt", "r")
+token = f.readline()
+e = open("environment.txt", "r")
+environment = e.readline()
+url = environment + "/reporte_cifras/buscarCifras?area_param=Extensión, Innovación y Propiedad Intelectual&programa_param=Estrategia de Comunicación de la Extensión&actividad_param=Construcción de una opinión pública informada"
+headers = {'Content-type': 'application/json', 'Authorization': token}
+r = requests.get(url, headers=headers)
+dataJson = r.json()
 
-new_cols = ['facultad', 'anio', 'Logro']
-data = data[new_cols]
+list = []
+
+for c in dataJson:
+    if c['informeActividadDetalle']['orden'] == 1:
+        i = 0
+        for a in c['informeActividadDetalle']['listaDatoListaValor']:
+            if i == 0:
+                o = {
+                    'Facultad': c['facultad'],
+                    'Año': c['anio'],
+                    'Logro': ''
+                }
+            if a['actividadDatoLista']['nombre'] == 'Logro' and a['actividadDatoLista']['orden'] == '1':
+                o['Logro'] = a['cifra']
+                i += 1
+            if i == 1:
+                list.append(o)
+                i = 0
+
+data = pd.DataFrame(list)
+
 
 layout = html.Div([
     html.H2('Extensión, Innovación y Propiedad Intelectual'),
@@ -35,7 +58,7 @@ layout = html.Div([
                     dbc.Col(html.Div([
                         dcc.Dropdown(
                             id="facultad_opinion_publica_informada",
-                            options=data['facultad'].unique(),
+                            options=data['Facultad'].unique(),
                             clearable=True,
                             placeholder="Seleccione la facultad",
                         ),
@@ -43,7 +66,7 @@ layout = html.Div([
                     dbc.Col(html.Div([
                         dcc.Dropdown(
                             id="anio_opinion_publica_informada",
-                            options=data['anio'].unique(),
+                            options=data['Año'].unique(),
                             clearable=True,
                             placeholder="Seleccione el año",
                         ),
@@ -95,18 +118,18 @@ def logros_alcanzados_opinion_publica_informada(facultad, anio):
     if facultad or anio:
         if not anio:
             df = data
-            df = df[df['facultad'] == facultad]
+            df = df[df['Facultad'] == facultad]
             table = df.to_dict('records')
             return table
         if not facultad:
             df = data
-            df = df[df['anio'] == anio]
+            df = df[df['Año'] == anio]
             table = df.to_dict('records')
             return table
         if facultad and anio:
             df = data
-            df = df[df['facultad'] == facultad]
-            df = df[df['anio'] == anio]
+            df = df[df['Facultad'] == facultad]
+            df = df[df['Año'] == anio]
             table = df.to_dict('records')
             return table
     df = data

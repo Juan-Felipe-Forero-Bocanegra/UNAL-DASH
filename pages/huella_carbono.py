@@ -8,6 +8,9 @@ import dash_bootstrap_components as dbc
 
 dash.register_page(__name__, path='/huella-carbono')
 
+layout = html.Div([])
+
+'''
 data_2 = pd.read_excel(open(
     'pages/huella_carbono.xlsx', 'rb'), sheet_name='1')
 
@@ -80,7 +83,7 @@ layout = html.Div([
                             color="anio",
                             labels={
                                 'anio': 'año',
-                                'facultad': 'Dependencia',
+                                'Facultad': 'Dependencia',
                                 'cifra': 'Huella de carbono'
                             },
                             color_discrete_sequence=px.colors.qualitative.Prism,
@@ -91,3 +94,4 @@ layout = html.Div([
                             barmode="group"
                             )),
 ], className='layout')
+'''

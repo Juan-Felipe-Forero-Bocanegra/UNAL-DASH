@@ -2,51 +2,62 @@ import dash
 from dash import Dash, dcc, html, Input, Output, callback
 import plotly.express as px
 import pandas as pd
+import numpy as np
 import plotly.graph_objects as go
 from dash import dash_table
 import dash_bootstrap_components as dbc
 import requests
 
-dash.register_page(__name__, path='/riesgos-ambientales')
+dash.register_page(
+    __name__, path='/actividades_aprendizaje_lenguas_extranjeras')
+
 
 f = open("file.txt", "r")
 token = f.readline()
 e = open("environment.txt", "r")
 environment = e.readline()
-url = environment + "/reporte_cifras/buscarCifras?area_param=Gestión ambiental&programa_param=Programas transversales&actividad_param=Riesgos ambientales"
+url = environment + "/reporte_cifras/buscarCifras?area_param=Formación&programa_param=Gestión de la actividad académica&actividad_param=Actividades realizadas para el aprendizaje de lenguas extranjeras"
 headers = {'Content-type': 'application/json', 'Authorization': token}
 r = requests.get(url, headers=headers)
 dataJson = r.json()
 
 list = []
-list2 = []
 
 for c in dataJson:
     if c['informeActividadDetalle']['orden'] == 1:
         i = 0
+        j = 0
         for a in c['informeActividadDetalle']['listaDatoListaValor']:
             if i == 0:
                 o = {
                     'Facultad': c['facultad'],
                     'Año': c['anio'],
-                    'Logro': ''
+                    'Logros': '',
+                    'Estudiantes': ''
                 }
-            if a['actividadDatoLista']['orden'] == '1':
-                o['Logro'] = a['cifra']
-                i += 1
-            if i == 1:
+            if a['actividadDatoLista']['nombre'] == 'Logros alcanzados (ej. asignaturas dictadas en un idioma extranjero o de fortalecimiento de lengua extranjera )':
+                if a['indice'] == j:
+                    o['Logros'] = a['cifra']
+                    i += 1
+            if a['actividadDatoLista']['nombre'] == 'Estudiantes beneficiados':
+                if a['indice'] == j:
+                    o['Estudiantes'] = a['cifra']
+                    i += 1
+            if i == 2:
                 list.append(o)
                 i = 0
-    if c['informeActividadDetalle']['orden'] == 2:
-        o = {
-                'Facultad':c['facultad'],
-                'Año':c['anio'],
-                'cifra': c['informeActividadDetalle']['cifra']
-                }
-        list2.append(o)
+                j += 1
+
 
 data = pd.DataFrame(list)
-data_2 = pd.DataFrame(list2)
+
+data.fillna(0, inplace=True)
+data['Logros'] = data['Logros'].replace(0, 'N/A')
+data = data[data['Logros'] != 'N/A']
+
+estudiantes_tmp = data[['Facultad', 'Año', 'Estudiantes']]
+estudiantes = estudiantes_tmp.rename(columns={'Estudiantes': 'cifra'})
+
 
 def total_function(facultad, anio, dataframe):
     df_facultad = dataframe[dataframe['Facultad'] == facultad]
@@ -55,27 +66,32 @@ def total_function(facultad, anio, dataframe):
         dataframe['Año'] == anio), 'total'] = df_total
 
 
-# Número de emergencias ambientales
+# Estudiantes
+estudiantes['Año'] = estudiantes['Año'].astype('str')
+estudiantes.fillna(0, inplace=True)
+estudiantes['cifra'] = estudiantes['cifra'].astype('int')
 
-data_2["Año"] = data_2["Año"].astype('str')
-data_2.fillna(0, inplace=True)
-data_2['cifra'] = data_2['cifra'].astype('int')
+estudiantes = estudiantes.groupby(['Facultad', 'Año'])[
+    'cifra'].sum().reset_index()
 
-data_2.apply(lambda x: total_function(x['Facultad'], x['Año'], data_2), axis=1)
-total_data_2 = data_2['cifra'].sum()
+estudiantes.apply(lambda x: total_function(
+    x['Facultad'], x['Año'], estudiantes), axis=1)
+
+total_estudiantes = estudiantes['cifra'].sum()
 
 layout = html.Div([
-    html.H2('Gestión ambiental'),
-    html.H3('Programas transversales'),
+    html.H2('Formación'),
+    html.H3('Gestión de la actividad académica'),
     dbc.Nav(
         [
-            dbc.NavItem(dbc.NavLink("Alertas tempranas",
-                                    href="/alertas-tempranas")),
-            dbc.NavItem(dbc.NavLink("Riesgos ambientales", active=True,
-                                    href="/riesgos-ambientales")),
-            dbc.NavItem(dbc.NavLink("Cultura ambiental",
-                                    href="/cultura-ambiental")),
-
+            dbc.NavItem(dbc.NavLink("Cátedras de sede",
+                                    href="/catedras-sede")),
+            dbc.NavItem(dbc.NavLink("Buenas prácticas de gestión académica",
+                        href="/buenas-practicas-gestion-academica")),
+            dbc.NavItem(dbc.NavLink("Evaluación estudiantil y examen Saber Pro",
+                        href="/evaluacion-estudiantil-examen-saber-pro")),
+            dbc.NavItem(dbc.NavLink("Actividades  para el aprendizaje de lenguas extranjeras",  active=True,
+                        href="/actividades_aprendizaje_lenguas_extranjeras")),
         ],
         pills=True,),
     html.Div(
@@ -87,42 +103,42 @@ layout = html.Div([
                             dbc.CardBody(
                                 [
                                     html.H5(
-                                        total_data_2,
+                                        total_estudiantes,
                                         className="card-number",
                                     ),
-                                    html.P("emergencias ambientales"),
+                                    html.P("estudiantes beneficiados"),
                                 ]
                             ),
                         )
-                    ], className='card_container'), lg=3),
-                ]
+                    ], className='card_container'), lg=4),
+                ],
             ),
         ]),
-    html.H5('Emergencias ambientales'),
-    dcc.Graph(id="graph_numero_emergencias_ambientales",
-              figure=px.bar(data_2,
+    html.H5('Estudiantes beneficiados en actividades de aprendizaje de lenguas extranjeras'),
+    dcc.Graph(id="graph_estudiantes_beneficiados_actividades_lenguas_extranjeras",
+              figure=px.bar(estudiantes,
                             x="cifra",
                             y="Facultad",
-                            color="Año",
+                            color='Año',
                             labels={
                                 'Facultad': 'Dependencia',
-                                'cifra': 'Emergencias ambientales'
+                                'cifra': 'Estudiantes beneficiados'
                             },
                             color_discrete_sequence=px.colors.qualitative.Prism,
                             hover_data={
                                 "cifra": True,
-                                "total": True,
-                                "Año": True},
+                                'total': True,
+                                'Año': True},
                             barmode="group"
                             )),
-    html.H5('Tipo de emergencias ambientales'),
+    html.H5('Logros Alcanzados'),
     html.Div(
         [
             dbc.Row(
                 [
                     dbc.Col(html.Div([
                         dcc.Dropdown(
-                            id="facultad_tipo_emergencias_ambientales",
+                            id="facultad_actividades_aprendizaje_lenguas_extranjeras",
                             options=data['Facultad'].unique(),
                             clearable=True,
                             placeholder="Seleccione la facultad",
@@ -130,7 +146,7 @@ layout = html.Div([
                     ]), lg=6),
                     dbc.Col(html.Div([
                         dcc.Dropdown(
-                            id="anio_tipo_emergencias_ambientales",
+                            id="anio_actividades_aprendizaje_lenguas_extranjeras",
                             options=data['Año'].unique(),
                             clearable=True,
                             placeholder="Seleccione el año",
@@ -164,22 +180,20 @@ layout = html.Div([
                                         'backgroundColor': 'rgb(29, 105, 150, 0.1)',
                                     }
                                 ],
-                                id='logros_tabla_tipo_emergencias_ambientales',
+                                id='logros_table_actividades_aprendizaje_lenguas_extranjeras',
                             ),
                         ], style={'paddingTop': '2%'})
                     )
                 ]
             )
         ]),
-
-
 ], className='layout')
 
 
 @callback(
-    Output("logros_tabla_tipo_emergencias_ambientales", "data"),
-    [Input("facultad_tipo_emergencias_ambientales", "value"), Input("anio_tipo_emergencias_ambientales", "value")])
-def logros_alcanzados_tipo_emergencias_ambientales(facultad, anio):
+    Output("logros_table_actividades_aprendizaje_lenguas_extranjeras", "data"),
+    [Input("facultad_actividades_aprendizaje_lenguas_extranjeras", "value"), Input("anio_actividades_aprendizaje_lenguas_extranjeras", "value")])
+def logros_alcanzados_actividades_aprendizaje_lenguas_extranjeras(facultad, anio):
     if facultad or anio:
         if not anio:
             df = data

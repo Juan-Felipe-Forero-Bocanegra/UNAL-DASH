@@ -5,50 +5,86 @@ import pandas as pd
 import plotly.graph_objects as go
 from dash import dash_table
 import dash_bootstrap_components as dbc
+import requests
 
 dash.register_page(__name__, path='/cultura-ambiental')
 
-data = pd.read_excel(open(
-    'pages/cultura_ambiental.xlsx', 'rb'), sheet_name='4')
+f = open("file.txt", "r")
+token = f.readline()
+e = open("environment.txt", "r")
+environment = e.readline()
+url = environment + "/reporte_cifras/buscarCifras?area_param=Gestión ambiental&programa_param=Programas transversales&actividad_param=Cultura ambiental"
+headers = {'Content-type': 'application/json', 'Authorization': token}
+r = requests.get(url, headers=headers)
+dataJson = r.json()
 
-data_2 = pd.read_excel(open(
-    'pages/cultura_ambiental.xlsx', 'rb'), sheet_name='1')
+list = []
+list2 = []
+list3 = []
+list4 = []
 
-data_3 = pd.read_excel(open(
-    'pages/cultura_ambiental.xlsx', 'rb'), sheet_name='2')
+for c in dataJson:
+    if c['informeActividadDetalle']['orden'] == 1:
+        o = {
+                'Facultad':c['facultad'],
+                'Año':c['anio'],
+                'cifra': c['informeActividadDetalle']['cifra']
+                }
+        list.append(o)
+    if c['informeActividadDetalle']['orden'] == 2:
+        o = {
+                'Facultad':c['facultad'],
+                'Año':c['anio'],
+                'cifra': c['informeActividadDetalle']['cifra']
+                }
+        list2.append(o)
+    if c['informeActividadDetalle']['orden'] == 3:
+        o = {
+                'Facultad':c['facultad'],
+                'Año':c['anio'],
+                'cifra': c['informeActividadDetalle']['cifra']
+                }
+        list3.append(o)
+    if c['informeActividadDetalle']['orden'] == 4:
+        o = {
+                'Facultad':c['facultad'],
+                'Año':c['anio'],
+                'Gestión de residuos': c['informeActividadDetalle']['cifra']
+                }
+        list4.append(o)
 
-data_4 = pd.read_excel(open(
-    'pages/cultura_ambiental.xlsx', 'rb'), sheet_name='3')
+data = pd.DataFrame(list4)
+data_2 = pd.DataFrame(list)
+data_3 = pd.DataFrame(list2)
+data_4 = pd.DataFrame(list3)
 
-# Protocolos y directrices ambientales utilizados con frecuencia
-data = data.drop(columns=['area', 'programa', 'actividad', 'actividadDetalle'])
+def total_function(facultad, anio, dataframe):
+    df_facultad = dataframe[dataframe['Facultad'] == facultad]
+    df_total = df_facultad['cifra'].sum()
+    dataframe.loc[(dataframe['Facultad'] == facultad) & (
+        dataframe['Año'] == anio), 'total'] = df_total
 
-new_cols = ['facultad', 'anio', 'Protocolo']
-data = data[new_cols]
 
 # ¿La facultad cuenta con GAESO?
 
-data_2 = data_2.drop(
-    columns=['area', 'programa', 'actividad', 'actividadDetalle'])
+data_2["Año"] = data_2["Año"].astype(str)
 
-new_cols_2 = ['facultad', 'anio', 'cifra']
-data_2 = data_2[new_cols_2]
-data_2["anio"] = data_2["anio"].astype(str)
+data_2['cifra'] = data_2['cifra'].replace(['11'], 'Sí')
+data_2['cifra'] = data_2['cifra'].replace(['12'], 'No')
 
 gaeso_figure = px.scatter(data_2,
-                          x="anio",
-                          y="facultad",
+                          x="Año",
+                          y="Facultad",
                           color="cifra",
                           labels={
-                                'anio': 'Año',
-                                'facultad': 'Dependencia',
+                                'Facultad': 'Dependencia',
                                 'cifra': 'GAESO'
                           },
                           color_discrete_sequence=px.colors.qualitative.G10,
                           hover_data={
                               "cifra": True,
-                              'facultad': True,
-                              "anio": True},
+                              'Facultad': True,
+                              "Año": True},
                           )
 gaeso_figure.update_traces(marker_size=20)
 gaeso_figure.update_xaxes(showgrid=True)
@@ -58,46 +94,20 @@ gaeso_figure.update_layout(scattermode="group")
 
 # Número de asistentes a eventos ambientales
 
-data_3 = data_3.drop(
-    columns=['area', 'programa', 'actividad', 'actividadDetalle'])
-
-new_cols_3 = ['facultad', 'anio', 'cifra']
-data_3 = data_3[new_cols_3]
-data_3["anio"] = data_3["anio"].astype('str')
+data_3["Año"] = data_3["Año"].astype('str')
 data_3.fillna(0, inplace=True)
 data_3['cifra'] = data_3['cifra'].astype('int')
 
-
-def total_function(facultad, anio):
-    df_facultad = data_3[data_3['facultad'] == facultad]
-    df_total = df_facultad['cifra'].sum()
-    data_3.loc[(data_3['facultad'] == facultad) & (
-        data_3['anio'] == anio), 'total'] = df_total
-
-
-data_3.apply(lambda x: total_function(x['facultad'], x['anio']), axis=1)
+data_3.apply(lambda x: total_function(x['Facultad'], x['Año'], data_3), axis=1)
 total_data_3 = data_3['cifra'].sum()
 
 # Número de eventos ambientales realizados
 
-data_4 = data_4.drop(
-    columns=['area', 'programa', 'actividad', 'actividadDetalle'])
-
-new_cols_4 = ['facultad', 'anio', 'cifra']
-data_4 = data_4[new_cols_4]
-data_4["anio"] = data_4["anio"].astype('str')
+data_4["Año"] = data_4["Año"].astype('str')
 data_4.fillna(0, inplace=True)
 data_4['cifra'] = data_4['cifra'].astype('int')
 
-
-def total_function_4(facultad, anio):
-    df_facultad = data_4[data_4['facultad'] == facultad]
-    df_total = df_facultad['cifra'].sum()
-    data_4.loc[(data_4['facultad'] == facultad) & (
-        data_4['anio'] == anio), 'total'] = df_total
-
-
-data_4.apply(lambda x: total_function_4(x['facultad'], x['anio']), axis=1)
+data_4.apply(lambda x: total_function(x['Facultad'], x['Año'], data_4), axis=1)
 total_data_4 = data_4['cifra'].sum()
 
 layout = html.Div([
@@ -153,36 +163,34 @@ layout = html.Div([
     dcc.Graph(id="graph_asistentes_eventos_ambientales",
               figure=px.bar(data_3,
                             x="cifra",
-                            y="facultad",
-                            color="anio",
-                            labels={
-                                'anio': 'año',
-                                'facultad': 'Dependencia',
+                            y="Facultad",
+                            color="Año",
+                            labels={                                
+                                'Facultad': 'Dependencia',
                                 'cifra': 'Asistentes'
                             },
                             color_discrete_sequence=px.colors.qualitative.Prism,
                             hover_data={
                                 "cifra": True,
                                 "total": True,
-                                "anio": True},
+                                "Año": True},
                             barmode="group"
                             )),
     html.H5('Eventos ambientales'),
     dcc.Graph(id="graph_eventos_ambientales_realizados",
               figure=px.bar(data_4,
                             x="cifra",
-                            y="facultad",
-                            color="anio",
-                            labels={
-                                'anio': 'año',
-                                'facultad': 'Dependencia',
+                            y="Facultad",
+                            color="Año",
+                            labels={                                
+                                'Facultad': 'Dependencia',
                                 'cifra': 'Eventos'
                             },
                             color_discrete_sequence=px.colors.qualitative.Prism,
                             hover_data={
                                 "cifra": True,
                                 "total": True,
-                                "anio": True},
+                                "Año": True},
                             barmode="group"
                             )),
     html.H5('Protocolos y directrices ambientales'),
@@ -193,7 +201,7 @@ layout = html.Div([
                     dbc.Col(html.Div([
                         dcc.Dropdown(
                             id="facultad_protocolo_directrices_ambientales",
-                            options=data['facultad'].unique(),
+                            options=data['Facultad'].unique(),
                             clearable=True,
                             placeholder="Seleccione la facultad",
                         ),
@@ -201,7 +209,7 @@ layout = html.Div([
                     dbc.Col(html.Div([
                         dcc.Dropdown(
                             id="anio_protocolo_directrices_ambientales",
-                            options=data['anio'].unique(),
+                            options=data['Año'].unique(),
                             clearable=True,
                             placeholder="Seleccione el año",
                         ),
@@ -251,18 +259,18 @@ def logros_alcanzados_protocolo_directrices_ambientales(facultad, anio):
     if facultad or anio:
         if not anio:
             df = data
-            df = df[df['facultad'] == facultad]
+            df = df[df['Facultad'] == facultad]
             table = df.to_dict('records')
             return table
         if not facultad:
             df = data
-            df = df[df['anio'] == anio]
+            df = df[df['Año'] == anio]
             table = df.to_dict('records')
             return table
         if facultad and anio:
             df = data
-            df = df[df['facultad'] == facultad]
-            df = df[df['anio'] == anio]
+            df = df[df['Facultad'] == facultad]
+            df = df[df['Año'] == anio]
             table = df.to_dict('records')
             return table
     df = data

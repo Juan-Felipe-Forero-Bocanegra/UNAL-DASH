@@ -7,13 +7,13 @@ from dash import dash_table
 import dash_bootstrap_components as dbc
 import requests
 
-dash.register_page(__name__, path='/logros-en-los-proyectos')
+dash.register_page(__name__, path='/autoevaluacion-programas-academicos')
 
 f = open("file.txt", "r")
 token = f.readline()
 e = open("environment.txt", "r")
 environment = e.readline()
-url = environment + "/reporte_cifras/buscarCifras?area_param=Extensión, Innovación y Propiedad Intelectual&programa_param=Proyectos de extensión&actividad_param=Logros en los proyectos"
+url = environment + "/reporte_cifras/buscarCifras?area_param=Formación&programa_param=Gestión de programas curriculares&actividad_param=Autoevaluación de los programas académicos"
 headers = {'Content-type': 'application/json', 'Authorization': token}
 r = requests.get(url, headers=headers)
 dataJson = r.json()
@@ -24,10 +24,9 @@ list3 = []
 list4 = []
 list5 = []
 list6 = []
-list7 = []
 
 for c in dataJson:
-    if c['informeActividadDetalle']['nombre'] == 'Descripción de principales logros alcanzados':
+    if c['informeActividadDetalle']['orden'] == 1:
         i = 0
         for a in c['informeActividadDetalle']['listaDatoListaValor']:
             if i == 0:
@@ -36,7 +35,7 @@ for c in dataJson:
                     'Año': c['anio'],
                     'Logro': ''
                 }
-            if a['actividadDatoLista']['nombre'] == 'Logro' and a['actividadDatoLista']['orden'] == '1':
+            if a['actividadDatoLista']['orden'] == '1':
                 o['Logro'] = a['cifra']
                 i += 1
             if i == 1:
@@ -44,46 +43,39 @@ for c in dataJson:
                 i = 0
     if c['informeActividadDetalle']['orden'] == 2:
         o = {
-                'Facultad':c['facultad'],
-                'Año':c['anio'],
-                'cifra': c['informeActividadDetalle']['cifra']
-                }
+            'Facultad': c['facultad'],
+            'Año': c['anio'],
+            'cifra': c['informeActividadDetalle']['cifra']
+        }
         list2.append(o)
     if c['informeActividadDetalle']['orden'] == 3:
         o = {
-                'Facultad':c['facultad'],
-                'Año':c['anio'],
-                'cifra': c['informeActividadDetalle']['cifra']
-                }
+            'Facultad': c['facultad'],
+            'Año': c['anio'],
+            'cifra': c['informeActividadDetalle']['cifra']
+        }
         list3.append(o)
     if c['informeActividadDetalle']['orden'] == 4:
         o = {
-                'Facultad':c['facultad'],
-                'Año':c['anio'],
-                'cifra': c['informeActividadDetalle']['cifra']
-                }
+            'Facultad': c['facultad'],
+            'Año': c['anio'],
+            'cifra': c['informeActividadDetalle']['cifra']
+        }
         list4.append(o)
     if c['informeActividadDetalle']['orden'] == 5:
         o = {
-                'Facultad':c['facultad'],
-                'Año':c['anio'],
-                'cifra': c['informeActividadDetalle']['cifra']
-                }
+            'Facultad': c['facultad'],
+            'Año': c['anio'],
+            'cifra': c['informeActividadDetalle']['cifra']
+        }
         list5.append(o)
     if c['informeActividadDetalle']['orden'] == 6:
         o = {
-                'Facultad':c['facultad'],
-                'Año':c['anio'],
-                'cifra': c['informeActividadDetalle']['cifra']
-                }
+            'Facultad': c['facultad'],
+            'Año': c['anio'],
+            'cifra': c['informeActividadDetalle']['cifra']
+        }
         list6.append(o)
-    if c['informeActividadDetalle']['orden'] == 7:
-        o = {
-                'Facultad':c['facultad'],
-                'Año':c['anio'],
-                'cifra': c['informeActividadDetalle']['cifra']
-                }
-        list7.append(o)
 
 
 data = pd.DataFrame(list)
@@ -92,7 +84,7 @@ data_3 = pd.DataFrame(list3)
 data_4 = pd.DataFrame(list4)
 data_5 = pd.DataFrame(list5)
 data_6 = pd.DataFrame(list6)
-data_7 = pd.DataFrame(list7)
+
 
 def total_function(facultad, anio, dataframe):
     df_facultad = dataframe[dataframe['Facultad'] == facultad]
@@ -100,7 +92,8 @@ def total_function(facultad, anio, dataframe):
     dataframe.loc[(dataframe['Facultad'] == facultad) & (
         dataframe['Año'] == anio), 'total'] = df_total
 
-# Inscritos en actividades de educación continua pertenecientes a la UNAL
+# Programas de pregrado en proceso de autoevaluación
+
 
 data_2['Año'] = data_2['Año'].astype('str')
 data_2.fillna(0, inplace=True)
@@ -110,7 +103,7 @@ data_2['cifra'] = data_2['cifra'].astype('int')
 data_2.apply(lambda x: total_function(x['Facultad'], x['Año'], data_2), axis=1)
 total_data_2 = data_2['cifra'].sum()
 
-# Inscritos en actividades de educación continua externos a la UNAL
+# Programas de posgrado a nivel de especialidad en proceso de autoevaluación
 
 data_3['Año'] = data_3['Año'].astype('str')
 data_3.fillna(0, inplace=True)
@@ -118,9 +111,8 @@ data_3['cifra'] = data_3['cifra'].astype('int')
 
 data_3.apply(lambda x: total_function(x['Facultad'], x['Año'], data_3), axis=1)
 total_data_3 = data_3['cifra'].sum()
-total_data_3 = f'{total_data_3:,}'.replace(',', ' ')
 
-# Inscritos a nivel internacional en actividades de educación continua
+# Programas de posgrado a nivel de maestría en proceso de autoevaluación
 
 data_4['Año'] = data_4['Año'].astype('str')
 data_4.fillna(0, inplace=True)
@@ -129,7 +121,7 @@ data_4['cifra'] = data_4['cifra'].astype('int')
 data_4.apply(lambda x: total_function(x['Facultad'], x['Año'], data_4), axis=1)
 total_data_4 = data_4['cifra'].sum()
 
-# Docentes participantes en actividades de educación continua externos a la UNAL*
+# Programas de posgrado a nivel de doctorado en proceso de autoevaluación
 
 data_5['Año'] = data_5['Año'].astype('str')
 data_5.fillna(0, inplace=True)
@@ -138,7 +130,7 @@ data_5['cifra'] = data_5['cifra'].astype('int')
 data_5.apply(lambda x: total_function(x['Facultad'], x['Año'], data_5), axis=1)
 total_data_5 = data_5['cifra'].sum()
 
-# Docentes participantes en actividades de educación continua pertenecientes a la UNAL
+# Programas de posgrado a nivel de especialización en proceso de autoevaluación
 
 data_6['Año'] = data_6['Año'].astype('str')
 data_6.fillna(0, inplace=True)
@@ -147,34 +139,24 @@ data_6['cifra'] = data_6['cifra'].astype('int')
 data_6.apply(lambda x: total_function(x['Facultad'], x['Año'], data_6), axis=1)
 total_data_6 = data_6['cifra'].sum()
 
-# Número de diplomados que se dictan en temas ambientales
-
-data_7['Año'] = data_7['Año'].astype('str')
-data_7.fillna(0, inplace=True)
-data_7['cifra'] = data_7['cifra'].astype('int')
-
-data_7.apply(lambda x: total_function(x['Facultad'], x['Año'], data_7), axis=1)
-total_data_7 = data_7['cifra'].sum()
-
-layout = html.Div([])
 
 layout = html.Div([
-    html.H2('Extensión, Innovación y Propiedad Intelectual'),
-    html.H3('Proyectos de extensión'),
+    html.H2('Formación'),
+    html.H3('Gestión de programas curriculares'),
     dbc.Nav(
         [
-            dbc.NavItem(dbc.NavLink("Presentación de propuestas y cotizaciones de estudios",
-                                    href="/presentacion-propuestas-y-cotizaciones-de-estudios")),
-            dbc.NavItem(dbc.NavLink('Participación en procesos de contratación y convocatorias',
-                                    href="/participacion-en-procesos-de-contratacion-y-convocatorias")),
-            dbc.NavItem(dbc.NavLink('Participación en procesos de invitación directa',
-                                    href="/participacion-en-procesos-de-invitacion-directa")),
-            dbc.NavItem(dbc.NavLink('Proyectos iniciados en el año',
-                                    href="/proyectos-iniciados-en-el-anio")),
-            dbc.NavItem(dbc.NavLink('Logros en los proyectos',  active=True,
-                                    href="/logros-en-los-proyectos")),
-            dbc.NavItem(dbc.NavLink('Liquidación de proyectos',
-                                    href="/liquidacion-de-proyectos")),
+            dbc.NavItem(dbc.NavLink(
+                "Creación y modificación de programas y planes de estudio", href="/creacion-modicacion-programas-planes-estudio")),
+            dbc.NavItem(dbc.NavLink(
+                "Autoevaluación de los programas académicos", active=True, href="/autoevaluacion-programas-academicos")),
+            dbc.NavItem(dbc.NavLink(
+                "Planes de mejoramiento de los programas académicos", href="/planes-mejoramiento-programas-academicos")),
+            dbc.NavItem(dbc.NavLink(
+                "Acreditación de programas académicos", href="/acreditacion-programas-academicos")),
+            dbc.NavItem(dbc.NavLink(
+                "Proyectos Educativos de los Programas (PEP)", href="/proyectos-educativos-programas")),
+            dbc.NavItem(dbc.NavLink(
+                "Recursos en Autoevaluación, Planes de Mejoramiento y Acreditación",  href="/recursos-autoevaluacion-planes-mejoramiento-acreditacion")),
         ],
         pills=True,),
     html.Div(
@@ -189,7 +171,7 @@ layout = html.Div([
                                         total_data_2,
                                         className="card-number",
                                     ),
-                                    html.P("inscritos en actividades de educación continua - UNAL"),
+                                    html.P("pregrados en autoevaluación"),
                                 ]
                             ),
                         )
@@ -202,7 +184,8 @@ layout = html.Div([
                                         total_data_3,
                                         className="card-number",
                                     ),
-                                    html.P("inscritos en actividades de educación continua externos"),
+                                    html.P(
+                                        "especialidades (posgrado) en autoevaluación"),
                                 ]
                             ),
                         )
@@ -215,7 +198,7 @@ layout = html.Div([
                                         total_data_4,
                                         className="card-number",
                                     ),
-                                    html.P("inscritos a nivel internacional en actividades de educación continua"),
+                                    html.P("maestrías en autoevaluación"),
                                 ]
                             ),
                         )
@@ -229,10 +212,10 @@ layout = html.Div([
                             dbc.CardBody(
                                 [
                                     html.H5(
-                                        total_data_6,
+                                        total_data_5,
                                         className="card-number",
                                     ),
-                                    html.P("docentes en actividades de educación continua - UNAL"),
+                                    html.P("doctorados en autoevaluación"),
                                 ]
                             ),
                         ),
@@ -245,20 +228,8 @@ layout = html.Div([
                                         total_data_5,
                                         className="card-number",
                                     ),
-                                    html.P("docentes en actividades de educación continua externos"),
-                                ]
-                            ),
-                        )
-                    ], className='card_container'), lg=4),
-                    dbc.Col(html.Div([
-                        dbc.Card(
-                            dbc.CardBody(
-                                [
-                                    html.H5(
-                                        total_data_7,
-                                        className="card-number",
-                                    ),
-                                    html.P("diplomados en temas ambientales"),
+                                    html.P(
+                                        "especializaciones en autoevaluación"),
                                 ]
                             ),
                         )
@@ -266,32 +237,32 @@ layout = html.Div([
                 ]
             )
         ]),
-    html.H5('Inscritos en actividades de educación continua pertenecientes a la UNAL'),
-    dcc.Graph(id="graph_inscritos_educacion_continua_UNAL",
+    html.H5('Programas de pregrado en autoevaluación'),
+    dcc.Graph(id="graph_programas_pregrado_autoevaluacion",
               figure=px.bar(data_2,
                             x="cifra",
                             y="Facultad",
                             color='Año',
                             labels={
                                 'Facultad': 'Dependencia',
-                                'cifra': 'Inscritos en educación contínua de la UNAL'
+                                'cifra': 'Programas de pregrado'
                             },
-                            color_discrete_sequence=px.colors.qualitative.Prism,
+                            color_discrete_sequence=px.colors.qualitative.G10,
                             hover_data={
                                 "cifra": True,
                                 "total": True,
                                 'Año': True},
                             barmode="group"
                             )),
-    html.H5('Inscritos en actividades de educación continua externos a la UNAL'),
-    dcc.Graph(id="graph_inscritos_educacion_continua_externos_UNAL",
+    html.H5('Programas de especialidad (posgrado) en autoevaluación'),
+    dcc.Graph(id="graph_programas_especialidad_autoevaluacion",
               figure=px.bar(data_3,
                             x="cifra",
                             y="Facultad",
                             color='Año',
                             labels={
                                 'Facultad': 'Dependencia',
-                                'cifra': 'Inscritos en educación contínua externos'
+                                'cifra': 'Programas de especialidad'
                             },
                             color_discrete_sequence=px.colors.qualitative.Prism,
                             barmode="group",
@@ -300,15 +271,15 @@ layout = html.Div([
                                 "total": True,
                                 'Año': True},
                             )),
-    html.H5('Inscritos a nivel internacional en actividades de educación contínua'),
-    dcc.Graph(id="graph_inscritos_nivel_internacional_educacion_continua",
+    html.H5('Programas de maestría en autoevaluación'),
+    dcc.Graph(id="graph_programas_maestria_autoevaluacion",
               figure=px.bar(data_4,
                             x="cifra",
                             y="Facultad",
                             color='Año',
                             labels={
                                 'Facultad': 'Dependencia',
-                                'cifra': 'Inscritos a nivel internacional'
+                                'cifra': 'Programas de maestría'
                             },
                             color_discrete_sequence=px.colors.qualitative.Prism,
                             barmode="group",
@@ -317,66 +288,48 @@ layout = html.Div([
                                 "total": True,
                                 'Año': True},
                             )),
-    html.H5('Docentes participantes en actividades de educación continua pertenecientes a la UNAL'),
-    dcc.Graph(id="graph_docentes_educacion_continua_unal",
-              figure=px.bar(data_6,
-                            x="cifra",
-                            y="Facultad",
-                            color='Año',
-                            labels={
-                                'Facultad': 'Dependencia',
-                                'cifra': 'Docentes pertenicientes a la UNAL'
-                            },
-                            color_discrete_sequence=px.colors.qualitative.G10,
-                            barmode="group",
-                            hover_data={
-                                "cifra": True,
-                                "total": True,
-                                'Año': True},
-                            )),
-    html.H5(
-        'Docentes participantes en actividades de educación continua externos a la UNAL'),
-    dcc.Graph(id="graph_docentes_educacion_continua_externos_unal",
+    html.H5('Programas de doctorado en autoevaluación'),
+    dcc.Graph(id="graph_programas_doctorado_especializacion",
               figure=px.bar(data_5,
                             x="cifra",
                             y="Facultad",
                             color='Año',
                             labels={
                                 'Facultad': 'Dependencia',
-                                'cifra': 'Docentes externos'
+                                'cifra': 'Programas de doctorado'
                             },
-                            color_discrete_sequence=px.colors.qualitative.G10,
+                            color_discrete_sequence=px.colors.qualitative.Prism,
                             barmode="group",
                             hover_data={
                                 "cifra": True,
                                 "total": True,
                                 'Año': True},
                             )),
-    html.H5('Número de diplomados que se dictan en temas ambientales'),
-    dcc.Graph(id="graph_diplomados_temas_ambientales",
-              figure=px.bar(data_7,
+    html.H5('Programas de especialización en autoevaluación'),
+    dcc.Graph(id="graph_programas_especialiacion_autoevaluacion",
+              figure=px.bar(data_6,
                             x="cifra",
                             y="Facultad",
                             color='Año',
                             labels={
                                 'Facultad': 'Dependencia',
-                                'cifra': 'Diplomados de temas ambientales'
+                                'cifra': 'Programas de especializacion'
                             },
-                            color_discrete_sequence=px.colors.qualitative.Plotly,
+                            color_discrete_sequence=px.colors.qualitative.Prism,
                             barmode="group",
                             hover_data={
                                 "cifra": True,
                                 "total": True,
                                 'Año': True},
                             )),
-    html.H5('Logros Alcanzados'),
+    html.H5('Logros alcanzados'),
     html.Div(
         [
             dbc.Row(
                 [
                     dbc.Col(html.Div([
                         dcc.Dropdown(
-                            id="facultad_logros_proyectos",
+                            id="facultad_autoevaluacion_programas_academicos",
                             options=data['Facultad'].unique(),
                             clearable=True,
                             placeholder="Seleccione la facultad",
@@ -384,7 +337,7 @@ layout = html.Div([
                     ]), lg=6),
                     dbc.Col(html.Div([
                         dcc.Dropdown(
-                            id="anio_logros_proyectos",
+                            id="anio_autoevaluacion_programas_academicos",
                             options=data['Año'].unique(),
                             clearable=True,
                             placeholder="Seleccione el año",
@@ -418,7 +371,7 @@ layout = html.Div([
                                         'backgroundColor': 'rgb(29, 105, 150, 0.1)',
                                     }
                                 ],
-                                id='logros_table_logros_proyectos',
+                                id='logros_table_autoevaluacion_programas_academicos',
                             ),
                         ], style={'paddingTop': '2%'})
                     )
@@ -430,9 +383,9 @@ layout = html.Div([
 
 
 @callback(
-    Output("logros_table_logros_proyectos", "data"),
-    [Input("facultad_logros_proyectos", "value"), Input("anio_logros_proyectos", "value")])
-def logros_alcanzados_logros_proyectos(facultad, anio):
+    Output("logros_table_autoevaluacion_programas_academicos", "data"),
+    [Input("facultad_autoevaluacion_programas_academicos", "value"), Input("anio_autoevaluacion_programas_academicos", "value")])
+def logros_alcanzados_autoevaluacion_programas_academicos(facultad, anio):
     if facultad or anio:
         if not anio:
             df = data
