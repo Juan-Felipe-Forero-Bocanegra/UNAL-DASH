@@ -86,7 +86,7 @@ layout = html.Div([
                                 ]
                             ),
                         )
-                    ], className='card_container'), lg=3),
+                    ], className='card_container'), lg=4),
                 ]
             ),
         ]),

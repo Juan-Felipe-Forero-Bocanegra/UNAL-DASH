@@ -166,7 +166,7 @@ layout = html.Div([
                     dbc.Col(html.Div([
                         dcc.Dropdown(
                             id="facultad_resultados_principales_requerimientos_estudiantes",
-                            options=data['Facultad'].unique(),
+                            options=data_2['Facultad'].unique(),
                             clearable=True,
                             placeholder="Seleccione la facultad",
                         ),
@@ -174,7 +174,7 @@ layout = html.Div([
                     dbc.Col(html.Div([
                         dcc.Dropdown(
                             id="anio_resultados_principales_requerimientos_estudiantes",
-                            options=data['Año'].unique(),
+                            options=data_2['Año'].unique(),
                             clearable=True,
                             placeholder="Seleccione el año",
                         ),
@@ -222,7 +222,7 @@ layout = html.Div([
                     dbc.Col(html.Div([
                         dcc.Dropdown(
                             id="facultad_resultados_seguimiento_dificultades",
-                            options=data['Facultad'].unique(),
+                            options=data_3['Facultad'].unique(),
                             clearable=True,
                             placeholder="Seleccione la facultad",
                         ),
@@ -230,7 +230,7 @@ layout = html.Div([
                     dbc.Col(html.Div([
                         dcc.Dropdown(
                             id="anio_resultados_seguimiento_dificultades",
-                            options=data['Año'].unique(),
+                            options=data_3['Año'].unique(),
                             clearable=True,
                             placeholder="Seleccione el año",
                         ),

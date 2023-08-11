@@ -5,17 +5,15 @@ import pandas as pd
 import plotly.graph_objects as go
 from dash import dash_table
 import dash_bootstrap_components as dbc
-from flask import session
 import requests
 
-dash.register_page(
-    __name__, path='/asignaturas')
+dash.register_page(__name__, path='/estudiantes-auxiliares')
 
 f = open("file.txt", "r")
 token = f.readline()
 e = open("environment.txt", "r")
 environment = e.readline()
-url = environment + "/reporte_cifras/buscarCifras?area_param=Formación&programa_param=Cursos y Asignaturas&actividad_param=Asignaturas"
+url = environment + "/reporte_cifras/buscarCifras?area_param=Formación&programa_param=Reconocimientos económicos a estudiantes&actividad_param=Estudiantes auxiliares"
 headers = {'Content-type': 'application/json', 'Authorization': token}
 r = requests.get(url, headers=headers)
 dataJson = r.json()
@@ -33,10 +31,10 @@ for c in dataJson:
                 o = {
                     'Facultad': c['facultad'],
                     'Año': c['anio'],
-                    'Actividad': ''
+                    'Logro': ''
                 }
             if a['actividadDatoLista']['orden'] == '1':
-                o['Actividad'] = a['cifra']
+                o['Logro'] = a['cifra']
                 i += 1
             if i == 1:
                 list.append(o)
@@ -52,40 +50,22 @@ for c in dataJson:
         o = {
             'Facultad': c['facultad'],
             'Año': c['anio'],
-            'cifra': c['informeActividadDetalle']['cifra']
+            'Observación': c['informeActividadDetalle']['cifra']
         }
         list3.append(o)
     if c['informeActividadDetalle']['orden'] == 4:
-        i = 0
-        j = 0
-        for a in c['informeActividadDetalle']['listaDatoListaValor']:
-            if i == 0:
-                o = {
-                    'Facultad': c['facultad'],
-                    'Año': c['anio'],
-                    'Temas con mayor repitencia': '',
-                    'Formato': ''
-                }
-            if a['actividadDatoLista']['orden'] == '1':
-                if a['indice'] == j:
-                    o['Temas con mayor repitencia'] = a['cifra']
-                    i += 1
-            if a['actividadDatoLista']['orden'] == '2':
-                if a['indice'] == j:
-                    o['Formato'] = a['cifra']
-                    i += 1
-            if i == 2:
-                list4.append(o)
-                i = 0
-                j += 1
+        o = {
+            'Facultad': c['facultad'],
+            'Año': c['anio'],
+            'cifra': c['informeActividadDetalle']['cifra']
+        }
+        list4.append(o)
 
 data = pd.DataFrame(list)
 data_2 = pd.DataFrame(list2)
 data_3 = pd.DataFrame(list3)
 data_4 = pd.DataFrame(list4)
 
-data_4['Formato'] = data_4['Formato'].replace(['575'], 'Teórico')
-data_4['Formato'] = data_4['Formato'].replace(['576'], 'Práctico')
 
 def total_function(facultad, anio, dataframe):
     df_facultad = dataframe[dataframe['Facultad'] == facultad]
@@ -93,38 +73,51 @@ def total_function(facultad, anio, dataframe):
     dataframe.loc[(dataframe['Facultad'] == facultad) & (
         dataframe['Año'] == anio), 'total'] = df_total
 
-# Número de asignaturas/módulos que se imparten sobre el medio ambiente y sostenibilidad
 
+# Estudiantes beneficiados
 
-data_2['Año'] = data_2['Año'].astype('str')
+data_2["Año"] = data_2["Año"].astype('str')
 data_2.fillna(0, inplace=True)
 data_2['cifra'] = data_2['cifra'].astype('int')
 
 data_2.apply(lambda x: total_function(x['Facultad'], x['Año'], data_2), axis=1)
 total_data_2 = data_2['cifra'].sum()
 
-# Número de asignaturas/módulos que se imparten sobre paz y sociedad
 
-data_3['Año'] = data_3['Año'].astype('str')
-data_3.fillna(0, inplace=True)
-data_3['cifra'] = data_3['cifra'].astype('int')
+# Suma de los reconocimientos económicos aportados por facultad
 
-data_3.apply(lambda x: total_function(x['Facultad'], x['Año'], data_3), axis=1)
-total_data_3 = data_3['cifra'].sum()
+data_4["Año"] = data_4["Año"].astype('str')
+data_4.fillna(0, inplace=True)
+data_4['cifra'] = data_4['cifra'].astype('int')
 
+data_4.apply(lambda x: total_function(x['Facultad'], x['Año'], data_4), axis=1)
+total_data_4 = data_4['cifra'].sum()
+total_data_4 = f'{total_data_4:,}'.replace(',', ' ')
+total_data_4 = '$ ' + total_data_4
 
 layout = html.Div([
     html.H2('Formación'),
-    html.H3('Cursos y Asignaturas'),
+    html.H3('Reconocimientos económicos a estudiantes'),
     dbc.Nav(
         [
-            dbc.NavItem(dbc.NavLink(
-                "Cursos", href="/cursos")),
-            dbc.NavItem(dbc.NavLink(
-                "Asignaturas", active=True, href="/asignaturas")),
-
+            dbc.NavItem(dbc.NavLink("Beca auxiliar docente",
+                        href="/beca-auxiliar-docente")),
+            dbc.NavItem(dbc.NavLink("Beca asistente docente",
+                        href="/beca-asistente-docente")),
+            dbc.NavItem(dbc.NavLink("Estudiantes auxiliares",
+                        active=True, href="/estudiantes-auxiliares")),
+            dbc.NavItem(dbc.NavLink("Beca Exención de Derechos Académicos",
+                        href="/beca-exencion-derechos-economicos")),
+            dbc.NavItem(dbc.NavLink("Prácticas y pasantías",
+                        href="/practicas-y-pasantias-formacion")),
+            dbc.NavItem(dbc.NavLink("Convenios para prácticas y pasantías en el año",
+                        href="/convenios-practicas-pasantias-formacion")),
+            dbc.NavItem(dbc.NavLink("Otras becas o reconocimientos económicos",
+                        href="/otras becas y reconocimientos")),
+            dbc.NavItem(dbc.NavLink("Otras becas o reconocimientos económicos",
+                        href="/otras-becas-o-reconocimientos-economicos")),
         ],
-        pills=True,),
+        pills=True),
     html.Div(
         [
             dbc.Row(
@@ -137,7 +130,7 @@ layout = html.Div([
                                         total_data_2,
                                         className="card-number",
                                     ),
-                                    html.P("asignaturas sobre medio ambiente y sostenibilidad"),
+                                    html.P("Estudiantes beneficiados"),
                                 ]
                             ),
                         )
@@ -147,10 +140,11 @@ layout = html.Div([
                             dbc.CardBody(
                                 [
                                     html.H5(
-                                        total_data_3,
+                                        total_data_4,
                                         className="card-number",
                                     ),
-                                    html.P("asignaturas sobre paz y sociedad"),
+                                    html.P(
+                                        "Suma de los reconocimientos económicos"),
                                 ]
                             ),
                         )
@@ -158,57 +152,40 @@ layout = html.Div([
                 ]
             ),
         ]),
-    html.H5('Asignaturas sobre medio ambiente y sostenibilidad'),
-    dcc.Graph(id="graph_asignaturas_medio_ambiente_sostenibilidad",
+    html.H5('Estudiantes auxiliares beneficiados'),
+    dcc.Graph(id="graph_estudiantes_auxiliares_beneficiados",
               figure=px.bar(data_2,
                             x="cifra",
                             y="Facultad",
-                            color='Año',
+                            color="Año",
                             labels={
                                 'Facultad': 'Dependencia',
-                                'cifra': 'Asignaturas sobre medio ambiente y sostenibilidad'
+                                'cifra': 'Estudiantes auxiliares beneficiados'
                             },
-                            color_discrete_sequence=px.colors.qualitative.G10,
+                            color_discrete_sequence=px.colors.qualitative.Prism,
                             hover_data={
                                 "cifra": True,
                                 "total": True,
-                                'Año': True},
+                                "Año": True},
                             barmode="group"
                             )),
-    html.H5('Asignaturas sobre paz y sociedad'),
-    dcc.Graph(id="graph_asignaturas_paz_sociedad",
-              figure=px.bar(data_3,
-                            x="cifra",
-                            y="Facultad",
-                            color='Año',
-                            labels={
-                                'Facultad': 'Dependencia',
-                                'cifra': 'Asignaturas sobre paz y sociedad'
-                            },
-                            color_discrete_sequence=px.colors.qualitative.G10,
-                            barmode="group",
-                            hover_data={
-                                "cifra": True,
-                                "total": True,
-                                'Año': True},
-                            )),
-    html.H5('Temas o asignaturas con mayor repitencia'),
+    html.H5('Observaciones'),
     html.Div(
         [
             dbc.Row(
                 [
                     dbc.Col(html.Div([
                         dcc.Dropdown(
-                            id="facultad_temas_asignaturas_mayor_repitencia",
-                            options=data_4['Facultad'].unique(),
+                            id="facultad_estudiantes_auxiliares_observaciones",
+                            options=data_3['Facultad'].unique(),
                             clearable=True,
                             placeholder="Seleccione la facultad",
                         ),
                     ]), lg=6),
                     dbc.Col(html.Div([
                         dcc.Dropdown(
-                            id="anio_temas_asignaturas_mayor_repitencia",
-                            options=data_4['Año'].unique(),
+                            id="anio_estudiantes_auxiliares_observaciones",
+                            options=data_3['Año'].unique(),
                             clearable=True,
                             placeholder="Seleccione el año",
                         ),
@@ -241,21 +218,38 @@ layout = html.Div([
                                         'backgroundColor': 'rgb(29, 105, 150, 0.1)',
                                     }
                                 ],
-                                id='logros_tabla_temas_asignaturas_mayor_repitencia',
+                                id='logros_tabla_estudiantes_auxiliares_observaciones',
                             ),
                         ], style={'paddingTop': '2%'})
                     )
                 ]
             )
         ]),
-    html.H5('Actividades realizadas para tratar las asignaturas con alta repitencia'),
+    html.H5('Suma de los reconocimientos económicos aportados por la facultad'),
+    dcc.Graph(id="graph_estudiantes_auxiliares_reconocimientos_economicos",
+              figure=px.bar(data_4,
+                            x="cifra",
+                            y="Facultad",
+                            color="Año",
+                            labels={
+                                'Facultad': 'Dependencia',
+                                'cifra': 'Suma de los reconocimientos económicos'
+                            },
+                            color_discrete_sequence=px.colors.qualitative.G10,
+                            hover_data={
+                                "cifra": True,
+                                "total": True,
+                                "Año": True},
+                            barmode="group"
+                            )),
+    html.H5('Logros Alcanzados'),
     html.Div(
         [
             dbc.Row(
                 [
                     dbc.Col(html.Div([
                         dcc.Dropdown(
-                            id="facultad_actividades_tratar_asignaturas_alta_repitencia",
+                            id="facultad_estudiantes_auxiliares",
                             options=data['Facultad'].unique(),
                             clearable=True,
                             placeholder="Seleccione la facultad",
@@ -263,7 +257,7 @@ layout = html.Div([
                     ]), lg=6),
                     dbc.Col(html.Div([
                         dcc.Dropdown(
-                            id="anio_actividades_tratar_asignaturas_alta_repitencia",
+                            id="anio_estudiantes_auxiliares",
                             options=data['Año'].unique(),
                             clearable=True,
                             placeholder="Seleccione el año",
@@ -297,45 +291,43 @@ layout = html.Div([
                                         'backgroundColor': 'rgb(29, 105, 150, 0.1)',
                                     }
                                 ],
-                                id='logros_tabla_actividades_tratar_asignaturas_alta_repitencia',
+                                id='logros_tabla_estudiantes_auxiliares',
                             ),
                         ], style={'paddingTop': '2%'})
                     )
                 ]
             )
         ]),
-
-
 ], className='layout')
 
 
 @callback(
-    Output("logros_tabla_temas_asignaturas_mayor_repitencia", "data"),
-    [Input("facultad_temas_asignaturas_mayor_repitencia", "value"), Input("anio_temas_asignaturas_mayor_repitencia", "value")])
-def logros_alcanzados_temas_asignaturas_mayor_repitencia(facultad, anio):
+    Output("logros_tabla_estudiantes_auxiliares_observaciones", "data"),
+    [Input("facultad_estudiantes_auxiliares_observaciones", "value"), Input("anio_estudiantes_auxiliares_observaciones", "value")])
+def logros_alcanzados_estudiantes_auxiliares_observaciones(facultad, anio):
     if facultad or anio:
         if not anio:
-            df = data_4
+            df = data_3
             df = df[df['Facultad'] == facultad]
             table = df.to_dict('records')
             return table
         if not facultad:
-            df = data_4
+            df = data_3
             df = df[df['Año'] == anio]
             table = df.to_dict('records')
             return table
         if facultad and anio:
-            df = data_4
+            df = data_3
             df = df[df['Facultad'] == facultad]
             df = df[df['Año'] == anio]
             table = df.to_dict('records')
             return table
-    
+
 
 @callback(
-    Output("logros_tabla_actividades_tratar_asignaturas_alta_repitencia", "data"),
-    [Input("facultad_actividades_tratar_asignaturas_alta_repitencia", "value"), Input("anio_actividades_tratar_asignaturas_alta_repitencia", "value")])
-def logros_alcanzados_actividades_tratar_asignaturas_alta_repitencia(facultad, anio):
+    Output("logros_tabla_estudiantes_auxiliares", "data"),
+    [Input("facultad_estudiantes_auxiliares", "value"), Input("anio_estudiantes_auxiliares", "value")])
+def logros_alcanzados_estudiantes_auxiliares(facultad, anio):
     if facultad or anio:
         if not anio:
             df = data
@@ -353,4 +345,6 @@ def logros_alcanzados_actividades_tratar_asignaturas_alta_repitencia(facultad, a
             df = df[df['Año'] == anio]
             table = df.to_dict('records')
             return table
-  
+    df = data
+    table = df.to_dict('records')
+    return table
