@@ -9,13 +9,14 @@ from flask import session
 import requests
 
 dash.register_page(
-    __name__, path='/beca-exencion-derechos-economicos')
+    __name__, path='/convocatorias-externas-otras-entidades')
 
 f = open("file.txt", "r")
 token = f.readline()
 e = open("environment.txt", "r")
 environment = e.readline()
-url = environment + "/reporte_cifras/buscarCifras?area_param=Formación&programa_param=Reconocimientos económicos a estudiantes&actividad_param=Beca Exención de Derechos Académicos"
+url = environment + \
+    "/reporte_cifras/buscarCifras?area_param=Investigación y Creación Artística&programa_param=Convocatorias&actividad_param=Convocatorias externas (Relacionamiento con otras entidades)"
 headers = {'Content-type': 'application/json', 'Authorization': token}
 r = requests.get(url, headers=headers)
 dataJson = r.json()
@@ -30,47 +31,38 @@ for c in dataJson:
                 o = {
                     'Facultad': c['facultad'],
                     'Año': c['anio'],
-                    'Logro': '',
-                    'Estudiantes beneficiados pregrado': '',
-                    'Estudiantes beneficiados posgrado': '',
-                    'Suma de los reconocimientos': ''
+                    'Objeto de la convocatoria (abreviado)': '',
+                    'Logros alcanzados': '',
+                    'Propuestas adjudicadas': '',
+                    'Monto financiado interno': '',
+                    'Monto financiado externo': ''
                 }
             if a['actividadDatoLista']['orden'] == '1':
                 if a['indice'] == j:
-                    o['Logro'] = a['cifra']
+                    o['Objeto de la convocatoria (abreviado)'] = a['cifra']
                     i += 1
             if a['actividadDatoLista']['orden'] == '2':
                 if a['indice'] == j:
-                    o['Estudiantes beneficiados pregrado'] = a['cifra']
+                    o['Logros alcanzados'] = a['cifra']
                     i += 1
             if a['actividadDatoLista']['orden'] == '3':
                 if a['indice'] == j:
-                    o['Estudiantes beneficiados posgrado'] = a['cifra']
+                    o['Propuestas adjudicadas'] = a['cifra']
                     i += 1
             if a['actividadDatoLista']['orden'] == '4':
                 if a['indice'] == j:
-                    o['Suma de los reconocimientos'] = a['cifra']
+                    o['Monto financiado interno'] = a['cifra']
                     i += 1
-            if i == 4:
+            if a['actividadDatoLista']['orden'] == '5':
+                if a['indice'] == j:
+                    o['Monto financiado externo'] = a['cifra']
+                    i += 1
+            if i == 5:
                 list.append(o)
                 i = 0
                 j += 1
 
 data = pd.DataFrame(list)
-
-
-estudiantes_pregrado_tmp = data[['Facultad','Año', 'Estudiantes beneficiados pregrado']]
-estudiantes_pregrado = estudiantes_pregrado_tmp.rename(
-    columns={'Estudiantes beneficiados pregrado': 'cifra'})
-
-estudiantes_posgrado_tmp = data[['Facultad',
-                                'Año', 'Estudiantes beneficiados posgrado']]
-estudiantes_posgrado = estudiantes_posgrado_tmp.rename(
-    columns={'Estudiantes beneficiados posgrado': 'cifra'})
-
-reconocimientos_tmp = data[['Facultad', 'Año', 'Suma de los reconocimientos']]
-reconocimientos = reconocimientos_tmp.rename(
-    columns={'Suma de los reconocimientos': 'cifra'})
 
 
 def total_function(facultad, anio, dataframe):
@@ -79,76 +71,97 @@ def total_function(facultad, anio, dataframe):
     dataframe.loc[(dataframe['Facultad'] == facultad) & (
         dataframe['Año'] == anio), 'total'] = df_total
 
-# Estudiantes beneficiados pregrado
 
+# propuestas adjudicadas
+propuestas_adjudicadas_tmp = data[[
+    'Facultad', 'Año', 'Propuestas adjudicadas']]
+propuestas_adjudicadas = propuestas_adjudicadas_tmp.rename(
+    columns={'Propuestas adjudicadas': 'cifra'})
 
-estudiantes_pregrado['Año'] = estudiantes_pregrado['Año'].astype('str')
-estudiantes_pregrado.fillna(0, inplace=True)
-estudiantes_pregrado['cifra'] = estudiantes_pregrado['cifra'].astype('int')
+propuestas_adjudicadas['Año'] = propuestas_adjudicadas['Año'].astype('str')
+propuestas_adjudicadas.fillna(0, inplace=True)
+propuestas_adjudicadas['cifra'] = propuestas_adjudicadas['cifra'].astype('int')
 
-estudiantes_pregrado = estudiantes_pregrado.groupby(
+propuestas_adjudicadas = propuestas_adjudicadas.groupby(
     ['Facultad', 'Año'])['cifra'].sum().reset_index()
 
-estudiantes_pregrado.apply(lambda x: total_function(
-    x['Facultad'], x['Año'], estudiantes_pregrado), axis=1)
+propuestas_adjudicadas.apply(lambda x: total_function(
+    x['Facultad'], x['Año'], propuestas_adjudicadas), axis=1)
 
-total_estudiantes_pregrado = estudiantes_pregrado['cifra'].sum()
+total_propuestas_adjudicadas = propuestas_adjudicadas['cifra'].sum()
 
-# Estudiantes beneficiados posgrado
+# Monto financiero interno
 
-estudiantes_posgrado['Año'] = estudiantes_posgrado['Año'].astype('str')
-estudiantes_posgrado.fillna(0, inplace=True)
-estudiantes_posgrado['cifra'] = estudiantes_posgrado['cifra'].astype('int')
+monto_financiado_interno_tmp = data[[
+    'Facultad', 'Año', 'Monto financiado interno']]
+monto_financiado_interno = monto_financiado_interno_tmp.rename(
+    columns={'Monto financiado interno': 'cifra'})
 
-estudiantes_posgrado = estudiantes_posgrado.groupby(
-    ['Facultad', 'Año'])['cifra'].sum().reset_index()
-
-estudiantes_posgrado.apply(lambda x: total_function(
-    x['Facultad'], x['Año'], estudiantes_posgrado), axis=1)
-
-total_estudiantes_posgrado = estudiantes_posgrado['cifra'].sum()
-
-# Suma de los reconocimientos
-
-reconocimientos['Año'] = reconocimientos['Año'].astype('str')
-reconocimientos.fillna(0, inplace=True)
-reconocimientos['cifra'] = reconocimientos['cifra'].astype('float')
-
-reconocimientos = reconocimientos.groupby(
-    ['Facultad', 'Año'])['cifra'].sum().reset_index()
-
-reconocimientos.apply(lambda x: total_function(
-    x['Facultad'], x['Año'], reconocimientos), axis=1)
-reconocimientos['total'] = reconocimientos['total'].map("{:,.2f}".format)
-
-total_reconocimientos = reconocimientos['cifra'].sum()
-total_reconocimientos = f'{total_reconocimientos:,}'.replace(',', ' ')
-total_reconocimientos = '$ ' + total_reconocimientos
-
-data['Suma de los reconocimientos'] = data['Suma de los reconocimientos'].astype(
+monto_financiado_interno['Año'] = monto_financiado_interno['Año'].astype('str')
+monto_financiado_interno.fillna(0, inplace=True)
+monto_financiado_interno['cifra'] = monto_financiado_interno['cifra'].astype(
     'float')
-data['Suma de los reconocimientos'] = '$ ' + \
-    data['Suma de los reconocimientos'].map("{:,.2f}".format)
+
+monto_financiado_interno = monto_financiado_interno.groupby(
+    ['Facultad', 'Año'])['cifra'].sum().reset_index()
+
+monto_financiado_interno.apply(lambda x: total_function(
+    x['Facultad'], x['Año'], monto_financiado_interno), axis=1)
+monto_financiado_interno['total'] = monto_financiado_interno['total'].map(
+    "{:,.2f}".format)
+
+total_monto_financiado_interno = monto_financiado_interno['cifra'].sum()
+
+total_monto_financiado_interno = f'{total_monto_financiado_interno:,}'.replace(
+    ',', ' ')
+total_monto_financiado_interno = '$ ' + total_monto_financiado_interno
+
+# Monto financiero externo
+
+monto_financiado_externo_tmp = data[[
+    'Facultad', 'Año', 'Monto financiado externo']]
+monto_financiado_externo = monto_financiado_externo_tmp.rename(
+    columns={'Monto financiado externo': 'cifra'})
+
+monto_financiado_externo['Año'] = monto_financiado_externo['Año'].astype('str')
+monto_financiado_externo.fillna(0, inplace=True)
+monto_financiado_externo['cifra'] = monto_financiado_externo['cifra'].astype(
+    'float')
+
+monto_financiado_externo = monto_financiado_externo.groupby(
+    ['Facultad', 'Año'])['cifra'].sum().reset_index()
+
+monto_financiado_externo.apply(lambda x: total_function(
+    x['Facultad'], x['Año'], monto_financiado_externo), axis=1)
+monto_financiado_externo['total'] = monto_financiado_externo['total'].map(
+    "{:,.2f}".format)
+
+total_monto_financiado_externo = monto_financiado_externo['cifra'].sum()
+
+total_monto_financiado_externo = f'{total_monto_financiado_externo:,}'.replace(
+    ',', ' ')
+total_monto_financiado_externo = '$ ' + total_monto_financiado_externo
+
+
+data['Monto financiado interno'] = data['Monto financiado interno'].astype(
+    'float')
+data['Monto financiado interno'] = '$ ' + \
+    data['Monto financiado interno'].map("{:,.2f}".format)
+
+data['Monto financiado externo'] = data['Monto financiado externo'].astype(
+    'float')
+data['Monto financiado externo'] = '$ ' + \
+    data['Monto financiado externo'].map("{:,.2f}".format)
 
 layout = html.Div([
-    html.H2('Formación'),
-    html.H3('Gestión de programas curriculares'),
+    html.H2('Investigación y Creación Artística'),
+    html.H3('Convocatorias'),
     dbc.Nav(
         [
-            dbc.NavItem(dbc.NavLink("Beca auxiliar docente",
-                        href="/beca-auxiliar-docente")),
-            dbc.NavItem(dbc.NavLink("Beca asistente docente",
-                        href="/beca-asistente-docente")),
-            dbc.NavItem(dbc.NavLink("Estudiantes auxiliares",
-                        href="/estudiantes-auxiliares")),
-            dbc.NavItem(dbc.NavLink("Beca Exención de Derechos Académicos",
-                        active=True, href="/beca-exencion-derechos-economicos")),
-            dbc.NavItem(dbc.NavLink("Prácticas y pasantías",
-                        href="/practicas-y-pasantias-formacion")),
-            dbc.NavItem(dbc.NavLink("Convenios para prácticas y pasantías en el año",
-                        href="/convenios-practicas-pasantias-formacion")),
-            dbc.NavItem(dbc.NavLink("Otras becas o reconocimientos económicos",
-                        href="/otras-becas-o-reconocimientos-economicos")),
+            dbc.NavItem(dbc.NavLink("Convocatorias internas",
+                        href="/convocatorias-internas-institucionales")),
+            dbc.NavItem(dbc.NavLink("Convocatorias externas", active=True,
+                        href="/convocatorias-externas-otras-entidades")),
         ],
         pills=True,),
     html.Div(
@@ -160,11 +173,11 @@ layout = html.Div([
                             dbc.CardBody(
                                 [
                                     html.H5(
-                                        total_estudiantes_pregrado,
+                                        total_propuestas_adjudicadas,
                                         className="card-number",
                                     ),
                                     html.P(
-                                        "estudiantes de pregrado beneficiados"),
+                                        "propuestas adjudicadas"),
                                 ]
                             ),
                         )
@@ -174,11 +187,11 @@ layout = html.Div([
                             dbc.CardBody(
                                 [
                                     html.H5(
-                                        total_estudiantes_posgrado,
+                                        total_monto_financiado_interno,
                                         className="card-number",
                                     ),
                                     html.P(
-                                        "estudiantes de posgrado beneficiados"),
+                                        "monto financiado interno"),
                                 ]
                             ),
                         )
@@ -188,10 +201,10 @@ layout = html.Div([
                             dbc.CardBody(
                                 [
                                     html.H5(
-                                        total_reconocimientos,
+                                        total_monto_financiado_externo,
                                         className="card-number",
                                     ),
-                                    html.P("suma de los reconocimientos"),
+                                    html.P("monto financiado externo"),
                                 ]
                             ),
                         )
@@ -199,15 +212,15 @@ layout = html.Div([
                 ],
             ),
         ]),
-    html.H5('Estudiantes de pregrado beneficiados de becas de exención de derechos académicos'),
-    dcc.Graph(id="graph_estudiantes_beneficiados_pregrado_becas_exencion_derechos_academicos",
-              figure=px.bar(estudiantes_pregrado,
+    html.H5('Propuestas adjudicadas'),
+    dcc.Graph(id="graph_propuestas_adjudicadas_convocatorias_externas_otras_entidades",
+              figure=px.bar(propuestas_adjudicadas,
                             x="cifra",
                             y="Facultad",
                             color='Año',
                             labels={
                                 'Facultad': 'Dependencia',
-                                'cifra': 'Estudiantes de pregrado beneficiados'
+                                'cifra': 'Propuestas adjudicadas'
                             },
                             color_discrete_sequence=px.colors.qualitative.Prism,
                             hover_data={
@@ -216,32 +229,15 @@ layout = html.Div([
                                 'Año': True},
                             barmode="group"
                             )),
-    html.H5('Estudiantes de posgrado beneficiados de becas de exención de derechos académicos'),
-    dcc.Graph(id="graph_estudiantes_beneficiados_posgrado_becas_exencion_derechos_academicos",
-              figure=px.bar(estudiantes_posgrado,
+    html.H5('Monto financiado interno'),
+    dcc.Graph(id="graph_monto_financiado_interno_convocatorias_externas_otras_entidades",
+              figure=px.bar(monto_financiado_interno,
                             x="cifra",
                             y="Facultad",
                             color='Año',
                             labels={
                                 'Facultad': 'Dependencia',
-                                'cifra': 'Estudiantes de posgrado beneficiados'
-                            },
-                            color_discrete_sequence=px.colors.qualitative.Prism,
-                            hover_data={
-                                "cifra": True,
-                                'total': True,
-                                'Año': True},
-                            barmode="group"
-                            )),
-    html.H5('Suma de los reconocimientos de becas de exención de derechos académicos'),
-    dcc.Graph(id="graph_suma_reconocimientos_becas_exencion_derechos_academicos",
-              figure=px.bar(reconocimientos,
-                            x="cifra",
-                            y="Facultad",
-                            color='Año',
-                            labels={
-                                'Facultad': 'Dependencia',
-                                'cifra': 'Reconocimientos de becas de exención'
+                                'cifra': 'Monto financiado interno'
                             },
                             color_discrete_sequence=px.colors.qualitative.G10,
                             hover_data={
@@ -250,14 +246,31 @@ layout = html.Div([
                                 'Año': True},
                             barmode="group"
                             )),
-    html.H5('Logros Alcanzados'),
+    html.H5('Monto financiado externo'),
+    dcc.Graph(id="graph_monto_financiado_externo_convocatorias_externas_otras_entidades",
+              figure=px.bar(monto_financiado_externo,
+                            x="cifra",
+                            y="Facultad",
+                            color='Año',
+                            labels={
+                                'Facultad': 'Dependencia',
+                                'cifra': 'Monto financiado externo'
+                            },
+                            color_discrete_sequence=px.colors.qualitative.G10,
+                            hover_data={
+                                "cifra": True,
+                                'total': True,
+                                'Año': True},
+                            barmode="group"
+                            )),
+    html.H5('Descripción de las convocatorias'),
     html.Div(
         [
             dbc.Row(
                 [
                     dbc.Col(html.Div([
                         dcc.Dropdown(
-                            id="facultad_beca_exencion_derechos_academicos",
+                            id="facultad_convocatorias_externas_investigacion_creacion_artistica",
                             options=data['Facultad'].unique(),
                             clearable=True,
                             placeholder="Seleccione la facultad",
@@ -265,7 +278,7 @@ layout = html.Div([
                     ]), lg=6),
                     dbc.Col(html.Div([
                         dcc.Dropdown(
-                            id="anio_beca_exencion_derechos_academicos",
+                            id="anio_convocatorias_externas_investigacion_creacion_artistica",
                             options=data['Año'].unique(),
                             clearable=True,
                             placeholder="Seleccione el año",
@@ -299,7 +312,7 @@ layout = html.Div([
                                         'backgroundColor': 'rgb(29, 105, 150, 0.1)',
                                     }
                                 ],
-                                id='logros_tabla_beca_exencion_derechos_academicos',
+                                id='logros_tabla_convocatorias_externas_investigacion_creacion_artistica',
                             ),
                         ], style={'paddingTop': '2%'})
                     )
@@ -312,9 +325,9 @@ layout = html.Div([
 
 
 @callback(
-    Output("logros_tabla_beca_exencion_derechos_academicos", "data"),
-    [Input("facultad_beca_exencion_derechos_academicos", "value"), Input("anio_beca_exencion_derechos_academicos", "value")])
-def logros_alcanzados_beca_exencion_derechos_academicos(facultad, anio):
+    Output("logros_tabla_convocatorias_externas_investigacion_creacion_artistica", "data"),
+    [Input("facultad_convocatorias_externas_investigacion_creacion_artistica", "value"), Input("anio_convocatorias_externas_investigacion_creacion_artistica", "value")])
+def logros_alcanzados_convocatorias_externas_investigacion_creacion_artistica(facultad, anio):
     if facultad or anio:
         if not anio:
             df = data

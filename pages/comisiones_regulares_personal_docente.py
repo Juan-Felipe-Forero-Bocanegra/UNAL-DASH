@@ -7,13 +7,13 @@ from dash import dash_table
 import dash_bootstrap_components as dbc
 import requests
 
-dash.register_page(__name__, path='/energia')
+dash.register_page(__name__, path='/comisiones-regulares-personal-docente')
 
 f = open("file.txt", "r")
 token = f.readline()
 e = open("environment.txt", "r")
 environment = e.readline()
-url = environment + "/reporte_cifras/buscarCifras?area_param=Gestión ambiental&programa_param=Línea base antrópica&actividad_param=Energía"
+url = environment + "/reporte_cifras/buscarCifras?area_param=Formación&programa_param=Formación del personal docente y administrativo&actividad_param=Comisiones Regulares otorgadas para el personal docente "
 headers = {'Content-type': 'application/json', 'Authorization': token}
 r = requests.get(url, headers=headers)
 dataJson = r.json()
@@ -37,8 +37,8 @@ for c in dataJson:
         }
         list2.append(o)
 
-data_2 = pd.DataFrame(list)
-data_3 = pd.DataFrame(list2)
+data = pd.DataFrame(list)
+data_2 = pd.DataFrame(list2)
 
 
 def total_function(facultad, anio, dataframe):
@@ -48,43 +48,42 @@ def total_function(facultad, anio, dataframe):
         dataframe['Año'] == anio), 'total'] = df_total
 
 
-# Consumo de energía en el último año
+# Valor de comisiones
+
+data["Año"] = data["Año"].astype('str')
+data.fillna(0, inplace=True)
+data['cifra'] = data['cifra'].astype('float')
+
+data.apply(lambda x: total_function(x['Facultad'], x['Año'], data), axis=1)
+data['total'] = data['total'].map("{:,.2f}".format)
+total_data = data['cifra'].sum()
+total_data = f'{total_data:,}'.replace(',', ' ')
+total_data = '$ ' + total_data
+
+# Número de docentes que estuvieron en comisión
 
 data_2["Año"] = data_2["Año"].astype('str')
 data_2.fillna(0, inplace=True)
-data_2['cifra'] = data_2['cifra'].astype('float')
+data_2['cifra'] = data_2['cifra'].astype('int')
 
 data_2.apply(lambda x: total_function(x['Facultad'], x['Año'], data_2), axis=1)
-data_2['total'] = data_2['total'].map("{:,.2f}".format)
 total_data_2 = data_2['cifra'].sum()
-total_data_2 = f'{total_data_2:,}'.replace(',', ' ')
-
-# Costo de energía en el último año
-
-data_3["Año"] = data_3["Año"].astype('str')
-data_3.fillna(0, inplace=True)
-data_3['cifra'] = data_3['cifra'].astype('float')
-
-
-data_3.apply(lambda x: total_function(x['Facultad'], x['Año'], data_3), axis=1)
-data_3['total'] = data_3['total'].map("{:,.2f}".format)
-total_data_3 = data_3['cifra'].sum()
-total_data_3 = f'{total_data_3:,}'.replace(',', ' ')
-total_data_3 = '$ ' + total_data_3
 
 layout = html.Div([
-    html.H2('Gestión ambiental'),
-    html.H3('Línea base antrópica'),
+    html.H2('Formación'),
+    html.H3('Formación del personal docente y administrativo'),
     dbc.Nav(
         [
-            dbc.NavItem(dbc.NavLink("Agua",
-                                    href="/agua")),
-            dbc.NavItem(dbc.NavLink("Energía", active=True,
-                                    href="/energia")),
-            dbc.NavItem(dbc.NavLink("Resíduos",
-                                    href="/residuos")),
-            dbc.NavItem(dbc.NavLink("Plagas y vectores",
-                                    href="/plagas-y-vectores")),
+            dbc.NavItem(dbc.NavLink("Fortalecimiento de competencias del personal",
+                                    href="/fortalecimiento-competencias-personal-formacion")),
+            dbc.NavItem(dbc.NavLink("Apoyos económicos a docentes en educación formal u informal",
+                                    href="/apoyos-economicos-docentes-educacion-formal-u-informal")),
+            dbc.NavItem(dbc.NavLink("Comisiones regulares para el personal docente", active=True,
+                                    href="/comisiones-regulares-personal-docente")),
+            dbc.NavItem(dbc.NavLink("Evaluación a docentes",
+                                    href="/evaluacion-a-docentes")),
+            dbc.NavItem(dbc.NavLink("Descuentos realizados a servidores públicos administrativos en matrículas",
+                                    href="/descuentos-servidores-administrativos-matriculas-pregrado-posgrado")),
         ],
         pills=True,),
     html.Div(
@@ -96,10 +95,10 @@ layout = html.Div([
                             dbc.CardBody(
                                 [
                                     html.H5(
-                                        total_data_2,
+                                        total_data,
                                         className="card-number",
                                     ),
-                                    html.P("consumo de energía en (?)"),
+                                    html.P("valor de comisiones"),
                                 ]
                             ),
                         )
@@ -109,10 +108,10 @@ layout = html.Div([
                             dbc.CardBody(
                                 [
                                     html.H5(
-                                        total_data_3,
+                                        total_data_2,
                                         className="card-number",
                                     ),
-                                    html.P("costo de la energía"),
+                                    html.P("docentes en comisión"),
                                 ]
                             ),
                         )
@@ -120,15 +119,15 @@ layout = html.Div([
                 ]
             ),
         ]),
-    html.H5('Consumo de energía'),
-    dcc.Graph(id="graph_consumo_energia",
-              figure=px.bar(data_2,
+    html.H5('Valor de las comisiones'),
+    dcc.Graph(id="graph_valor_comisiones",
+              figure=px.bar(data,
                             x="cifra",
                             y="Facultad",
                             color="Año",
                             labels={
                                 'Facultad': 'Dependencia',
-                                'cifra': 'Consumo de energía'
+                                'cifra': 'Valor de las comisiones'
                             },
                             color_discrete_sequence=px.colors.qualitative.Prism,
                             hover_data={
@@ -137,17 +136,17 @@ layout = html.Div([
                                 "Año": True},
                             barmode="group"
                             )),
-    html.H5('Costo de la energía'),
-    dcc.Graph(id="graph_costo_energia",
-              figure=px.bar(data_3,
+    html.H5('Docentes que estuvieron en comisión'),
+    dcc.Graph(id="graph_docentes_comision",
+              figure=px.bar(data_2,
                             x="cifra",
                             y="Facultad",
                             color="Año",
                             labels={
                                 'Facultad': 'Dependencia',
-                                'cifra': 'Costo de la energía'
+                                'cifra': 'Docentes en comisión'
                             },
-                            color_discrete_sequence=px.colors.qualitative.Prism,
+                            color_discrete_sequence=px.colors.qualitative.G10,
                             hover_data={
                                 "cifra": True,
                                 "total": True,

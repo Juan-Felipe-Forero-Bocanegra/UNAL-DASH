@@ -23,9 +23,9 @@ server = app.server
 
 app.layout = html.Div([
     dcc.Interval(
-         id='interval',
-         interval=1 * 3600000,
-         n_intervals=0),
+        id='interval',
+        interval=1 * 3600000,
+        n_intervals=0),
     dcc.Store(id='store'),
     dbc.NavbarSimple(
         children=[
@@ -62,7 +62,8 @@ app.layout = html.Div([
             ),
             dbc.DropdownMenu(
                 children=[
-                    dbc.DropdownMenuItem("Consolidación de la paz", href='/formacion-paz'),                    
+                    dbc.DropdownMenuItem(
+                        "Consolidación de la paz", href='/formacion-paz'),
                 ],
                 nav=True,
                 in_navbar=True,
@@ -71,7 +72,8 @@ app.layout = html.Div([
             dbc.DropdownMenu(
                 children=[
                     dbc.DropdownMenuItem("Línea base antrópica", href='/agua'),
-                    dbc.DropdownMenuItem("Programas transversales", href='/alertas-tempranas'),                    
+                    dbc.DropdownMenuItem(
+                        "Programas transversales", href='/alertas-tempranas'),
                 ],
                 nav=True,
                 in_navbar=True,
@@ -80,28 +82,61 @@ app.layout = html.Div([
             dbc.DropdownMenu(
                 children=[
                     dbc.DropdownMenuItem("Producción editorial", href='/'),
-                    dbc.DropdownMenuItem("Difusión y comercialización", href='/difusion-comercializacion-publicaciones'),                    
+                    dbc.DropdownMenuItem(
+                        "Difusión y comercialización", href='/difusion-comercializacion-publicaciones'),
                 ],
                 nav=True,
                 in_navbar=True,
                 label="Divulgación de la producción académica",
             ),
-            dbc.NavItem(dbc.NavLink("Gobierno de TI", href='/repositorios-informacion')),
-             dbc.DropdownMenu(
+            dbc.NavItem(dbc.NavLink("Gobierno de TI",
+                        href='/repositorios-informacion')),
+            dbc.DropdownMenu(
                 children=[
-                    dbc.DropdownMenuItem("Gestión de programas curriculares", href='/creacion-modicacion-programas-planes-estudio'),
-                    dbc.DropdownMenuItem("Cupos", href='/oferta-cupos'),  
-                    dbc.DropdownMenuItem("Cursos y asignaturas", href='/cursos'), 
-                    dbc.DropdownMenuItem("Gestión de la actividad académica", href='/catedras-sede'),
-                    dbc.DropdownMenuItem("Tutores docentes", href='/designacion-tutores-docentes'),
-                    dbc.DropdownMenuItem("Reconocimientos económicos a estudiantes", href='/beca-auxiliar-docente'),                       
+                    dbc.DropdownMenuItem("Gestión de programas curriculares",
+                                         href='/creacion-modicacion-programas-planes-estudio'),
+                    dbc.DropdownMenuItem("Cupos", href='/oferta-cupos'),
+                    dbc.DropdownMenuItem(
+                        "Cursos y asignaturas", href='/cursos'),
+                    dbc.DropdownMenuItem(
+                        "Gestión de la actividad académica", href='/catedras-sede'),
+                    dbc.DropdownMenuItem(
+                        "Tutores docentes", href='/designacion-tutores-docentes'),
+                    dbc.DropdownMenuItem(
+                        "Reconocimientos económicos a estudiantes", href='/beca-auxiliar-docente'),
+                    dbc.DropdownMenuItem(
+                        "Acompañamiento estudiantil ", href='/acompanamiento-programas-especiales'),
+                    dbc.DropdownMenuItem("Formación del personal docente y administrativo",
+                                         href='/fortalecimiento-competencias-personal-formacion'),
+                    dbc.DropdownMenuItem("Apoyo a la Innovación Académica",
+                                         href='/liderazgo-emprendimiento-empleabilidad'),
+                    dbc.DropdownMenuItem("Asuntos estudiantiles",
+                                         href='/ingreso-asuntos-estudiantiles'),
                 ],
                 nav=True,
                 in_navbar=True,
                 label="Formación",
             ),
-                     
-             
+            dbc.DropdownMenu(
+                children=[
+                    dbc.DropdownMenuItem("Actividades de fomento y fortalecimiento",
+                                         href='/capacitaciones-investigacion-creacion-artistica'),
+                    dbc.DropdownMenuItem("Convocatorias",
+                                         href='/convocatorias-internas-institucionales'),
+                    dbc.DropdownMenuItem("Proyectos de investigación",
+                                         href='/cifras-proyectos-periodo'),
+                    dbc.DropdownMenuItem("Alianzas, redes, convenios y movilidades",
+                                         href='/alianzas-redes-convenios-ICA'),
+                    dbc.DropdownMenuItem("Movilidad investigativa",
+                                         href='/movilidad-estudiantil-investigativa-ICA'),
+
+                ],
+                nav=True,
+                in_navbar=True,
+                label="Investigación y Creación Artística",
+            ),
+
+
         ],
         brand="Prig Data App",
         color="light",
@@ -128,7 +163,6 @@ def login(interval):
     n = text_file.write(token)
     text_file.close()
     return {'token': token}
-
 
 
 if __name__ == '__main__':

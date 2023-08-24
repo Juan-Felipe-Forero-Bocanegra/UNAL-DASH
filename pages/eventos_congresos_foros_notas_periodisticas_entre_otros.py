@@ -5,40 +5,58 @@ import pandas as pd
 import plotly.graph_objects as go
 from dash import dash_table
 import dash_bootstrap_components as dbc
+from flask import session
 import requests
 
-dash.register_page(__name__, path='/seguimiento-docentes-tutores')
+dash.register_page(
+    __name__, path='/eventos-congresos-foros-entre-otros')
 
 f = open("file.txt", "r")
 token = f.readline()
 e = open("environment.txt", "r")
 environment = e.readline()
-url = environment + "/reporte_cifras/buscarCifras?area_param=Formación&programa_param=Tutores docentes&actividad_param=Proceso de seguimiento a docentes tutores"
+url = environment + "/reporte_cifras/buscarCifras?area_param=Investigación y Creación Artística&programa_param=Actividades de fomento y fortalecimiento de la Investigación y creación artística.&actividad_param=Eventos, congreso, foros, notas periodísticas, entre otros"
 headers = {'Content-type': 'application/json', 'Authorization': token}
 r = requests.get(url, headers=headers)
 dataJson = r.json()
 
 list = []
-list2 = []
-
 for c in dataJson:
     if c['informeActividadDetalle']['orden'] == 1:
-        o = {
-            'Facultad': c['facultad'],
-            'Año': c['anio'],
-            'Descripción': c['informeActividadDetalle']['cifra']
-        }
-        list.append(o)
-    if c['informeActividadDetalle']['orden'] == 2:
-        o = {
-            'Facultad': c['facultad'],
-            'Año': c['anio'],
-            'cifra': c['informeActividadDetalle']['cifra']
-        }
-        list2.append(o)
+        i = 0
+        j = 0
+        for a in c['informeActividadDetalle']['listaDatoListaValor']:
+            if i == 0:
+                o = {
+                    'Facultad': c['facultad'],
+                    'Año': c['anio'],
+                    'Nombre de la actividad': '',
+                    'Número de asistentes': '',
+                    'Tipo de evento': '',
+                    'Presupuesto ejecutado': '',
+                }
+            if a['actividadDatoLista']['orden'] == '1':
+                if a['indice'] == j:
+                    o['Nombre de la actividad'] = a['cifra']
+                    i += 1
+            if a['actividadDatoLista']['orden'] == '2':
+                if a['indice'] == j:
+                    o['Número de asistentes'] = a['cifra']
+                    i += 1
+            if a['actividadDatoLista']['orden'] == '3':
+                if a['indice'] == j:
+                    o['Tipo de evento'] = a['cifra']
+                    i += 1
+            if a['actividadDatoLista']['orden'] == '4':
+                if a['indice'] == j:
+                    o['Presupuesto ejecutado'] = a['cifra']
+                    i += 1
+            if i == 4:
+                list.append(o)
+                i = 0
+                j += 1
 
 data = pd.DataFrame(list)
-data_2 = pd.DataFrame(list2)
 
 
 def total_function(facultad, anio, dataframe):
@@ -48,26 +66,49 @@ def total_function(facultad, anio, dataframe):
         dataframe['Año'] == anio), 'total'] = df_total
 
 
-# Número de encuentros
+# descripción de las capacitaciones
 
-data_2["Año"] = data_2["Año"].astype('str')
-data_2.fillna(0, inplace=True)
-data_2['cifra'] = data_2['cifra'].astype('int')
+presupuesto_tmp = data[['Facultad', 'Año', 'Presupuesto ejecutado']]
+presupuesto = presupuesto_tmp.rename(
+    columns={'Presupuesto ejecutado': 'cifra'})
 
-data_2.apply(lambda x: total_function(x['Facultad'], x['Año'], data_2), axis=1)
-total_data_2 = data_2['cifra'].sum()
+presupuesto['Año'] = presupuesto['Año'].astype('str')
+presupuesto.fillna(0, inplace=True)
+presupuesto['cifra'] = presupuesto['cifra'].astype('float')
+
+
+presupuesto = presupuesto.groupby(
+    ['Facultad', 'Año'])['cifra'].sum().reset_index()
+
+presupuesto.apply(lambda x: total_function(
+    x['Facultad'], x['Año'], presupuesto), axis=1)
+
+presupuesto['total'] = presupuesto['total'].map("{:,.2f}".format)
+
+total_presupuesto = presupuesto['cifra'].sum()
+total_presupuesto = f'{total_presupuesto:,}'.replace(',', ' ')
+total_presupuesto = '$ ' + total_presupuesto
+
+
+data['Presupuesto ejecutado'] = data['Presupuesto ejecutado'].astype(
+    'float')
+data['Presupuesto ejecutado'] = '$ ' + \
+    data['Presupuesto ejecutado'].map("{:,.2f}".format)
+
 
 layout = html.Div([
-    html.H2('Formación'),
-    html.H3('Tutores docentes'),
+    html.H2('Investigación y Creación Artística'),
+    html.H3('Actividades de fomento y fortalecimiento'),
     dbc.Nav(
         [
-            dbc.NavItem(dbc.NavLink("Designación de tutores docentes",
-                                    href="/designacion-tutores-docentes")),
-            dbc.NavItem(dbc.NavLink("Seguimiento a docentes tutores", active=True,
-                                    href="/seguimiento-docentes-tutores")),
-            dbc.NavItem(dbc.NavLink("Resultados de los seguimientos", 
-                                    href="/resultados-seguimientos-tutores-docentes")),
+            dbc.NavItem(dbc.NavLink("Capacitaciones",
+                        href="/capacitaciones-investigacion-creacion-artistica")),
+            dbc.NavItem(dbc.NavLink("Eventos, congresos, foros, entre otros", active=True,
+                                    href="/eventos-congresos-foros-entre-otros")),
+            dbc.NavItem(dbc.NavLink("Revistas indexadas",
+                                    href="/revistas-indexadas-investigacion-creacion-artisticas")),
+            dbc.NavItem(dbc.NavLink("Otras actividades", 
+                                    href="/otras-actividades-investigacion-creacion-artistica")),
         ],
         pills=True,),
     html.Div(
@@ -79,42 +120,43 @@ layout = html.Div([
                             dbc.CardBody(
                                 [
                                     html.H5(
-                                        total_data_2,
+                                        total_presupuesto,
                                         className="card-number",
                                     ),
-                                    html.P("encuentros"),
+                                    html.P(
+                                        "presupuesto"),
                                 ]
                             ),
                         )
                     ], className='card_container'), lg=4),
-                ]
+                ],
             ),
         ]),
-    html.H5('Número de encuentros para el seguimiento de los docentes tutores'),
-    dcc.Graph(id="graph_numero_encuentros_seguimiento_docentes_tutores",
-              figure=px.bar(data_2,
+    html.H5('Presupuesto ejecutado'),
+    dcc.Graph(id="graph_presupuesto_ejecutado_eventos_congresos_foros_entre_otros",
+              figure=px.bar(presupuesto,
                             x="cifra",
                             y="Facultad",
-                            color="Año",
+                            color='Año',
                             labels={
                                 'Facultad': 'Dependencia',
-                                'cifra': 'Número de encuentros'
+                                'cifra': 'Presupuesto ejecutado'
                             },
                             color_discrete_sequence=px.colors.qualitative.Prism,
                             hover_data={
                                 "cifra": True,
-                                "total": True,
-                                "Año": True},
+                                'total': True,
+                                'Año': True},
                             barmode="group"
                             )),
-    html.H5('Descripción del seguimiento a los docentes tutores'),
+    html.H5('Logros Alcanzados'),
     html.Div(
         [
             dbc.Row(
                 [
                     dbc.Col(html.Div([
                         dcc.Dropdown(
-                            id="facultad_seguimiento_docentes_tutores",
+                            id="facultad_eventos_congresos_foros_entre_otros",
                             options=data['Facultad'].unique(),
                             clearable=True,
                             placeholder="Seleccione la facultad",
@@ -122,7 +164,7 @@ layout = html.Div([
                     ]), lg=6),
                     dbc.Col(html.Div([
                         dcc.Dropdown(
-                            id="anio_seguimiento_docentes_tutores",
+                            id="anio_eventos_congresos_foros_entre_otros",
                             options=data['Año'].unique(),
                             clearable=True,
                             placeholder="Seleccione el año",
@@ -156,20 +198,22 @@ layout = html.Div([
                                         'backgroundColor': 'rgb(29, 105, 150, 0.1)',
                                     }
                                 ],
-                                id='logros_tabla_seguimiento_docentes_tutores',
+                                id='logros_tabla_eventos_congresos_foros_entre_otros',
                             ),
                         ], style={'paddingTop': '2%'})
                     )
                 ]
             )
         ]),
+
+
 ], className='layout')
 
 
 @callback(
-    Output("logros_tabla_seguimiento_docentes_tutores", "data"),
-    [Input("facultad_seguimiento_docentes_tutores", "value"), Input("anio_seguimiento_docentes_tutores", "value")])
-def logros_alcanzados_seguimiento_docentes_tutores(facultad, anio):
+    Output("logros_tabla_eventos_congresos_foros_entre_otros", "data"),
+    [Input("facultad_eventos_congresos_foros_entre_otros", "value"), Input("anio_eventos_congresos_foros_entre_otros", "value")])
+def logros_alcanzados_eventos_congresos_foros_entre_otros(facultad, anio):
     if facultad or anio:
         if not anio:
             df = data

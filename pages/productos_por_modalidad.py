@@ -7,13 +7,13 @@ from dash import dash_table
 import dash_bootstrap_components as dbc
 import requests
 
-dash.register_page(__name__, path='/residuos')
+dash.register_page(__name__, path='/productos-por-modalidad')
 
 f = open("file.txt", "r")
 token = f.readline()
 e = open("environment.txt", "r")
 environment = e.readline()
-url = environment + "/reporte_cifras/buscarCifras?area_param=Gestión ambiental&programa_param=Línea base antrópica&actividad_param=Residuos"
+url = environment + "/reporte_cifras/buscarCifras?area_param=Investigación y Creación Artística&programa_param=Proyectos de investigación&actividad_param=Productos por modalidad"
 headers = {'Content-type': 'application/json', 'Authorization': token}
 r = requests.get(url, headers=headers)
 dataJson = r.json()
@@ -92,105 +92,83 @@ def total_function(facultad, anio, dataframe):
     dataframe.loc[(dataframe['Facultad'] == facultad) & (
         dataframe['Año'] == anio), 'total'] = df_total
 
-# Cantidad de residuos biodegradables
+# Ponencias
 
 
 data_2["Año"] = data_2["Año"].astype('str')
 data_2.fillna(0, inplace=True)
-data_2['cifra'] = data_2['cifra'].astype('float')
+data_2['cifra'] = data_2['cifra'].astype('int')
 
 data_2.apply(lambda x: total_function(x['Facultad'], x['Año'], data_2), axis=1)
-data_2['total'] = data_2['total'].map("{:,.2f}".format)
 total_data_2 = data_2['cifra'].sum()
-total_data_2 = f'{total_data_2:,}'.replace(',', ' ')
-total_data_2 = total_data_2 + ' kg'
 
-# Cantidad de residuos reciclables
+# Pasantías
 
 data_3["Año"] = data_3["Año"].astype('str')
 data_3.fillna(0, inplace=True)
-data_3['cifra'] = data_3['cifra'].astype('float')
+data_3['cifra'] = data_3['cifra'].astype('int')
 
 data_3.apply(lambda x: total_function(x['Facultad'], x['Año'], data_3), axis=1)
-data_3['total'] = data_3['total'].map("{:,.2f}".format)
 total_data_3 = data_3['cifra'].sum()
-total_data_3 = round(total_data_3, 2)
-total_data_3 = f'{total_data_3:,}'.replace(',', ' ')
-total_data_3 = total_data_3 + ' kg'
 
-# Cantidad de residuos ordinarios
+# Tesis
 
 data_4["Año"] = data_4["Año"].astype('str')
 data_4.fillna(0, inplace=True)
-data_4['cifra'] = data_4['cifra'].astype('float')
+data_4['cifra'] = data_4['cifra'].astype('int')
 
 data_4.apply(lambda x: total_function(x['Facultad'], x['Año'], data_4), axis=1)
-data_4['total'] = data_4['total'].map("{:,.2f}".format)
 total_data_4 = data_4['cifra'].sum()
-total_data_4 = f'{total_data_4:,}'.replace(',', ' ')
-total_data_4 = total_data_4 + ' kg'
 
-# Cantidad de RCD
+# Conferencias
 
 data_5["Año"] = data_5["Año"].astype('str')
 data_5.fillna(0, inplace=True)
-data_5['cifra'] = data_5['cifra'].astype('float')
+data_5['cifra'] = data_5['cifra'].astype('int')
 
 data_5.apply(lambda x: total_function(x['Facultad'], x['Año'], data_5), axis=1)
-data_5['total'] = data_5['total'].map("{:,.2f}".format)
 total_data_5 = data_5['cifra'].sum()
-total_data_5 = f'{total_data_5:,}'.replace(',', ' ')
-total_data_5 = total_data_5 + ' kg'
 
-# Cantidad de residuos químicos
+# Foros
 
 data_6["Año"] = data_6["Año"].astype('str')
 data_6.fillna(0, inplace=True)
-data_6['cifra'] = data_6['cifra'].astype('float')
+data_6['cifra'] = data_6['cifra'].astype('int')
 
 data_6.apply(lambda x: total_function(x['Facultad'], x['Año'], data_6), axis=1)
-data_6['total'] = data_6['total'].map("{:,.2f}".format)
 total_data_6 = data_6['cifra'].sum()
-total_data_6 = f'{total_data_6:,}'.replace(',', ' ')
-total_data_6 = total_data_6 + ' kg'
 
-# Cantidad de residuos infecciosos
+# Presentaciones
 
 data_7["Año"] = data_7["Año"].astype('str')
 data_7.fillna(0, inplace=True)
-data_7['cifra'] = data_7['cifra'].astype('float')
+data_7['cifra'] = data_7['cifra'].astype('int')
 
 data_7.apply(lambda x: total_function(x['Facultad'], x['Año'], data_7), axis=1)
-data_7['total'] = data_7['total'].map("{:,.2f}".format)
 total_data_7 = data_7['cifra'].sum()
-total_data_7 = f'{total_data_7:,}'.replace(',', ' ')
-total_data_7 = total_data_7 + ' kg'
 
-# Cantidad de residuos posconsumo
+# Conciertos
 
 data_8["Año"] = data_8["Año"].astype('str')
 data_8.fillna(0, inplace=True)
-data_8['cifra'] = data_8['cifra'].astype('float')
+data_8['cifra'] = data_8['cifra'].astype('int')
 
 data_8.apply(lambda x: total_function(x['Facultad'], x['Año'], data_8), axis=1)
-data_8['total'] = data_8['total'].map("{:,.2f}".format)
 total_data_8 = data_8['cifra'].sum()
-total_data_8 = f'{total_data_8:,}'.replace(',', ' ')
-total_data_8 = total_data_8 + ' kg'
 
 layout = html.Div([
-    html.H2('Gestión ambiental'),
-    html.H3('Línea base antrópica'),
+    html.H2('Investigación y Creación Artística'),
+    html.H3('Proyectos de investigación'),
     dbc.Nav(
         [
-            dbc.NavItem(dbc.NavLink("Agua",
-                                    href="/agua")),
-            dbc.NavItem(dbc.NavLink("Energía",
-                                    href="/energia")),
-            dbc.NavItem(dbc.NavLink("Resíduos", active=True,
-                                    href="/residuos")),
-            dbc.NavItem(dbc.NavLink("Plagas y vectores", 
-                                    href="/plagas-y-vectores")),
+            dbc.NavItem(dbc.NavLink("Cifras de proyectos en el periodo",
+                                    href="/cifras-proyectos-periodo")),
+            dbc.NavItem(dbc.NavLink("Productos por modalidad", active=True,
+                                    href="/productos-por-modalidad")),
+            dbc.NavItem(dbc.NavLink("Proyectos con financiación interna",
+                                    href="/proyectos-financiacion-interna-investigacion-creacion-artistica")),
+            dbc.NavItem(dbc.NavLink("Proyectos con financiación externa",
+                                    href="/proyectos-financiacion-externa-investigacion-creacion-artistica")),
         ],
         pills=True,),
     html.Div(
@@ -205,7 +183,8 @@ layout = html.Div([
                                         total_data_2,
                                         className="card-number",
                                     ),
-                                    html.P("biodegradables"),
+                                    html.P(
+                                        "ponencias"),
                                 ]
                             ),
                         )
@@ -218,7 +197,8 @@ layout = html.Div([
                                         total_data_3,
                                         className="card-number",
                                     ),
-                                    html.P("reciclables"),
+                                    html.P(
+                                        "pasantías"),
                                 ]
                             ),
                         )
@@ -231,7 +211,8 @@ layout = html.Div([
                                         total_data_4,
                                         className="card-number",
                                     ),
-                                    html.P("ordinarios"),
+                                    html.P(
+                                        "tesis"),
                                 ]
                             ),
                         )
@@ -248,7 +229,8 @@ layout = html.Div([
                                         total_data_5,
                                         className="card-number",
                                     ),
-                                    html.P("RCD generados"),
+                                    html.P(
+                                        "conferencias"),
                                 ]
                             ),
                         )
@@ -261,7 +243,8 @@ layout = html.Div([
                                         total_data_6,
                                         className="card-number",
                                     ),
-                                    html.P("químicos"),
+                                    html.P(
+                                        "foros"),
                                 ]
                             ),
                         )
@@ -274,7 +257,8 @@ layout = html.Div([
                                         total_data_7,
                                         className="card-number",
                                     ),
-                                    html.P("infecciosos"),
+                                    html.P(
+                                        "presentaciones"),
                                 ]
                             ),
                         )
@@ -291,7 +275,8 @@ layout = html.Div([
                                         total_data_8,
                                         className="card-number",
                                     ),
-                                    html.P("posconsumo"),
+                                    html.P(
+                                        "conciertos"),
                                 ]
                             ),
                         )
@@ -299,15 +284,15 @@ layout = html.Div([
                 ]
             ),
         ]),
-    html.H5('Residuos biodegradables'),
-    dcc.Graph(id="graph_residuos_biodegradables",
+    html.H5('Ponencias'),
+    dcc.Graph(id="graph_ponencias_productos_por_modalidad",
               figure=px.bar(data_2,
                             x="cifra",
                             y="Facultad",
                             color="Año",
                             labels={
                                 'Facultad': 'Dependencia',
-                                'cifra': 'Residuos biodegradables'
+                                'cifra': 'Ponencias'
                             },
                             color_discrete_sequence=px.colors.qualitative.Prism,
                             hover_data={
@@ -316,32 +301,32 @@ layout = html.Div([
                                 "Año": True},
                             barmode="group"
                             )),
-    html.H5('Residuos reciclables'),
-    dcc.Graph(id="graph_residuos_reciclabes",
+    html.H5('Pasantías'),
+    dcc.Graph(id="graph_pasantias_ponencias_productos_por_modalidad",
               figure=px.bar(data_3,
                             x="cifra",
                             y="Facultad",
                             color="Año",
                             labels={
                                 'Facultad': 'Dependencia',
-                                'cifra': 'Residuos reciclables'
+                                'cifra': 'Pasantías'
                             },
-                            color_discrete_sequence=px.colors.qualitative.Prism,
+                            color_discrete_sequence=px.colors.qualitative.G10,
                             hover_data={
                                 "cifra": True,
                                 "total": True,
                                 "Año": True},
                             barmode="group"
                             )),
-    html.H5('Residuos ordinarios'),
-    dcc.Graph(id="graph_residuos_ordinarios",
+    html.H5('Tesis'),
+    dcc.Graph(id="graph_tesis_productos_por_modalidad",
               figure=px.bar(data_4,
                             x="cifra",
                             y="Facultad",
                             color="Año",
                             labels={
                                 'Facultad': 'Dependencia',
-                                'cifra': 'Residuos ordinarios'
+                                'cifra': 'Tesis'
                             },
                             color_discrete_sequence=px.colors.qualitative.Prism,
                             hover_data={
@@ -350,32 +335,32 @@ layout = html.Div([
                                 "Año": True},
                             barmode="group"
                             )),
-    html.H5('RCD generado'),
-    dcc.Graph(id="graph_RCD_generado",
+    html.H5('Conferencias'),
+    dcc.Graph(id="graph_conferencias_productos_por_modalidad",
               figure=px.bar(data_5,
                             x="cifra",
                             y="Facultad",
                             color="Año",
                             labels={
                                 'Facultad': 'Dependencia',
-                                'cifra': 'RDC generados'
+                                'cifra': 'Conferencias'
                             },
-                            color_discrete_sequence=px.colors.qualitative.Prism,
+                            color_discrete_sequence=px.colors.qualitative.G10,
                             hover_data={
                                 "cifra": True,
                                 "total": True,
                                 "Año": True},
                             barmode="group"
                             )),
-    html.H5('Residuos químicos'),
-    dcc.Graph(id="graph_residuos_químicos",
+    html.H5('Foros'),
+    dcc.Graph(id="graph_foros_productos_por_modalidad",
               figure=px.bar(data_6,
                             x="cifra",
                             y="Facultad",
                             color="Año",
                             labels={
                                 'Facultad': 'Dependencia',
-                                'cifra': 'Resíduos químicos'
+                                'cifra': 'Foros'
                             },
                             color_discrete_sequence=px.colors.qualitative.Prism,
                             hover_data={
@@ -384,32 +369,32 @@ layout = html.Div([
                                 "Año": True},
                             barmode="group"
                             )),
-    html.H5('Residuos infecciosos'),
-    dcc.Graph(id="graph_residuos_infecciosos",
+    html.H5('Presentaciones'),
+    dcc.Graph(id="graph_presentaciones_productos_por_modalidad",
               figure=px.bar(data_7,
                             x="cifra",
                             y="Facultad",
                             color="Año",
                             labels={
                                 'Facultad': 'Dependencia',
-                                'cifra': 'Residuos infeccsiosos'
+                                'cifra': 'Presentaciones'
                             },
-                            color_discrete_sequence=px.colors.qualitative.Prism,
+                            color_discrete_sequence=px.colors.qualitative.G10,
                             hover_data={
                                 "cifra": True,
                                 "total": True,
                                 "Año": True},
                             barmode="group"
                             )),
-    html.H5('Residuos posconsumo'),
-    dcc.Graph(id="graph_residuos_posconsumo",
+    html.H5('Conciertos'),
+    dcc.Graph(id="graph_conciertos_productos_por_modalidad",
               figure=px.bar(data_8,
                             x="cifra",
                             y="Facultad",
                             color="Año",
                             labels={
                                 'Facultad': 'Dependencia',
-                                'cifra': 'Residuos posconsumo'
+                                'cifra': 'Conciertos'
                             },
                             color_discrete_sequence=px.colors.qualitative.Prism,
                             hover_data={

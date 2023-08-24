@@ -71,6 +71,7 @@ data_2.fillna(0, inplace=True)
 data_2['cifra'] = data_2['cifra'].astype('float')
 
 data_2.apply(lambda x: total_function(x['Facultad'], x['Año'], data_2), axis=1)
+data_2['total'] = data_2['total'].map("{:,.2f}".format)
 total_data_2 = data_2['cifra'].sum()
 total_data_2 = f'{total_data_2:,}'.replace(',', ' ')
 
@@ -81,6 +82,7 @@ data_3.fillna(0, inplace=True)
 data_3['cifra'] = data_3['cifra'].astype('float')
 
 data_3.apply(lambda x: total_function(x['Facultad'], x['Año'], data_3), axis=1)
+data_3['total'] = data_3['total'].map("{:,.2f}".format)
 total_data_3 = data_3['cifra'].sum()
 total_data_3 = f'{total_data_3:,}'.replace(',', ' ')
 total_data_3 = '$ ' + total_data_3

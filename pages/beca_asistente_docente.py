@@ -99,9 +99,10 @@ data_4.fillna(0, inplace=True)
 data_4['cifra'] = data_4['cifra'].astype('float')
 
 data_4.apply(lambda x: total_function(x['Facultad'], x['Año'], data_4), axis=1)
+data_4['total'] = data_4['total'].map("{:,.2f}".format)
 total_data_4 = data_4['cifra'].sum()
 
-total_data_4 = f'{total_data_4:,}'
+total_data_4 = f'{total_data_4:,}'.replace(',', ' ')
 total_data_4 = '$ ' + total_data_4
 
 layout = html.Div([
@@ -140,7 +141,7 @@ layout = html.Div([
                                         className="card-number",
                                     ),
                                     html.P(
-                                        "Estudiantes beneficiados semestre I"),
+                                        "estudiantes beneficiados semestre I"),
                                 ]
                             ),
                         )
@@ -154,7 +155,7 @@ layout = html.Div([
                                         className="card-number",
                                     ),
                                     html.P(
-                                        "Estudiantes beneficiados semestre II"),
+                                        "estudiantes beneficiados semestre II"),
                                 ]
                             ),
                         )
@@ -168,7 +169,7 @@ layout = html.Div([
                                         className="card-number",
                                     ),
                                     html.P(
-                                        "Suma de los reconocimientos económicos"),
+                                        "suma de los reconocimientos económicos"),
                                 ]
                             ),
                         )

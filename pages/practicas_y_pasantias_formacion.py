@@ -137,6 +137,7 @@ data_6.fillna(0, inplace=True)
 data_6['cifra'] = data_6['cifra'].astype('float')
 
 data_6.apply(lambda x: total_function(x['Facultad'], x['Año'], data_6), axis=1)
+data_6['total'] = data_6['total'].map("{:,.2f}".format)
 total_data_6 = data_6['cifra'].sum()
 total_data_6 = f'{total_data_6:,}'.replace(',', ' ')
 total_data_6 = '$ ' + total_data_6

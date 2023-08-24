@@ -61,9 +61,9 @@ data = data[data['Logros'] != 'N/A']
 
 docentes_tmp = data[['Facultad', 'Año', 'Docentes']]
 docentes = docentes_tmp.rename(columns={'Docentes': 'cifra'})
+
 estudiantes_tmp = data[['Facultad', 'Año', 'Estudiantes']]
 estudiantes = estudiantes_tmp.rename(columns={'Estudiantes': 'cifra'})
-
 
 def total_function(facultad, anio, dataframe):
     df_facultad = dataframe[dataframe['Facultad'] == facultad]
@@ -72,7 +72,6 @@ def total_function(facultad, anio, dataframe):
         dataframe['Año'] == anio), 'total'] = df_total
 
 # Docentes
-
 
 docentes['Año'] = docentes['Año'].astype('str')
 docentes.fillna(0, inplace=True)

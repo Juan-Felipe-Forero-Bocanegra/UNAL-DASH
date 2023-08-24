@@ -225,7 +225,7 @@ layout = html.Div([
                             dbc.CardBody(
                                 [
                                     html.H5(
-                                        total_data_5,
+                                        total_data_6,
                                         className="card-number",
                                     ),
                                     html.P(
