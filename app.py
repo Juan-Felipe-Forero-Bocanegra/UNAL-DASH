@@ -129,6 +129,10 @@ app.layout = html.Div([
                                          href='/alianzas-redes-convenios-ICA'),
                     dbc.DropdownMenuItem("Movilidad investigativa",
                                          href='/movilidad-estudiantil-investigativa-ICA'),
+                    dbc.DropdownMenuItem("Innovación",
+                                         href='/actividades-innovacion-ICA'),
+                    dbc.DropdownMenuItem("Despliegue de la investigación",
+                                         href='/semillero-investigacion-ICA'),
 
                 ],
                 nav=True,
