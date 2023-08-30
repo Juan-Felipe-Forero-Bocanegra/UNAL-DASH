@@ -139,6 +139,16 @@ app.layout = html.Div([
                 in_navbar=True,
                 label="Investigación y Creación Artística",
             ),
+            dbc.DropdownMenu(
+                children=[
+                    dbc.DropdownMenuItem("Planeación táctica y operativa del SNL", href='/programas-planes-proyectos-laboratorios'),
+                    dbc.DropdownMenuItem(
+                        "Proyectos de laboratorios", href='/formulacion-ejecucion-proyectos-y-convenios-laboratorios'),
+                ],
+                nav=True,
+                in_navbar=True,
+                label="Gestión de laboratorios",
+            ),
 
 
         ],
