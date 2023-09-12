@@ -158,6 +158,43 @@ app.layout = html.Div([
                 in_navbar=True,
                 label="Gestión de laboratorios",
             ),
+            dbc.DropdownMenu(
+                children=[
+                    dbc.DropdownMenuItem(
+                        "Coordinación del Bienestar Universitario", href='/proyectos-sistema-bienestar-universitario'),
+                    dbc.DropdownMenuItem(
+                        "Área de Acompañamiento Integral", href='/admision-e-induccion-bienestar-universitario'),
+                    dbc.DropdownMenuItem(
+                        "Área de Gestión y Fomento Socioeconómico", href='/apoyos-socioeconomicos-estudiantes-bienestar-universitario'),
+                    dbc.DropdownMenuItem(
+                        "Área de Salud", href='/logros-actividades-areas-salud-bienestar-universitario'),
+                    dbc.DropdownMenuItem(
+                        "Área de Cultura", href='/eventos-culturales-artistico-bienestar-universitario'),
+                    dbc.DropdownMenuItem(
+                        "Área de Actividad Física y Deporte", href='/eventos-deportivos-bienestar-universitario'),
+
+                    dbc.DropdownMenuItem(
+                        "Programa de egresados", href='/actividades-egresados-bienestar-universitario'),
+                    dbc.DropdownMenuItem(
+                        "La movilidad como apoyo de bienestar", href='/movilidad-estudiantil-bienestar-universitario'),
+                ],
+                nav=True,
+                in_navbar=True,
+                label="Bienestar universitario",
+            ),
+            dbc.DropdownMenu(
+                children=[
+                    dbc.DropdownMenuItem(
+                        "Divulgación general", href='/contenidos-produccion-publicacion-divulgacion-comunicacion'),
+                    dbc.DropdownMenuItem(
+                        "Divulgación oficial (normatividad)", href='/mecanismo-comunicacion-informacion-oficial'),
+                    dbc.DropdownMenuItem(
+                        "Atención a PQRS", href='/atencion-PQRS-comunicacion'),
+                ],
+                nav=True,
+                in_navbar=True,
+                label="Comunicación",
+            ),
 
 
         ],
