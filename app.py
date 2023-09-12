@@ -141,9 +141,18 @@ app.layout = html.Div([
             ),
             dbc.DropdownMenu(
                 children=[
-                    dbc.DropdownMenuItem("Planeación táctica y operativa del SNL", href='/programas-planes-proyectos-laboratorios'),
+                    dbc.DropdownMenuItem(
+                        "Planeación táctica y operativa del SNL", href='/programas-planes-proyectos-laboratorios'),
                     dbc.DropdownMenuItem(
                         "Proyectos de laboratorios", href='/formulacion-ejecucion-proyectos-y-convenios-laboratorios'),
+                    dbc.DropdownMenuItem(
+                        "Alianzas, convenios o donaciones", href='/alianzas-convenios-donaciones-laboratorios'),
+                    dbc.DropdownMenuItem(
+                        "Servicios prestados en los laboratorios", href='/servicios-extension-laboratorios'),
+                    dbc.DropdownMenuItem(
+                        "Cifras SNIES", href='/cifras-snies-laboratorios'),
+                    dbc.DropdownMenuItem(
+                        "Actualizacion HERMES", href='/actualizacion-hermes-laboratorios'),
                 ],
                 nav=True,
                 in_navbar=True,
