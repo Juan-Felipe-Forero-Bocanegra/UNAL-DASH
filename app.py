@@ -195,6 +195,16 @@ app.layout = html.Div([
                 in_navbar=True,
                 label="Comunicación",
             ),
+            dbc.DropdownMenu(
+                children=[
+                    dbc.DropdownMenuItem(
+                        "Implementación del Sistema de Gestión de Calidad", href='/procesos-y-procedimientos-desarrollo-organizacional'),
+                ],
+                nav=True,
+                in_navbar=True,
+                label="Desarrollo Organizacional",
+            ),
+
 
 
         ],
@@ -226,4 +236,4 @@ def login(interval):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=True, port=8052)
