@@ -8,14 +8,14 @@ import dash_bootstrap_components as dbc
 import requests
 
 dash.register_page(
-    __name__, path='/salidas-no-conformes-desarrollo-organizacional')
+    __name__, path='/actividades-alto-riesgo-personal-directo-o-contratista-direccionamiento-institucional')
 
 f = open("file.txt", "r")
 token = f.readline()
 e = open("environment.txt", "r")
 environment = e.readline()
 url = environment + \
-    "/reporte_cifras/buscarCifras?area_param=Desarrollo Organizacional&programa_param=Implementación del Sistema de Gestión de Calidad&actividad_param=Salidas no conformes"
+    "/reporte_cifras/buscarCifras?area_param=Direccionamiento Institucional&programa_param=División de seguridad y salud en el trabajo&actividad_param=Actividades de alto riesgo de personal directo o contratistas"
 headers = {'Content-type': 'application/json', 'Authorization': token}
 r = requests.get(url, headers=headers)
 dataJson = r.json()
@@ -30,10 +30,10 @@ for c in dataJson:
                 o = {
                     'Facultad': c['facultad'],
                     'Año': c['anio'],
-                    'Gestión realizada': ''
+                    'Actividad': ''
                 }
             if a['actividadDatoLista']['orden'] == '1':
-                o['Gestión realizada'] = a['cifra']
+                o['Actividad'] = a['cifra']
                 i += 1
             if i == 1:
                 list.append(o)
@@ -44,24 +44,18 @@ data = pd.DataFrame(list)
 # logros alcanzados
 
 layout = html.Div([
-    html.H2('Desarrollo Organizacional'),
-    html.H3('Implementación del Sistema de Gestión de Calidad'),
+    html.H2('Direccionamiento Institucional'),
+    html.H3('División de seguridad y salud en el trabajo'),
     dbc.Nav(
         [
-            dbc.NavItem(dbc.NavLink("Procesos y procedimientos",
-                                    href="/procesos-y-procedimientos-desarrollo-organizacional")),
-            dbc.NavItem(dbc.NavLink("Retroalimentación con partes interesadas",
-                                    href="/retroalimentacion-partes-interesadas-desarrollo-organizacional")),
-            dbc.NavItem(dbc.NavLink("Trámites y servicios",
-                                    href="/tramites-servicios-desarrollo-organizacional")),
-            dbc.NavItem(dbc.NavLink("Salidas no conformes", active=True,
-                                    href="/salidas-no-conformes-desarrollo-organizacional")),
-            dbc.NavItem(dbc.NavLink("Mejoramiento contínuo del SGC",
-                                    href="/mejoramiento-continuo-SGC-desarrollo-organizacional")),
-            dbc.NavItem(dbc.NavLink("Auditorias",
-                                    href="/auditorias-desarrollo-organizacional")),
-            dbc.NavItem(dbc.NavLink("Planes de mejoramiento y acciones correctivas",  
-                                    href="/planes-mejoramiento-acciones-correctivas-desarrollo-organizacional")),
+            dbc.NavItem(dbc.NavLink("Exámenes ocupacionales de ingreso para docentes ocasionales",
+                                    href="/examenes-ocupacionales-docentes-ocasionales-direccionamiento-institucional")),
+            dbc.NavItem(dbc.NavLink("Actividades laborales con clase de riesgo",
+                                    href="/actividades-laborales-clase-riesgo-direccionamiento-institucional")),
+            dbc.NavItem(dbc.NavLink("Actividades de alto riesgo de personal directo o contratistas", active=True,
+                                    href="/actividades-alto-riesgo-personal-directo-o-contratista-direccionamiento-institucional")),
+            dbc.NavItem(dbc.NavLink("Actos y condiciones inseguras", 
+                                    href="/actos-y-condiciones-inseguras")),
 
         ],
         pills=True,),
@@ -71,7 +65,7 @@ layout = html.Div([
                 [
                     dbc.Col(html.Div([
                         dcc.Dropdown(
-                            id="facultad_salidas_no_conformes_desarrollo_organizacional",
+                            id="facultad_actividades_alto_riesgo_personal_direccionamiento_institucional",
                             options=data['Facultad'].unique(),
                             clearable=True,
                             placeholder="Seleccione la facultad",
@@ -79,7 +73,7 @@ layout = html.Div([
                     ]), lg=6),
                     dbc.Col(html.Div([
                         dcc.Dropdown(
-                            id="anio_salidas_no_conformes_desarrollo_organizacional",
+                            id="anio_actividades_alto_riesgo_personal_direccionamiento_institucional",
                             options=data['Año'].unique(),
                             clearable=True,
                             placeholder="Seleccione el año",
@@ -113,7 +107,7 @@ layout = html.Div([
                                         'backgroundColor': 'rgb(29, 105, 150, 0.1)',
                                     }
                                 ],
-                                id='logros_tabla_salidas_no_conformes_desarrollo_organizacional',
+                                id='logros_tabla_actividades_alto_riesgo_personal_direccionamiento_institucional',
                             ),
                         ], style={'paddingTop': '2%'})
                     )
@@ -126,9 +120,9 @@ layout = html.Div([
 
 
 @callback(
-    Output("logros_tabla_salidas_no_conformes_desarrollo_organizacional", "data"),
-    [Input("facultad_salidas_no_conformes_desarrollo_organizacional", "value"), Input("anio_salidas_no_conformes_desarrollo_organizacional", "value")])
-def logros_alcanzados_salidas_no_conformes_desarrollo_organizacional(facultad, anio):
+    Output("logros_tabla_actividades_alto_riesgo_personal_direccionamiento_institucional", "data"),
+    [Input("facultad_actividades_alto_riesgo_personal_direccionamiento_institucional", "value"), Input("anio_actividades_alto_riesgo_personal_direccionamiento_institucional", "value")])
+def logros_alcanzados_actividades_alto_riesgo_personal_direccionamiento_institucional(facultad, anio):
     if facultad or anio:
         if not anio:
             df = data

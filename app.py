@@ -204,6 +204,28 @@ app.layout = html.Div([
                 in_navbar=True,
                 label="Desarrollo Organizacional",
             ),
+            dbc.DropdownMenu(
+                children=[
+                    dbc.DropdownMenuItem(
+                        "Participación en la definición de políticas institucionales", href='/proceso-eleccion-direccionamiento-institucional'),
+                    dbc.DropdownMenuItem(
+                        "Plan de Acción de Facultad", href='/formulacion-plan-accion-direccionamiento-institucional'),
+                    dbc.DropdownMenuItem(
+                        "Participación en estudios y evaluaciones estratégicas", href='/participacion-estudios-y-evaluacion-estrategicas-direccionamiento-institucional'),
+                    dbc.DropdownMenuItem(
+                        "Apoyos para servidores públicos", href='/apoyos-economicos-servidores-publicos-direccionamiento-institucional'),
+                    dbc.DropdownMenuItem(
+                        "División de seguridad y salud en el trabajo", href='/examenes-ocupacionales-docentes-ocasionales-direccionamiento-institucional'),
+                    dbc.DropdownMenuItem(
+                        "Programa de egresados", href='/actividades-egresados-direccionamiento-institucional'),
+                    dbc.DropdownMenuItem(
+                        "Direccionamiento Institucional", href='/participacion-otros-planes-institucionales-direccionamiento-institucional'),
+                ],
+                nav=True,
+                in_navbar=True,
+                label="Direccionamiento Institucional",
+            ),
+
 
 
 
@@ -236,4 +258,4 @@ def login(interval):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True, port=8052)
+    app.run_server(debug=True, port=8050)
