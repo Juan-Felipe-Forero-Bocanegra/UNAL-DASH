@@ -225,6 +225,19 @@ app.layout = html.Div([
                 in_navbar=True,
                 label="Direccionamiento Institucional",
             ),
+            dbc.DropdownMenu(
+                children=[
+                    dbc.DropdownMenuItem(
+                        "Aseo, transporte, vigilancia y mantenimiento", href='/servicios-aseo-transporte-vigilancia-mantenimiento-gestion-administrativa-y-financiera'),
+                    dbc.DropdownMenuItem(
+                        "Gestión Financiera", href='/presupuesto-proyectos-investigacion-gestion-administrativa-y-financiera'),
+                    dbc.DropdownMenuItem(
+                        "Gestión Administrativa de Bienes y Servicios", href='/adquisicion-bienes-y-servicios-gestion-administrativa-y-financiera'),
+                ],
+                nav=True,
+                in_navbar=True,
+                label="Gestión Administrativa y Financiera",
+            ),
 
 
 
