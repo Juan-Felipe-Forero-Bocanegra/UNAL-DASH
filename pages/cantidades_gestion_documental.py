@@ -112,7 +112,6 @@ total_data_4 = format(total_data_4, '.2f')
 
 layout = html.Div([
     html.H2('Gestión Documental'),
-    html.H3('Gestión Documental'),
     dbc.Nav(
         [
             dbc.NavItem(dbc.NavLink("Actualizacion de Tablas de Retención Documental (TRD) y de Valoración Documental (TVD)",

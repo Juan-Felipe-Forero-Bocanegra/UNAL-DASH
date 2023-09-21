@@ -240,7 +240,15 @@ app.layout = html.Div([
             ),
             dbc.NavItem(dbc.NavLink("Gestión Documental",
                         href='/actualizacion-TRD-y-TVD-gestion-documental')),
-
+            dbc.DropdownMenu(
+                children=[
+                    dbc.DropdownMenuItem(
+                        "Gestión de Ordenamiento y Desarrollo Físico", href='/elaboracion-y-diseno-proyectos-infraestructura')
+                ],
+                nav=True,
+                in_navbar=True,
+                label="Infraestructura",
+            ),
 
 
 
