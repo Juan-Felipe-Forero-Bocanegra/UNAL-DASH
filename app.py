@@ -238,6 +238,8 @@ app.layout = html.Div([
                 in_navbar=True,
                 label="Gestión Administrativa y Financiera",
             ),
+            dbc.NavItem(dbc.NavLink("Gestión Documental",
+                        href='/actualizacion-TRD-y-TVD-gestion-documental')),
 
 
 
