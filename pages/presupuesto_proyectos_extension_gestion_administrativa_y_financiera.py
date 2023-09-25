@@ -8,13 +8,13 @@ import dash_bootstrap_components as dbc
 import requests
 
 dash.register_page(
-    __name__, path='/practicas-y-pasantias-formacion')
+    __name__, path='/presupuesto-proyectos-extension-gestion-administrativa-y-financiera')
 
 f = open("file.txt", "r")
 token = f.readline()
 e = open("environment.txt", "r")
 environment = e.readline()
-url = environment + "/reporte_cifras/buscarCifras?area_param=Formación&programa_param=Reconocimientos económicos a estudiantes&actividad_param=Prácticas y pasantías"
+url = environment + "/reporte_cifras/buscarCifras?area_param=Gestión Administrativa y Financiera&programa_param=Gestión Financiera&actividad_param=Presupuesto en proyectos de extensión"
 headers = {'Content-type': 'application/json', 'Authorization': token}
 r = requests.get(url, headers=headers)
 dataJson = r.json()
@@ -24,25 +24,15 @@ list2 = []
 list3 = []
 list4 = []
 list5 = []
-list6 = []
-
 
 for c in dataJson:
     if c['informeActividadDetalle']['orden'] == 1:
-        i = 0
-        for a in c['informeActividadDetalle']['listaDatoListaValor']:
-            if i == 0:
-                o = {
-                    'Facultad': c['facultad'],
-                    'Año': c['anio'],
-                    'Logro': ''
-                }
-            if a['actividadDatoLista']['orden'] == '1':
-                o['Logro'] = a['cifra']
-                i += 1
-            if i == 1:
-                list.append(o)
-                i = 0
+        o = {
+            'Facultad': c['facultad'],
+            'Año': c['anio'],
+            'cifra': c['informeActividadDetalle']['cifra']
+        }
+        list.append(o)
     if c['informeActividadDetalle']['orden'] == 2:
         o = {
             'Facultad': c['facultad'],
@@ -65,26 +55,30 @@ for c in dataJson:
         }
         list4.append(o)
     if c['informeActividadDetalle']['orden'] == 5:
-        o = {
-            'Facultad': c['facultad'],
-            'Año': c['anio'],
-            'cifra': c['informeActividadDetalle']['cifra']
-        }
-        list5.append(o)
-    if c['informeActividadDetalle']['orden'] == 6:
-        o = {
-            'Facultad': c['facultad'],
-            'Año': c['anio'],
-            'cifra': c['informeActividadDetalle']['cifra']
-        }
-        list6.append(o)
+        i = 0
+        j = 0
+        for a in c['informeActividadDetalle']['listaDatoListaValor']:
+            if i == 0:
+                o = {
+                    'Facultad': c['facultad'],
+                    'Año': c['anio'],
+                    'Descripción': '',
+                }
+            if a['actividadDatoLista']['orden'] == '1':
+                if a['indice'] == j:
+                    o['Descripción'] = a['cifra']
+                    i += 1
+            if i == 1:
+                list5.append(o)
+                i = 0
+                j += 1
+
 
 data = pd.DataFrame(list)
 data_2 = pd.DataFrame(list2)
 data_3 = pd.DataFrame(list3)
 data_4 = pd.DataFrame(list4)
 data_5 = pd.DataFrame(list5)
-data_6 = pd.DataFrame(list6)
 
 
 def total_function(facultad, anio, dataframe):
@@ -94,73 +88,73 @@ def total_function(facultad, anio, dataframe):
         dataframe['Año'] == anio), 'total'] = df_total
 
 
-# Estudiantes de pregrado vínculados con entidades externas
+# Presupuesto apropiado en proyectos de extensión de modalidad de servicios académicos
+
+data["Año"] = data["Año"].astype('str')
+data.fillna(0, inplace=True)
+data['cifra'] = data['cifra'].astype('float')
+
+data.apply(lambda x: total_function(x['Facultad'], x['Año'], data), axis=1)
+
+data['total'] = data['total'].map("{:,.2f}".format)
+
+total_data = data['cifra'].sum()
+total_data = f'{total_data:,}'.replace(',', ' ')
+total_data = '$ ' + total_data
+
+# Presupuesto apropiado en proyectos de extensión de la modalidad de educación continua
 
 data_2["Año"] = data_2["Año"].astype('str')
 data_2.fillna(0, inplace=True)
-data_2['cifra'] = data_2['cifra'].astype('int')
+data_2['cifra'] = data_2['cifra'].astype('float')
 
 data_2.apply(lambda x: total_function(x['Facultad'], x['Año'], data_2), axis=1)
-total_data_2 = data_2['cifra'].sum()
 
-# Estudiantes de posgrado vínculados con entidades externas
+data_2['total'] = data_2['total'].map("{:,.2f}".format)
+
+total_data_2 = data_2['cifra'].sum()
+total_data_2 = f'{total_data_2:,}'.replace(',', ' ')
+total_data_2 = '$ ' + total_data_2
+
+# Presupuesto ejecutado en proyectos de extensión de modalidad de servicios académicos
 
 data_3["Año"] = data_3["Año"].astype('str')
 data_3.fillna(0, inplace=True)
-data_3['cifra'] = data_3['cifra'].astype('int')
+data_3['cifra'] = data_3['cifra'].astype('float')
 
 data_3.apply(lambda x: total_function(x['Facultad'], x['Año'], data_3), axis=1)
-total_data_3 = data_3['cifra'].sum()
 
-# Estudiantes de pregrado vinculados con la Universidad
+data_3['total'] = data_3['total'].map("{:,.2f}".format)
+
+total_data_3 = data_3['cifra'].sum()
+total_data_3 = f'{total_data_3:,}'.replace(',', ' ')
+total_data_3 = '$ ' + total_data_3
+
+# Presupuesto ejecutado en proyectos de extensión de la modalidad de educación continua
 
 data_4["Año"] = data_4["Año"].astype('str')
 data_4.fillna(0, inplace=True)
-data_4['cifra'] = data_4['cifra'].astype('int')
+data_4['cifra'] = data_4['cifra'].astype('float')
 
 data_4.apply(lambda x: total_function(x['Facultad'], x['Año'], data_4), axis=1)
+
+data_4['total'] = data_4['total'].map("{:,.2f}".format)
+
 total_data_4 = data_4['cifra'].sum()
-
-# Estudiantes de posgrado vinculados con la Universidad
-
-data_5["Año"] = data_5["Año"].astype('str')
-data_5.fillna(0, inplace=True)
-data_5['cifra'] = data_5['cifra'].astype('int')
-
-data_5.apply(lambda x: total_function(x['Facultad'], x['Año'], data_5), axis=1)
-total_data_5 = data_5['cifra'].sum()
-
-# Suma de los reconocmientos económicos
-
-data_6["Año"] = data_6["Año"].astype('str')
-data_6.fillna(0, inplace=True)
-data_6['cifra'] = data_6['cifra'].astype('float')
-
-data_6.apply(lambda x: total_function(x['Facultad'], x['Año'], data_6), axis=1)
-total_data_6 = data_6['cifra'].sum()
-total_data_6 = f'{total_data_6:,}'.replace(',', ' ')
-total_data_6 = '$ ' + total_data_6
+total_data_4 = f'{total_data_4:,}'.replace(',', ' ')
+total_data_4 = '$ ' + total_data_4
 
 
 layout = html.Div([
-    html.H2('Formación'),
-    html.H3('Gestión de programas curriculares'),
+    html.H2('Gestión Administrativa y Financiera'),
+    html.H3('Gestión Financiera'),
     dbc.Nav(
         [
-            dbc.NavItem(dbc.NavLink("Beca auxiliar docente",
-                        href="/beca-auxiliar-docente")),
-            dbc.NavItem(dbc.NavLink("Beca asistente docente",
-                        href="/beca-asistente-docente")),
-            dbc.NavItem(dbc.NavLink("Estudiantes auxiliares",
-                        href="/estudiantes-auxiliares")),
-            dbc.NavItem(dbc.NavLink("Beca Exención de Derechos Académicos",
-                        href="/beca-exencion-derechos-economicos")),
-            dbc.NavItem(dbc.NavLink("Prácticas y pasantías",
-                        active=True, href="/practicas-y-pasantias-formacion")),
-            dbc.NavItem(dbc.NavLink("Convenios para prácticas y pasantías en el año",
-                        href="/convenios-practicas-pasantias-formacion")),
-            dbc.NavItem(dbc.NavLink("Otras becas o reconocimientos económicos",
-                        href="/otras-becas-o-reconocimientos-economicos")),
+            dbc.NavItem(dbc.NavLink("Presupuesto en proyectos de investigación",
+                                    href="/presupuesto-proyectos-investigacion-gestion-administrativa-y-financiera")),
+            dbc.NavItem(dbc.NavLink("Presupuesto en proyectos de extensión", active=True,
+                                    href="/presupuesto-proyectos-extension-gestion-administrativa-y-financiera")),
+
         ],
         pills=True,),
     html.Div(
@@ -172,11 +166,25 @@ layout = html.Div([
                             dbc.CardBody(
                                 [
                                     html.H5(
+                                        total_data,
+                                        className="card-number",
+                                    ),
+                                    html.P(
+                                        "presupuesto apropiado en proyectos de extensión de modalidad de servicios académicos"),
+                                ]
+                            ),
+                        )
+                    ], className='card_container'), lg=4),
+                    dbc.Col(html.Div([
+                        dbc.Card(
+                            dbc.CardBody(
+                                [
+                                    html.H5(
                                         total_data_2,
                                         className="card-number",
                                     ),
                                     html.P(
-                                        "estudiantes de pregrado vínculados con entidades externas"),
+                                        "presupuesto apropiado en proyectos de extensión de la modalidad de educación continua"),
                                 ]
                             ),
                         )
@@ -190,11 +198,18 @@ layout = html.Div([
                                         className="card-number",
                                     ),
                                     html.P(
-                                        "estudiantes de posgrado vínculados con entidades externas"),
+                                        "presupuesto ejecutado en proyectos de extensión de modalidad de servicios académicos"),
                                 ]
                             ),
                         )
                     ], className='card_container'), lg=4),
+                ]
+            ),
+        ]),
+    html.Div(
+        [
+            dbc.Row(
+                [
                     dbc.Col(html.Div([
                         dbc.Card(
                             dbc.CardBody(
@@ -204,39 +219,7 @@ layout = html.Div([
                                         className="card-number",
                                     ),
                                     html.P(
-                                        "estudiantes de pregrado vinculados con la universidad"),
-                                ]
-                            ),
-                        )
-                    ], className='card_container'), lg=4),
-                ]
-            ),
-            dbc.Row(
-                [
-                    dbc.Col(html.Div([
-                        dbc.Card(
-                            dbc.CardBody(
-                                [
-                                    html.H5(
-                                        total_data_5,
-                                        className="card-number",
-                                    ),
-                                    html.P(
-                                        "estudiantes de posgrado vinculados con la universidad"),
-                                ]
-                            ),
-                        )
-                    ], className='card_container'), lg=4),
-                    dbc.Col(html.Div([
-                        dbc.Card(
-                            dbc.CardBody(
-                                [
-                                    html.H5(
-                                        total_data_6,
-                                        className="card-number",
-                                    ),
-                                    html.P(
-                                        "suma de los reconocmientos económicos"),
+                                        "presupuesto ejecutado en proyectos de extensión de la modalidad de educación continua"),
                                 ]
                             ),
                         )
@@ -244,15 +227,15 @@ layout = html.Div([
                 ]
             ),
         ]),
-    html.H5('Estudiantes de pregrado vínculados con entidades externas'),
-    dcc.Graph(id="graph_estudiantes_pregrado_entidades_externas_formacion",
-              figure=px.bar(data_2,
+    html.H5('Presupuesto apropiado en proyectos de extensión de modalidad de servicios académicos'),
+    dcc.Graph(id="graph_presupuesto_apropiado_proyecto_extension_servicios_academicos_gestion_administrativa_y_financiera",
+              figure=px.bar(data,
                             x="cifra",
                             y="Facultad",
                             color="Año",
                             labels={
                                 'Facultad': 'Dependencia',
-                                'cifra': 'Estudiantes de pregrado'
+                                'cifra': 'Presupuesto apropiado'
                             },
                             color_discrete_sequence=px.colors.qualitative.Prism,
                             hover_data={
@@ -261,82 +244,65 @@ layout = html.Div([
                                 "Año": True},
                             barmode="group"
                             )),
-    html.H5('Estudiantes de posgrado vínculados con entidades externas'),
-    dcc.Graph(id="graph_estudiantes_posgrado_entidades_externas_formacion",
+    html.H5('Presupuesto ejecutado en proyectos de extensión de modalidad de servicios académicos'),
+    dcc.Graph(id="graph_presupuesto_ejecutado_proyecto_extension_servicios_academicos_gestion_administrativa_y_financiera",
               figure=px.bar(data_3,
                             x="cifra",
                             y="Facultad",
                             color="Año",
                             labels={
                                 'Facultad': 'Dependencia',
-                                'cifra': 'Estudiantes de posgrado'
+                                'cifra': 'Presupuesto ejecutado'
                             },
                             color_discrete_sequence=px.colors.qualitative.Prism,
-                            barmode="group",
                             hover_data={
                                 "cifra": True,
                                 "total": True,
                                 "Año": True},
+                            barmode="group"
                             )),
-    html.H5('Estudiantes de pregrado vinculados con la Universidad'),
-    dcc.Graph(id="graph_estudiantes_pregrado_vinculados_unal_formacion",
+    html.H5('Presupuesto apropiado en proyectos de extensión de la modalidad de educación continua'),
+    dcc.Graph(id="graph_presupuesto_apropiado_proyectos_extension_educacion_continua_gestion_administrativa_y_financiera",
+              figure=px.bar(data_2,
+                            x="cifra",
+                            y="Facultad",
+                            color="Año",
+                            labels={
+                                'Facultad': 'Dependencia',
+                                'cifra': 'Presupuesto apropiado'
+                            },
+                            color_discrete_sequence=px.colors.qualitative.G10,
+                            hover_data={
+                                "cifra": True,
+                                "total": True,
+                                "Año": True},
+                            barmode="group"
+                            )),
+    html.H5('Presupuesto ejecutado en proyectos de extensión de la modalidad de educación continua'),
+    dcc.Graph(id="graph_presupuesto_ejecutado_proyectos_extension_educacion_continua_gestion_administrativa_y_financiera",
               figure=px.bar(data_4,
                             x="cifra",
                             y="Facultad",
                             color="Año",
                             labels={
                                 'Facultad': 'Dependencia',
-                                'cifra': 'Estudiantes de pregrado'
+                                'cifra': 'Presupuesto ejecutado'
                             },
                             color_discrete_sequence=px.colors.qualitative.G10,
-                            barmode="group",
                             hover_data={
                                 "cifra": True,
                                 "total": True,
                                 "Año": True},
+                            barmode="group"
                             )),
-    html.H5('Estudiantes de posgrado vinculados con la Universidad'),
-    dcc.Graph(id="graph_estudiantes_posgrado_vinculados_unal_formacion",
-              figure=px.bar(data_5,
-                            x="cifra",
-                            y="Facultad",
-                            color="Año",
-                            labels={
-                                'Facultad': 'Dependencia',
-                                'cifra': 'Estudiantes de posgrado'
-                            },
-                            color_discrete_sequence=px.colors.qualitative.G10,
-                            barmode="group",
-                            hover_data={
-                                "cifra": True,
-                                "total": True,
-                                "Año": True},
-                            )),
-    html.H5('Suma de los reconocmientos económicos'),
-    dcc.Graph(id="graph_suma_reconocimientos_economicos_formacion",
-              figure=px.bar(data_6,
-                            x="cifra",
-                            y="Facultad",
-                            color="Año",
-                            labels={
-                                'Facultad': 'Dependencia',
-                                'cifra': 'Reconocimientos económicos'
-                            },
-                            color_discrete_sequence=px.colors.qualitative.Plotly,
-                            barmode="group",
-                            hover_data={
-                                "cifra": True,
-                                "total": True,
-                                "Año": True},
-                            )),
-    html.H5('Logros Alcanzados'),
+html.H5('Descripción general de la ejecución presupuestal*'),
     html.Div(
         [
             dbc.Row(
                 [
                     dbc.Col(html.Div([
                         dcc.Dropdown(
-                            id="facultad_practicas_pasantias_formacion",
+                            id="facultad_descripcion_ejecucion_presupuestal_proyectos_extension_gestion_administrativa_y_financiera",
                             options=data['Facultad'].unique(),
                             clearable=True,
                             placeholder="Seleccione la facultad",
@@ -344,7 +310,7 @@ layout = html.Div([
                     ]), lg=6),
                     dbc.Col(html.Div([
                         dcc.Dropdown(
-                            id="anio_practicas_pasantias_formacion",
+                            id="anio_descripcion_ejecucion_presupuestal_proyectos_extension_gestion_administrativa_y_financiera",
                             options=data['Año'].unique(),
                             clearable=True,
                             placeholder="Seleccione el año",
@@ -378,7 +344,7 @@ layout = html.Div([
                                         'backgroundColor': 'rgb(29, 105, 150, 0.1)',
                                     }
                                 ],
-                                id='logros_table_practicas_pasantias_formacion',
+                                id='logros_tabla_descripcion_ejecucion_presupuestal_proyectos_extension_gestion_administrativa_y_financiera',
                             ),
                         ], style={'paddingTop': '2%'})
                     )
@@ -386,30 +352,32 @@ layout = html.Div([
             )
         ]),
 
+
+
 ], className='layout')
 
 
 @callback(
-    Output("logros_table_practicas_pasantias_formacion", "data"),
-    [Input("facultad_practicas_pasantias_formacion", "value"), Input("anio_practicas_pasantias_formacion", "value")])
-def logros_alcanzados_practicas_pasantias_formacion(facultad, anio):
+    Output("logros_tabla_descripcion_ejecucion_presupuestal_proyectos_extension_gestion_administrativa_y_financiera", "data"),
+    [Input("facultad_descripcion_ejecucion_presupuestal_proyectos_extension_gestion_administrativa_y_financiera", "value"), Input("anio_descripcion_ejecucion_presupuestal_proyectos_extension_gestion_administrativa_y_financiera", "value")])
+def logros_alcanzados_descripcion_ejecucion_presupuestal_proyectos_extension_gestion_administrativa_y_financiera(facultad, anio):
     if facultad or anio:
         if not anio:
-            df = data
+            df = data_5
             df = df[df['Facultad'] == facultad]
             table = df.to_dict('records')
             return table
         if not facultad:
-            df = data
+            df = data_5
             df = df[df['Año'] == anio]
             table = df.to_dict('records')
             return table
         if facultad and anio:
-            df = data
+            df = data_5
             df = df[df['Facultad'] == facultad]
             df = df[df['Año'] == anio]
             table = df.to_dict('records')
             return table
-    df = data
+    df = data_5
     table = df.to_dict('records')
     return table

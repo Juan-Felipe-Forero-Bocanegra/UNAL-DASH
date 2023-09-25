@@ -7,13 +7,15 @@ from dash import dash_table
 import dash_bootstrap_components as dbc
 import requests
 
-dash.register_page(__name__, path='/reconocimiento-visibilidad-universidad')
+dash.register_page(
+    __name__, path='/gestion-espacios-fisicos-mantenimiento-infraestructura')
 
 f = open("file.txt", "r")
 token = f.readline()
 e = open("environment.txt", "r")
 environment = e.readline()
-url = environment + "/reporte_cifras/buscarCifras?area_param=Extensión, Innovación y Propiedad Intelectual&programa_param=Reconocimiento y visibilidad de la Universidad&actividad_param=Acciones para aumentar el reconocimiento y visibilidad de la Universidad"
+url = environment + \
+    "/reporte_cifras/buscarCifras?area_param=Infraestructura&programa_param=Gestión de Ordenamiento y Desarrollo Físico&actividad_param=Gestión de espacios físicos y mantenimiento"
 headers = {'Content-type': 'application/json', 'Authorization': token}
 r = requests.get(url, headers=headers)
 dataJson = r.json()
@@ -39,17 +41,29 @@ for c in dataJson:
 
 data = pd.DataFrame(list)
 
+# logros alcanzados
+
 layout = html.Div([
-    html.H2('Extensión, Innovación y Propiedad Intelectual'),
-    html.H3('Acciones para aumentar el reconocimiento y la visibilidad de la Universidad'),   
-    html.H5('Logros Alcanzados'),
+    html.H2('Infraestructura'),
+    html.H3('Gestión de Ordenamiento y Desarrollo Físico'),
+    dbc.Nav(
+        [
+            dbc.NavItem(dbc.NavLink("Elaboración y diseño de proyectos", 
+                                    href="/elaboracion-y-diseno-proyectos-infraestructura")),
+            dbc.NavItem(dbc.NavLink("Intervención de espacios físicos",
+                                    href="/intervencion-espacios-fisicos-infraestructura")),
+            dbc.NavItem(dbc.NavLink("Gestión de espacios físicos y mantenimiento",active=True,
+                                    href="/gestion-espacios-fisicos-mantenimiento-infraestructura")),
+
+        ],
+        pills=True,),
     html.Div(
         [
             dbc.Row(
                 [
                     dbc.Col(html.Div([
                         dcc.Dropdown(
-                            id="facultad_reconocimiento_visilidad_universidad",
+                            id="facultad_gestion_espacios_fisicos_infraestructura",
                             options=data['Facultad'].unique(),
                             clearable=True,
                             placeholder="Seleccione la facultad",
@@ -57,7 +71,7 @@ layout = html.Div([
                     ]), lg=6),
                     dbc.Col(html.Div([
                         dcc.Dropdown(
-                            id="anio_reconocimiento_visilidad_universidad",
+                            id="anio_gestion_espacios_fisicos_infraestructura",
                             options=data['Año'].unique(),
                             clearable=True,
                             placeholder="Seleccione el año",
@@ -91,7 +105,7 @@ layout = html.Div([
                                         'backgroundColor': 'rgb(29, 105, 150, 0.1)',
                                     }
                                 ],
-                                id='logros_tabla_reconocimiento_visilidad_universidad',
+                                id='logros_tabla_gestion_espacios_fisicos_infraestructura',
                             ),
                         ], style={'paddingTop': '2%'})
                     )
@@ -104,9 +118,9 @@ layout = html.Div([
 
 
 @callback(
-    Output("logros_tabla_reconocimiento_visilidad_universidad", "data"),
-    [Input("facultad_reconocimiento_visilidad_universidad", "value"), Input('anio_reconocimiento_visilidad_universidad', "value")])
-def logros_alcanzados_reconocimiento_visilidad_universidad(facultad, anio):
+    Output("logros_tabla_gestion_espacios_fisicos_infraestructura", "data"),
+    [Input("facultad_gestion_espacios_fisicos_infraestructura", "value"), Input("anio_gestion_espacios_fisicos_infraestructura", "value")])
+def logros_alcanzados_gestion_espacios_fisicos_infraestructura(facultad, anio):
     if facultad or anio:
         if not anio:
             df = data

@@ -8,14 +8,14 @@ import dash_bootstrap_components as dbc
 import requests
 
 dash.register_page(
-    __name__, path='/mantenimiento-actualizacion-servicios-digitales')
-
+    __name__, path='/servicios-aseo-transporte-vigilancia-mantenimiento-gestion-administrativa-y-financiera')
 
 f = open("file.txt", "r")
 token = f.readline()
 e = open("environment.txt", "r")
 environment = e.readline()
-url = environment + "/reporte_cifras/buscarCifras?area_param=Gobierno y Gestión de Servicios TI&programa_param=Gobierno y Gestión de Servicios TI&actividad_param=Mantenimiento y actualización de aplicativos, servicios dígitales y equipos"
+url = environment + \
+    "/reporte_cifras/buscarCifras?area_param=Gestión Administrativa y Financiera&programa_param=Aseo, transporte, vigilancia y mantenimiento&actividad_param=Servicios de aseo, transporte, vigilancia, mantenimiento"
 headers = {'Content-type': 'application/json', 'Authorization': token}
 r = requests.get(url, headers=headers)
 dataJson = r.json()
@@ -41,30 +41,25 @@ for c in dataJson:
 
 data = pd.DataFrame(list)
 
+# logros alcanzados
+
 layout = html.Div([
-    html.H2('Gobierno y Gestión de Servicios TI'),
-    html.H3(
-        'Mantenimiento y actualización de servicios digitales'),
+    html.H2('Gestión Administrativa y Financiera'),
+    html.H3('Aseo, transporte, vigilancia y mantenimiento'),
     dbc.Nav(
         [
-            dbc.NavItem(dbc.NavLink("Repositorios de información",
-                                    href="/repositorios-informacion")),
-            dbc.NavItem(dbc.NavLink("Mantenimiento y actualización de servicios digitales", active=True,
-                                    href="/mantenimiento-actualizacion-servicios-digitales")),
-            dbc.NavItem(dbc.NavLink("Gestión de proyectos informáticos",
-                                    href="/gestion-proyectos-informaticos")),
-            dbc.NavItem(dbc.NavLink("Páginas web",
-                                    href="/paginas-web")),
+            dbc.NavItem(dbc.NavLink("Servicios de aseo, transporte, vigilancia, mantenimiento", active=True,
+                                    href="/servicios-aseo-transporte-vigilancia-mantenimiento-gestion-administrativa-y-financiera")),
+
         ],
         pills=True,),
-    html.H5('Logros Alcanzados'),
     html.Div(
         [
             dbc.Row(
                 [
                     dbc.Col(html.Div([
                         dcc.Dropdown(
-                            id="facultad_mantenimiento_servicios_digitales",
+                            id="facultad_servicios_aseo_transporte_vigilancia_mantenimiento_gestion_administrativa",
                             options=data['Facultad'].unique(),
                             clearable=True,
                             placeholder="Seleccione la facultad",
@@ -72,7 +67,7 @@ layout = html.Div([
                     ]), lg=6),
                     dbc.Col(html.Div([
                         dcc.Dropdown(
-                            id="anio_mantenimiento_servicios_digitales",
+                            id="anio_servicios_aseo_transporte_vigilancia_mantenimiento_gestion_administrativa",
                             options=data['Año'].unique(),
                             clearable=True,
                             placeholder="Seleccione el año",
@@ -106,7 +101,7 @@ layout = html.Div([
                                         'backgroundColor': 'rgb(29, 105, 150, 0.1)',
                                     }
                                 ],
-                                id='logros_tabla_mantenimiento_servicios_digitales',
+                                id='logros_tabla_servicios_aseo_transporte_vigilancia_mantenimiento_gestion_administrativa',
                             ),
                         ], style={'paddingTop': '2%'})
                     )
@@ -119,9 +114,9 @@ layout = html.Div([
 
 
 @callback(
-    Output("logros_tabla_mantenimiento_servicios_digitales", "data"),
-    [Input("facultad_mantenimiento_servicios_digitales", "value"), Input("anio_mantenimiento_servicios_digitales", "value")])
-def logros_alcanzados_mantenimiento_servicios_digitales(facultad, anio):
+    Output("logros_tabla_servicios_aseo_transporte_vigilancia_mantenimiento_gestion_administrativa", "data"),
+    [Input("facultad_servicios_aseo_transporte_vigilancia_mantenimiento_gestion_administrativa", "value"), Input("anio_servicios_aseo_transporte_vigilancia_mantenimiento_gestion_administrativa", "value")])
+def logros_alcanzados_servicios_aseo_transporte_vigilancia_mantenimiento_gestion_administrativa(facultad, anio):
     if facultad or anio:
         if not anio:
             df = data

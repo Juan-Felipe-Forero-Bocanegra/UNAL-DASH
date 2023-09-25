@@ -7,20 +7,20 @@ from dash import dash_table
 import dash_bootstrap_components as dbc
 import requests
 
-dash.register_page(__name__, path='/fortalecimiento-competencias-personal')
+dash.register_page(
+    __name__, path='/intervencion-espacios-fisicos-infraestructura')
 
 f = open("file.txt", "r")
 token = f.readline()
 e = open("environment.txt", "r")
 environment = e.readline()
-url = environment + "/reporte_cifras/buscarCifras?area_param=Extensión, Innovación y Propiedad Intelectual&programa_param=Formación del personal docente y administrativo&actividad_param=Fortalecimiento de competencias del personal"
+url = environment + \
+    "/reporte_cifras/buscarCifras?area_param=Infraestructura&programa_param=Gestión de Ordenamiento y Desarrollo Físico&actividad_param=Intervención de espacios físicos"
 headers = {'Content-type': 'application/json', 'Authorization': token}
 r = requests.get(url, headers=headers)
 dataJson = r.json()
 
 list = []
-list2 = []
-list3 = []
 
 for c in dataJson:
     if c['informeActividadDetalle']['orden'] == 1:
@@ -30,69 +30,65 @@ for c in dataJson:
                 o = {
                     'Facultad': c['facultad'],
                     'Año': c['anio'],
-                    'Logro': ''
+                    'Logro': '',
+                    'Área (m2)': ''
                 }
             if a['actividadDatoLista']['orden'] == '1':
                 o['Logro'] = a['cifra']
                 i += 1
-            if i == 1:
+            if a['actividadDatoLista']['orden'] == '2':
+                o['Área (m2)'] = a['cifra']
+                i += 1
+            if i == 2:
                 list.append(o)
                 i = 0
-    if c['informeActividadDetalle']['orden'] == 2:
-        o = {
-                'Facultad':c['facultad'],
-                'Año':c['anio'],
-                'cifra': c['informeActividadDetalle']['cifra']
-                }
-        list2.append(o)
-    if c['informeActividadDetalle']['orden'] == 3:
-        o = {
-                'Facultad':c['facultad'],
-                'Año':c['anio'],
-                'cifra': c['informeActividadDetalle']['cifra']
-                }
-        list3.append(o)
+
 
 data = pd.DataFrame(list)
-data_2 = pd.DataFrame(list2)
-data_3 = pd.DataFrame(list3)
+
+
+area_tmp = data[['Facultad', 'Año', 'Área (m2)']]
+area = area_tmp.rename(
+    columns={'Área (m2)': 'cifra'})
+
 
 def total_function(facultad, anio, dataframe):
     df_facultad = dataframe[dataframe['Facultad'] == facultad]
     df_total = df_facultad['cifra'].sum()
+    df_total = format(df_total, '.2f')
     dataframe.loc[(dataframe['Facultad'] == facultad) & (
         dataframe['Año'] == anio), 'total'] = df_total
 
 
-# Número de capacitaciones realizadas para el personal docente realizadas en la facultad
+# egresados participantes
 
-data_2["Año"] = data_2["Año"].astype('str')
-data_2.fillna(0, inplace=True)
-data_2['cifra'] = data_2['cifra'].astype('int')
+area['Año'] = area['Año'].astype('str')
+area.fillna(0, inplace=True)
+area['cifra'] = area['cifra'].astype('float')
 
-data_2.apply(lambda x: total_function(x['Facultad'], x['Año'], data_2), axis=1)
-total_data_2 = data_2['cifra'].sum()
+area = area.groupby(
+    ['Facultad', 'Año'])['cifra'].sum().reset_index()
 
-# Número de docentes participantes en capacitaciones realizadas en la facultad
+area.apply(lambda x: total_function(
+    x['Facultad'], x['Año'], area), axis=1)
 
-data_3["Año"] = data_3["Año"].astype('str')
-data_3.fillna(0, inplace=True)
-data_3['cifra'] = data_3['cifra'].astype('int')
-
-data_3.apply(lambda x: total_function(x['Facultad'], x['Año'], data_3), axis=1)
-total_data_3 = data_3['cifra'].sum()
+total_area = area['cifra'].sum()
+total_data_4 = format(total_area, '.2f')
 
 layout = html.Div([
-    html.H2('Extensión, Innovación y Propiedad Intelectual'),
-    html.H3('Formación del personal docente y administrativo'),
-     dbc.Nav(
+    html.H2('Infraestructura'),
+    html.H3('Gestión de Ordenamiento y Desarrollo Físico'),
+    dbc.Nav(
         [
-            dbc.NavItem(dbc.NavLink("Fortalecimiento de competencias del personal", active=True,
-                                    href="/fortalecimiento-competencias-personal")),
-            dbc.NavItem(dbc.NavLink("Descuentos a los servidores públicos administrativos en capacitaciones del área de extensión", 
-                                    href="/descuentos-otorgados-servidores-publicos-administrativos")),
+            dbc.NavItem(dbc.NavLink("Elaboración y diseño de proyectos",
+                                    href="/elaboracion-y-diseno-proyectos-infraestructura")),
+            dbc.NavItem(dbc.NavLink("Intervención de espacios físicos", active=True,
+                                    href="/intervencion-espacios-fisicos-infraestructura")),
+            dbc.NavItem(dbc.NavLink("Gestión de espacios físicos y mantenimiento", 
+                                    href="/gestion-espacios-fisicos-mantenimiento-infraestructura")),
+
         ],
-        pills=True,),   
+        pills=True,),
     html.Div(
         [
             dbc.Row(
@@ -102,72 +98,43 @@ layout = html.Div([
                             dbc.CardBody(
                                 [
                                     html.H5(
-                                        total_data_2,
+                                        total_area,
                                         className="card-number",
                                     ),
-                                    html.P("capacitaciones para el personal docente"),
+                                    html.P(
+                                        "area intervenida (m2)"),
                                 ]
                             ),
                         )
                     ], className='card_container'), lg=4),
-                    dbc.Col(html.Div([
-                        dbc.Card(
-                            dbc.CardBody(
-                                [
-                                    html.H5(
-                                        total_data_3,
-                                        className="card-number",
-                                    ),
-                                    html.P("docentes participantes"),
-                                ]
-                            ),
-                        )
-                    ], className='card_container'), lg=4),
-                ]
+                ],
             ),
         ]),
-    html.H5('Capacitaciones para el personal docente'),
-    dcc.Graph(id="graph_capacitaciones_personal_docente_facultad",
-              figure=px.bar(data_2,
+    html.H5('Área intervenida'),
+    dcc.Graph(id="graph_intervencion_espacios_infraestructura",
+              figure=px.bar(area,
                             x="cifra",
                             y="Facultad",
-                            color="Año",
+                            color='Año',
                             labels={
                                 'Facultad': 'Dependencia',
-                                'cifra': 'Capacitaciones'
+                                'cifra': 'Área intervenida'
                             },
                             color_discrete_sequence=px.colors.qualitative.Prism,
                             hover_data={
                                 "cifra": True,
-                                "total": True,
-                                "Año": True},
+                                'total': True,
+                                'Año': True},
                             barmode="group"
                             )),
-    html.H5('Docentes participantes en capacitaciones'),
-    dcc.Graph(id="graph_numero_docentes_capacitaciones_facultad",
-              figure=px.bar(data_3,
-                            x="cifra",
-                            y="Facultad",
-                            color="Año",
-                            labels={
-                                'Facultad': 'Dependencia',
-                                'cifra': 'Docentes'
-                            },
-                            color_discrete_sequence=px.colors.qualitative.Prism,
-                            hover_data={
-                                "cifra": True,
-                                "total": True,
-                                "Año": True},
-                            barmode="group"
-                            )),
-    html.H5('Logros Alcanzados'),
+    html.H5('Logros alcanzados'),
     html.Div(
         [
             dbc.Row(
                 [
                     dbc.Col(html.Div([
                         dcc.Dropdown(
-                            id="facultad_fortalecimiento_competencias_personal",
+                            id="facultad_intervencion_espacios_fisicos_infraestructura",
                             options=data['Facultad'].unique(),
                             clearable=True,
                             placeholder="Seleccione la facultad",
@@ -175,7 +142,7 @@ layout = html.Div([
                     ]), lg=6),
                     dbc.Col(html.Div([
                         dcc.Dropdown(
-                            id="anio_fortalecimiento_competencias_personal",
+                            id="anio_intervencion_espacios_fisicos_infraestructura",
                             options=data['Año'].unique(),
                             clearable=True,
                             placeholder="Seleccione el año",
@@ -209,7 +176,7 @@ layout = html.Div([
                                         'backgroundColor': 'rgb(29, 105, 150, 0.1)',
                                     }
                                 ],
-                                id='logros_tabla_fortalecimiento_competencias_personal',
+                                id='logros_tabla_intervencion_espacios_fisicos_infraestructura',
                             ),
                         ], style={'paddingTop': '2%'})
                     )
@@ -222,9 +189,9 @@ layout = html.Div([
 
 
 @callback(
-    Output("logros_tabla_fortalecimiento_competencias_personal", "data"),
-    [Input("facultad_fortalecimiento_competencias_personal", "value"), Input("anio_fortalecimiento_competencias_personal", "value")])
-def logros_alcanzados_fortalecimiento_competencias_personal(facultad, anio):
+    Output("logros_tabla_intervencion_espacios_fisicos_infraestructura", "data"),
+    [Input("facultad_intervencion_espacios_fisicos_infraestructura", "value"), Input("anio_intervencion_espacios_fisicos_infraestructura", "value")])
+def logros_alcanzados_intervencion_espacios_fisicos_infraestructura(facultad, anio):
     if facultad or anio:
         if not anio:
             df = data

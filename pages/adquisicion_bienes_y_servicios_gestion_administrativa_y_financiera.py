@@ -7,13 +7,14 @@ from dash import dash_table
 import dash_bootstrap_components as dbc
 import requests
 
-dash.register_page(__name__, path='/beca-auxiliar-docente')
+dash.register_page(
+    __name__, path='/adquisicion-bienes-y-servicios-gestion-administrativa-y-financiera')
 
 f = open("file.txt", "r")
 token = f.readline()
 e = open("environment.txt", "r")
 environment = e.readline()
-url = environment + "/reporte_cifras/buscarCifras?area_param=Formación&programa_param=Reconocimientos económicos a estudiantes&actividad_param=Beca auxiliar docente"
+url = environment + "/reporte_cifras/buscarCifras?area_param=Gestión Administrativa y Financiera&programa_param=Gestión Administrativa de Bienes y Servicios&actividad_param=Adquisición de bienes y servicios"
 headers = {'Content-type': 'application/json', 'Authorization': token}
 r = requests.get(url, headers=headers)
 dataJson = r.json()
@@ -22,40 +23,47 @@ list = []
 list2 = []
 list3 = []
 
+
 for c in dataJson:
     if c['informeActividadDetalle']['orden'] == 1:
         i = 0
+        j = 0
         for a in c['informeActividadDetalle']['listaDatoListaValor']:
             if i == 0:
                 o = {
                     'Facultad': c['facultad'],
                     'Año': c['anio'],
-                    'Logro': ''
+                    'Logro': '',
                 }
             if a['actividadDatoLista']['orden'] == '1':
-                o['Logro'] = a['cifra']
-                i += 1
+                if a['indice'] == j:
+                    o['Logro'] = a['cifra']
+                    i += 1
             if i == 1:
                 list.append(o)
                 i = 0
+                j += 1
     if c['informeActividadDetalle']['orden'] == 2:
         o = {
-                'Facultad':c['facultad'],
-                'Año':c['anio'],
-                'cifra': c['informeActividadDetalle']['cifra']
-                }
+            'Facultad': c['facultad'],
+            'Año': c['anio'],
+            'cifra': c['informeActividadDetalle']['cifra']
+        }
         list2.append(o)
     if c['informeActividadDetalle']['orden'] == 3:
         o = {
-                'Facultad':c['facultad'],
-                'Año':c['anio'],
-                'cifra': c['informeActividadDetalle']['cifra']
-                }
+            'Facultad': c['facultad'],
+            'Año': c['anio'],
+            'cifra': c['informeActividadDetalle']['cifra']
+        }
         list3.append(o)
+   
+
 
 data = pd.DataFrame(list)
 data_2 = pd.DataFrame(list2)
 data_3 = pd.DataFrame(list3)
+
 
 def total_function(facultad, anio, dataframe):
     df_facultad = dataframe[dataframe['Facultad'] == facultad]
@@ -64,40 +72,45 @@ def total_function(facultad, anio, dataframe):
         dataframe['Año'] == anio), 'total'] = df_total
 
 
-# Estudiantes beneficiados
+# Presupuesto ejecutado en compras
 
 data_2["Año"] = data_2["Año"].astype('str')
 data_2.fillna(0, inplace=True)
-data_2['cifra'] = data_2['cifra'].astype('int')
+data_2['cifra'] = data_2['cifra'].astype('float')
 
 data_2.apply(lambda x: total_function(x['Facultad'], x['Año'], data_2), axis=1)
-total_data_2 = data_2['cifra'].sum()
 
-# Suma de los reconocimientos económicos aportados por facultad
+data_2['total'] = data_2['total'].map("{:,.2f}".format)
+
+total_data_2 = data_2['cifra'].sum()
+total_data_2 = f'{total_data_2:,}'.replace(',', ' ')
+total_data_2 = '$ ' + total_data_2
+
+# Presupuesto ejecutado en servicios
 
 data_3["Año"] = data_3["Año"].astype('str')
 data_3.fillna(0, inplace=True)
-data_3['cifra'] = data_3['cifra'].astype('int')
+data_3['cifra'] = data_3['cifra'].astype('float')
 
 data_3.apply(lambda x: total_function(x['Facultad'], x['Año'], data_3), axis=1)
+
+data_3['total'] = data_3['total'].map("{:,.2f}".format)
+
 total_data_3 = data_3['cifra'].sum()
 total_data_3 = f'{total_data_3:,}'.replace(',', ' ')
 total_data_3 = '$ ' + total_data_3
 
+
 layout = html.Div([
-    html.H2('Formación'),
-    html.H3('Reconocimientos económicos a estudiantes'),
-     dbc.Nav(
+    html.H2('Gestión Administrativa y Financiera'),
+    html.H3('Gestión Administrativa de Bienes y Servicios'),
+    dbc.Nav(
         [
-            dbc.NavItem(dbc.NavLink("Beca auxiliar docente", active=True, href="/beca-auxiliar-docente")),
-            dbc.NavItem(dbc.NavLink("Beca asistente docente", href="/beca-asistente-docente")),
-             dbc.NavItem(dbc.NavLink("Estudiantes auxiliares", href="/estudiantes-auxiliares")),
-             dbc.NavItem(dbc.NavLink("Beca Exención de Derechos Académicos",  href="/beca-exencion-derechos-economicos")),
-             dbc.NavItem(dbc.NavLink("Prácticas y pasantías", href="/practicas-y-pasantias-formacion")),
-             dbc.NavItem(dbc.NavLink("Convenios para prácticas y pasantías en el año", href="/convenios-practicas-pasantias-formacion")),
-              dbc.NavItem(dbc.NavLink("Otras becas o reconocimientos económicos", href="/otras-becas-o-reconocimientos-economicos")),
+            dbc.NavItem(dbc.NavLink("Adquisición de bienes y servicios", active=True, 
+                                    href="/adquisicion-bienes-y-servicios-gestion-administrativa-y-financiera")),
+           
         ],
-        pills=True),   
+        pills=True,),
     html.Div(
         [
             dbc.Row(
@@ -110,7 +123,8 @@ layout = html.Div([
                                         total_data_2,
                                         className="card-number",
                                     ),
-                                    html.P("Estudiantes beneficiados"),
+                                    html.P(
+                                        "presupuesto ejecutado en compras"),
                                 ]
                             ),
                         )
@@ -123,23 +137,25 @@ layout = html.Div([
                                         total_data_3,
                                         className="card-number",
                                     ),
-                                    html.P("Suma de los reconocimientos económicos"),
+                                    html.P(
+                                        "presupuesto ejecutado en servicios"),
                                 ]
                             ),
                         )
-                    ], className='card_container'), lg=4),
+                    ], className='card_container'), lg=4),                    
                 ]
             ),
         ]),
-    html.H5('Estudiantes beneficiados con la beca auxiliar docente'),
-    dcc.Graph(id="graph_beca_auxiliar_docente_estudiantes_beneficiados",
+
+    html.H5('Presupuesto ejecutado en compras'),
+    dcc.Graph(id="graph_presupuesto_ejecutado_en_compras_adquisicion_bienes_y_servicios_gestion_administrativa_y_financiera",
               figure=px.bar(data_2,
                             x="cifra",
                             y="Facultad",
                             color="Año",
                             labels={
                                 'Facultad': 'Dependencia',
-                                'cifra': 'Estudiantes beneficiados'
+                                'cifra': 'Presupuesto ejecutado en compras'
                             },
                             color_discrete_sequence=px.colors.qualitative.Prism,
                             hover_data={
@@ -148,15 +164,15 @@ layout = html.Div([
                                 "Año": True},
                             barmode="group"
                             )),
-    html.H5('Suma de los reconocimientos económicos aportados por la facultad'),
-    dcc.Graph(id="graph_beca_auxiliar_docente_reconocimientos_economicos",
+    html.H5('Presupuesto ejecutado en servicios'),
+    dcc.Graph(id="graph_presupuesto_ejecutado_en_servicios_adquisicion_bienes_y_servicios_gestion_administrativa_y_financiera",
               figure=px.bar(data_3,
                             x="cifra",
                             y="Facultad",
                             color="Año",
                             labels={
                                 'Facultad': 'Dependencia',
-                                'cifra': 'Suma de los reconocimientos económicos'
+                                'cifra': 'Presupuesto ejecutado en servicios'
                             },
                             color_discrete_sequence=px.colors.qualitative.G10,
                             hover_data={
@@ -165,14 +181,14 @@ layout = html.Div([
                                 "Año": True},
                             barmode="group"
                             )),
-    html.H5('Logros Alcanzados'),
+html.H5('Logros alcanzados'),
     html.Div(
         [
             dbc.Row(
                 [
                     dbc.Col(html.Div([
                         dcc.Dropdown(
-                            id="facultad_beca_auxiliar_docente",
+                            id="facultad_adquisicion_bienes_y_servicios_gestion_administrativa_y_financiera",
                             options=data['Facultad'].unique(),
                             clearable=True,
                             placeholder="Seleccione la facultad",
@@ -180,7 +196,7 @@ layout = html.Div([
                     ]), lg=6),
                     dbc.Col(html.Div([
                         dcc.Dropdown(
-                            id="anio_beca_auxiliar_docente",
+                            id="anio_adquisicion_bienes_y_servicios_gestion_administrativa_y_financiera",
                             options=data['Año'].unique(),
                             clearable=True,
                             placeholder="Seleccione el año",
@@ -214,20 +230,23 @@ layout = html.Div([
                                         'backgroundColor': 'rgb(29, 105, 150, 0.1)',
                                     }
                                 ],
-                                id='logros_tabla_beca_auxiliar_docente',
+                                id='logros_tabla_adquisicion_bienes_y_servicios_gestion_administrativa_y_financiera',
                             ),
                         ], style={'paddingTop': '2%'})
                     )
                 ]
             )
         ]),
+
+
+
 ], className='layout')
 
 
 @callback(
-    Output("logros_tabla_beca_auxiliar_docente", "data"),
-    [Input("facultad_beca_auxiliar_docente", "value"), Input("anio_beca_auxiliar_docente", "value")])
-def logros_alcanzados_beca_auxiliar_docente(facultad, anio):
+    Output("logros_tabla_adquisicion_bienes_y_servicios_gestion_administrativa_y_financiera", "data"),
+    [Input("facultad_adquisicion_bienes_y_servicios_gestion_administrativa_y_financiera", "value"), Input("anio_adquisicion_bienes_y_servicios_gestion_administrativa_y_financiera", "value")])
+def logros_alcanzados_adquisicion_bienes_y_servicios_gestion_administrativa_y_financiera(facultad, anio):
     if facultad or anio:
         if not anio:
             df = data

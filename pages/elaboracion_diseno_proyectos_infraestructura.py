@@ -8,13 +8,14 @@ import dash_bootstrap_components as dbc
 import requests
 
 dash.register_page(
-    __name__, path='/paginas-web')
+    __name__, path='/elaboracion-y-diseno-proyectos-infraestructura')
 
 f = open("file.txt", "r")
 token = f.readline()
 e = open("environment.txt", "r")
 environment = e.readline()
-url = environment + "/reporte_cifras/buscarCifras?area_param=Gobierno y Gestión de Servicios TI&programa_param=Gobierno y Gestión de Servicios TI&actividad_param=Páginas web"
+url = environment + \
+    "/reporte_cifras/buscarCifras?area_param=Infraestructura&programa_param=Gestión de Ordenamiento y Desarrollo Físico&actividad_param=Elaboración y diseño de proyectos"
 headers = {'Content-type': 'application/json', 'Authorization': token}
 r = requests.get(url, headers=headers)
 dataJson = r.json()
@@ -40,30 +41,29 @@ for c in dataJson:
 
 data = pd.DataFrame(list)
 
+# logros alcanzados
+
 layout = html.Div([
-    html.H2('Gobierno y Gestión de Servicios TI'),
-    html.H3(
-        'Páginas web'),
+    html.H2('Infraestructura'),
+    html.H3('Gestión de Ordenamiento y Desarrollo Físico'),
     dbc.Nav(
         [
-            dbc.NavItem(dbc.NavLink("Repositorios de información",
-                                    href="/repositorios-informacion")),
-            dbc.NavItem(dbc.NavLink("Mantenimiento y actualización de servicios digitales",
-                                    href="/mantenimiento-actualizacion-servicios-digitales")),
-            dbc.NavItem(dbc.NavLink("Gestión de proyectos informáticos", 
-                                    href="/gestion-proyectos-informaticos")),
-            dbc.NavItem(dbc.NavLink("Páginas web", active=True,
-                                    href="/paginas-web")),
+            dbc.NavItem(dbc.NavLink("Elaboración y diseño de proyectos", active=True,
+                                    href="/elaboracion-y-diseno-proyectos-infraestructura")),
+            dbc.NavItem(dbc.NavLink("Intervención de espacios físicos",
+                                    href="/intervencion-espacios-fisicos-infraestructura")),
+            dbc.NavItem(dbc.NavLink("Gestión de espacios físicos y mantenimiento", 
+                                    href="/gestion-espacios-fisicos-mantenimiento-infraestructura")),
+
         ],
         pills=True,),
-    html.H5('Logros Alcanzados'),
     html.Div(
         [
             dbc.Row(
                 [
                     dbc.Col(html.Div([
                         dcc.Dropdown(
-                            id="facultad_paginas_web",
+                            id="facultad_elaboracion_diseno_proyectos_infraestructura",
                             options=data['Facultad'].unique(),
                             clearable=True,
                             placeholder="Seleccione la facultad",
@@ -71,7 +71,7 @@ layout = html.Div([
                     ]), lg=6),
                     dbc.Col(html.Div([
                         dcc.Dropdown(
-                            id="anio_paginas_web",
+                            id="anio_elaboracion_diseno_proyectos_infraestructura",
                             options=data['Año'].unique(),
                             clearable=True,
                             placeholder="Seleccione el año",
@@ -105,7 +105,7 @@ layout = html.Div([
                                         'backgroundColor': 'rgb(29, 105, 150, 0.1)',
                                     }
                                 ],
-                                id='logros_tabla_paginas_web',
+                                id='logros_tabla_elaboracion_diseno_proyectos_infraestructura',
                             ),
                         ], style={'paddingTop': '2%'})
                     )
@@ -118,9 +118,9 @@ layout = html.Div([
 
 
 @callback(
-    Output("logros_tabla_paginas_web", "data"),
-    [Input("facultad_paginas_web", "value"), Input("anio_paginas_web", "value")])
-def logros_alcanzados_paginas_web(facultad, anio):
+    Output("logros_tabla_elaboracion_diseno_proyectos_infraestructura", "data"),
+    [Input("facultad_elaboracion_diseno_proyectos_infraestructura", "value"), Input("anio_elaboracion_diseno_proyectos_infraestructura", "value")])
+def logros_alcanzados_elaboracion_diseno_proyectos_infraestructura(facultad, anio):
     if facultad or anio:
         if not anio:
             df = data
