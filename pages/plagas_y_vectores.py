@@ -50,7 +50,7 @@ def total_function(facultad, anio, dataframe):
 
 data_2["Año"] = data_2["Año"].astype('str')
 data_2.fillna(0, inplace=True)
-data_2['cifra'] = data_2['cifra'].astype('int')
+data_2['cifra'] = data_2['cifra'].astype('float')
 
 data_2.apply(lambda x: total_function(x['Facultad'], x['Año'], data_2), axis=1)
 total_data_2 = data_2['cifra'].sum()
@@ -59,7 +59,7 @@ total_data_2 = data_2['cifra'].sum()
 
 data_3["Año"] = data_3["Año"].astype('str')
 data_3.fillna(0, inplace=True)
-data_3['cifra'] = data_3['cifra'].astype('int')
+data_3['cifra'] = data_3['cifra'].astype('float')
 
 data_3.apply(lambda x: total_function(x['Facultad'], x['Año'], data_3), axis=1)
 total_data_3 = data_3['cifra'].sum()

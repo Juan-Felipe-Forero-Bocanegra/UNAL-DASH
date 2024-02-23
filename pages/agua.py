@@ -91,7 +91,7 @@ total_data_3 = '$ ' + total_data_3
 
 data_4["Año"] = data_4["Año"].astype('str')
 data_4.fillna(0, inplace=True)
-data_4['cifra'] = data_4['cifra'].astype('int')
+data_4['cifra'] = data_4['cifra'].astype('float')
 
 data_4.apply(lambda x: total_function(x['Facultad'], x['Año'], data_4), axis=1)
 total_data_4 = data_4['cifra'].sum()

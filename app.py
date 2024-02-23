@@ -6,7 +6,7 @@ import json
 import time
 from flask import session
 
-url = "http://localhost:8070/authenticate"
+url = "http://localhost:8073/authenticate"
 data = {'username': 'jforerobo', 'password': 'T$Cc#s7%hPqk'}
 headers = {'Content-type': 'application/json'}
 r = requests.post(url, json=data)

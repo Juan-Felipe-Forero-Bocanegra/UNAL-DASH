@@ -151,7 +151,7 @@ layout = html.Div([
                                         className="card-number",
                                     ),
                                     html.P(
-                                        "estudiantes de pregrado beneficiados"),
+                                        "Total presupesto asignado"),
                                 ]
                             ),
                         )
@@ -165,7 +165,7 @@ layout = html.Div([
                                         className="card-number",
                                     ),
                                     html.P(
-                                        "estudiantes de posgrado beneficiados"),
+                                        "Total presupuesto ejecutado"),
                                 ]
                             ),
                         )
